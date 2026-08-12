@@ -122,8 +122,23 @@ export const useAchievementStore = create<AchievementState>()(
       // être débloqué (c'est le titre de départ gratuit), même pour les
       // parties commencées avant l'ajout de ce correctif.
       onRehydrateStorage: () => (state) => {
-        if (state && !state.unlockedTitles.includes('Novice')) {
+        if (!state) return;
+
+        // Titre de départ garanti.
+        if (!state.unlockedTitles.includes('Novice')) {
           state.unlockedTitles = [...state.unlockedTitles, 'Novice'];
+        }
+
+        // Migration des titres déjà débloqués avant l'ajout de la récompense de titre.
+        // On reconstruit le set à partir des succès validés, puis on ajoute les titres manquants.
+        const missingTitles = ACHIEVEMENTS.filter(a => {
+          if (a.reward?.type !== 'title' || typeof a.reward.value !== 'string') return false;
+          if (state.unlockedTitles.includes(a.reward.value)) return false;
+          return !!state.unlocked[a.id];
+        }).map(a => a.reward!.value as string);
+
+        if (missingTitles.length > 0) {
+          state.unlockedTitles = [...new Set([...state.unlockedTitles, ...missingTitles])];
         }
       },
     }

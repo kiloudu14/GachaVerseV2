@@ -148,8 +148,8 @@ export const ULTIMATE_DEFS: Record<string, UltimateDef> = {
   },
   bulbizarre: {
     templateId:'bulbizarre', name:'Vampigraine', duration:12, cooldown:150,
-    description:'Convertit 0.5% des dégâts infligés en monnaie pendant 12s',
-    effect:{ damageToCoinPct:0.5 }, animDuration:1600,
+    description:'Convertit 50% des dégâts infligés en monnaie pendant 12s',
+    effect:{ damageToCoinPct:50 }, animDuration:1600,
   },
   kissy_missy: {
     templateId:'kissy_missy', name:'Cadeau', duration:1, cooldown:150,

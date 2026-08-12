@@ -13,15 +13,21 @@ const firebaseConfig = {
   measurementId:     process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
+const hasFirebaseConfig = Object.values(firebaseConfig).every(value => typeof value === 'string' && value.trim().length > 0);
+
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 if (typeof window !== 'undefined') {
-  app  = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  auth = getAuth(app);
-  db   = getFirestore(app);
+  if (!hasFirebaseConfig) {
+    console.warn('[Firebase] Variables d’environnement absentes : Firebase désactivé en local.');
+  } else {
+    app  = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    auth = getAuth(app);
+    db   = getFirestore(app);
+  }
 }
 
 export { auth, db };
-export default app!;
+export default app;
