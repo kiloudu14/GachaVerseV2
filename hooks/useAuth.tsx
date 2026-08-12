@@ -46,17 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     const unsub = watchSession(user.uid, () => {
       setKickedOut(true);
-      signOut(auth).catch(() => {});
+      if (auth) {
+        signOut(auth).catch(() => {});
+      }
     });
     return unsub;
   }, [user]);
 
   const signIn = async (email: string, password: string) => {
+    if (!auth) throw new Error('Firebase non configuré');
     const cred = await signInWithEmailAndPassword(auth, email, password);
     await claimSession(cred.user.uid);
   };
 
   const signUp = async (email: string, password: string, username: string, discordUsername: string) => {
+    if (!auth) throw new Error('Firebase non configuré');
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     // Compte créé mais PAS de session/accès automatique : il reste "en attente"
     // tant que le pseudo Discord n'a pas été vérifié manuellement.
@@ -64,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInGoogle = async () => {
+    if (!auth) throw new Error('Firebase non configuré');
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
     await claimSession(cred.user.uid);
@@ -71,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     clearLocalSession();
+    if (!auth) return;
     await signOut(auth);
   };
 
