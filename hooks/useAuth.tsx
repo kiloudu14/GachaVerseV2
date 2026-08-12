@@ -56,7 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     if (!auth) throw new Error('Firebase non configuré');
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    await claimSession(cred.user.uid);
+    const ok = await claimSession(cred.user.uid);
+    if (!ok) {
+      await signOut(auth);
+      throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
+    }
   };
 
   const signUp = async (email: string, password: string, username: string, discordUsername: string) => {
@@ -71,7 +75,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!auth) throw new Error('Firebase non configuré');
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
-    await claimSession(cred.user.uid);
+    const ok = await claimSession(cred.user.uid);
+    if (!ok) {
+      await signOut(auth);
+      throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
+    }
   };
 
   const logout = async () => {
