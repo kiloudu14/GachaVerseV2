@@ -14,6 +14,7 @@ import { getAffinityForId } from '@/lib/game/affinities';
 import { AffinityBadge } from '@/components/ui/AffinityBadge';
 import { AffinityTooltip } from '@/components/ui/AffinityTooltip';
 import { EDITION_CONFIG } from '@/lib/game/editions';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 const RARITY_PRIORITY: Record<string, number> = {
   T: 0, P: 1, CO: 2, S: 3, M: 4, L: 5, E: 6, R: 7, U: 8, C: 9,
@@ -104,12 +105,13 @@ export function CompanionsPage() {
               const isSelected = selSlot === index;
               const cfg = tpl ? RARITY_CONFIG[tpl.rarity] : null;
               const dps = tpl && own ? calcCharDps(tpl, own) : 0;
+              const hasEquipment = !!own && Object.values(own.equippedItems ?? {}).some(id => !!id);
 
               return (
                 <div
                   key={index}
                   className={`companion-team-slot ${isSelected ? 'companion-team-slot--selected' : ''}`}
-                  style={tpl ? { borderColor: isSelected ? 'var(--purple-hi)' : `${cfg!.color}55`, background: isSelected ? 'rgba(168,85,247,0.14)' : `${cfg!.color}10` } : undefined}
+                  style={tpl ? { borderColor: isSelected ? 'var(--purple-hi)' : `${cfg!.color}55`, background: isSelected ? 'rgba(168,85,247,0.14)' : `${cfg!.color}10`, position: 'relative' } : { position: 'relative' }}
                   onClick={() => setSelSlot(isSelected ? null : index)}
                 >
                   <div className="companion-team-slot__meta">SLOT {index + 1}</div>
@@ -124,6 +126,13 @@ export function CompanionsPage() {
                         width={64}
                         height={88}
                       />
+                      {hasEquipment && (
+                        <Tooltip content={<span style={{ fontWeight: 700 }}>Équipements équipés</span>}>
+                          <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '4px 6px', fontSize: 12, zIndex: 6 }}>
+                            ⚔️
+                          </div>
+                        </Tooltip>
+                      )}
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontFamily: 'var(--f-ui)', fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{tpl.name}</div>
                         <div style={{ marginTop: 6 }}><RarityBadge rarity={tpl.rarity} /></div>
@@ -426,11 +435,12 @@ export function CompanionsPage() {
                       }
                     }}
                     style={{
-                      cursor: 'pointer',
-                      background: isEquipped ? `${cfg.color}12` : 'rgba(255,255,255,0.03)',
-                      borderColor: selSlot !== null ? 'var(--purple-dim)' : isEquipped ? `${cfg.color}55` : 'rgba(255,255,255,0.08)',
-                      boxShadow: isEquipped ? `0 0 16px ${cfg.glow}15` : undefined,
-                    }}
+                        cursor: 'pointer',
+                        position: 'relative',
+                        background: isEquipped ? `${cfg.color}12` : 'rgba(255,255,255,0.03)',
+                        borderColor: selSlot !== null ? 'var(--purple-dim)' : isEquipped ? `${cfg.color}55` : 'rgba(255,255,255,0.08)',
+                        boxShadow: isEquipped ? `0 0 16px ${cfg.glow}15` : undefined,
+                      }}
                   >
                     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                       <CharacterCardThumb
@@ -442,6 +452,13 @@ export function CompanionsPage() {
                         width={56}
                         height={78}
                       />
+                      {Object.values(ownedChar.equippedItems ?? {}).some(id => !!id) && (
+                        <Tooltip content={<span style={{ fontWeight: 700 }}>Équipements équipés</span>}>
+                          <div style={{ position: 'absolute', bottom: 8, left: 8, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '0px 6px', fontSize: 10, zIndex: 6 }}>
+                            ⚔️
+                          </div>
+                        </Tooltip>
+                      )}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                           <span style={{ fontFamily: 'var(--f-ui)', fontWeight: 700, fontSize: 14, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tpl.name}</span>
