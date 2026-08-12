@@ -545,7 +545,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
   ],
 };
 
-export function generateEnemy(wave: number, palier: number): Enemy {
+export function generateEnemy(wave: number, palier: number, maxPalierReached: number = palier): Enemy {
   const defs   = PALIER_ENEMIES[palier];
   const def    = defs ? defs[wave - 1] : getFallback(wave, palier);
   const isBoss = def.isBoss ?? (wave === 10);
@@ -561,7 +561,11 @@ export function generateEnemy(wave: number, palier: number): Enemy {
     ? Math.floor(60 * Math.pow(1.13, global - 1) * 12)
     : Math.floor(60 * Math.pow(1.13, global - 1));
 
-  const gemsReward = isBoss ? palier : (wave === 5 ? 1 : 0);
+  // Gemme garantie du "mini-boss" (vague 5) : uniquement lors d'une vraie
+  // progression, jamais en re-farmant un palier déjà validé — sinon c'est un
+  // robinet infini de gemmes en boucle.
+  const isFarming = palier < maxPalierReached;
+  const gemsReward = isBoss ? palier : (wave === 5 && !isFarming ? 1 : 0);
 
   return {
     id:    `p${palier}_w${wave}`,

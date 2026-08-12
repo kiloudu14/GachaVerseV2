@@ -10,7 +10,7 @@ import { TITLE_GOLD_BONUS_PCT } from '@/lib/game/titles';
 const CATEGORIES: (AchievCategory | 'all')[] = ['all', 'combat', 'progression', 'collection', 'gacha', 'social'];
 
 export function AchievementsPage() {
-  const { unlocked, progress, activeTitle, unlockedTitles, setActiveTitle, unlockedCount } = useAchievementStore();
+  const { unlocked, progress, activeTitle, unlockedTitles, setActiveTitle, unlockedCount, isClaimed, claimAchievement } = useAchievementStore();
   const { nekoGems } = useGameStore();
   const [cat, setCat]   = useState<AchievCategory | 'all'>('all');
   const [tab, setTab]   = useState<'achievements' | 'titles'>('achievements');
@@ -129,20 +129,40 @@ export function AchievementsPage() {
                           </>
                         )}
 
-                        {a.reward && !isSecret && (
-                          <div style={{ marginTop:'6px', display:'inline-flex', alignItems:'center', gap:'5px', background: done ? 'rgba(251,191,36,0.1)' : 'rgba(255,255,255,0.03)', border:`1px solid ${done ? 'rgba(251,191,36,0.3)' : 'var(--border)'}`, borderRadius:'6px', padding:'3px 8px' }}>
-                            <span style={{ fontFamily:'var(--f-ui)', fontSize:'10px', color: done ? '#fbbf24' : 'var(--text-dim)', fontWeight:700 }}>
-                              {done ? '✓' : '🔒'} Récompense :
-                            </span>
-                            <span style={{ fontFamily:'var(--f-num)', fontSize:'10px', color: done ? '#fbbf24' : 'var(--text-dim)', fontWeight:700 }}>
-                              {a.reward.type === 'title'
-                                ? `Titre « ${a.reward.value} »`
-                                : a.reward.type === 'gems'
-                                  ? `+${a.reward.value} 💎`
-                                  : `+${formatNumber(a.reward.value as number)} 🪙`}
-                            </span>
-                          </div>
-                        )}
+                        {a.reward && !isSecret && (() => {
+                          const alreadyClaimed = isClaimed(a.id);
+                          const rewardLabel = a.reward.type === 'title'
+                            ? `Titre « ${a.reward.value} »`
+                            : a.reward.type === 'gems'
+                              ? `+${a.reward.value} 💎`
+                              : `+${formatNumber(a.reward.value as number)} 🪙`;
+
+                          // Débloqué mais pas encore réclamé : gros bouton RÉCUP cliquable.
+                          if (done && !alreadyClaimed) {
+                            return (
+                              <button onClick={() => claimAchievement(a.id)}
+                                style={{ marginTop:'6px', display:'flex', alignItems:'center', justifyContent:'center', gap:'6px', width:'100%',
+                                  background:'linear-gradient(135deg,#f59e0b,#fbbf24)', border:'1px solid #fbbf24', borderRadius:'8px', padding:'6px 10px',
+                                  cursor:'pointer', animation:'pulseGlow 1.6s ease-in-out infinite' }}>
+                                <span style={{ fontFamily:'var(--f-ui)', fontWeight:900, fontSize:'11px', color:'#1a1305', letterSpacing:'0.5px' }}>
+                                  🎁 RÉCUP — {rewardLabel}
+                                </span>
+                              </button>
+                            );
+                          }
+
+                          // Déjà réclamé, ou pas encore débloqué : badge statique normal.
+                          return (
+                            <div style={{ marginTop:'6px', display:'inline-flex', alignItems:'center', gap:'5px', background: alreadyClaimed ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.03)', border:`1px solid ${alreadyClaimed ? 'rgba(74,222,128,0.3)' : 'var(--border)'}`, borderRadius:'6px', padding:'3px 8px' }}>
+                              <span style={{ fontFamily:'var(--f-ui)', fontSize:'10px', color: alreadyClaimed ? '#4ade80' : 'var(--text-dim)', fontWeight:700 }}>
+                                {alreadyClaimed ? '✓ Reçu :' : '🔒 Récompense :'}
+                              </span>
+                              <span style={{ fontFamily:'var(--f-num)', fontSize:'10px', color: alreadyClaimed ? '#4ade80' : 'var(--text-dim)', fontWeight:700 }}>
+                                {rewardLabel}
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

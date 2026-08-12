@@ -243,6 +243,8 @@ interface GameStore extends GameState {
   addToCollection: (id: string) => CardEdition;
   grantMaxedCharacter: (templateId: string, edition?: CardEdition) => void;
   // Quêtes
+  bumpQuestProgress: (id: string, by?: number) => void;
+  setQuestProgress: (id: string, value: number) => void;
   claimQuest: (id: string) => void;
   ensureDailyQuests: () => void;
   ensureWeeklyQuests: () => void;
@@ -320,7 +322,7 @@ export const useGameStore = create<GameStore>()(
           bossActive:   false,
           bossTimeLeft: 0,
           bossAvoided:  true,
-          currentEnemy: generateEnemy(1, state.palier),
+          currentEnemy: generateEnemy(1, state.palier, state.maxPalierReached),
         });
       },
 
@@ -332,7 +334,7 @@ export const useGameStore = create<GameStore>()(
           bossActive:   true,
           bossAvoided:  false,
           bossTimeLeft: getPalierConfig(state.palier).bossTimerSeconds,
-          currentEnemy: generateEnemy(10, state.palier),
+          currentEnemy: generateEnemy(10, state.palier, state.maxPalierReached),
         });
       },
 
@@ -351,7 +353,7 @@ export const useGameStore = create<GameStore>()(
           bossTimeLeft:  0,
           bossAvoided:   false,
           ultUsedThisFight: [],
-          currentEnemy:  generateEnemy(1, dest),
+          currentEnemy:  generateEnemy(1, dest, state.maxPalierReached),
         });
       },
 
@@ -421,7 +423,7 @@ export const useGameStore = create<GameStore>()(
       tickBossTimer: () => set(state => {
         if (!state.bossActive || state.bossTimeLeft <= 0) return {};
         const t = state.bossTimeLeft - 1;
-        if (t <= 0) return { bossActive:false, bossTimeLeft:0, wave:1, currentEnemy: generateEnemy(1, state.palier) };
+        if (t <= 0) return { bossActive:false, bossTimeLeft:0, wave:1, currentEnemy: generateEnemy(1, state.palier, state.maxPalierReached) };
         return { bossTimeLeft: t };
       }),
 
@@ -653,10 +655,9 @@ export const useGameStore = create<GameStore>()(
         set(state => ({
           clickUpgradeLevel: newLevel,
           baseDpc: calcBaseDpc(newLevel), // courbe puissance, stocké pour les sauvegardes
-          quests: state.quests.map(q =>
-            q.id === 'd_upgrade_10' || q.id === 'w_upgrade_50' && !q.done ? { ...q, current: Math.min(q.current+1, q.target) } : q
-          ),
         }));
+        get().bumpQuestProgress('d_upgrade_10', 1);
+        get().bumpQuestProgress('w_upgrade_50', 1);
       },
 
       upgradeGold: () => {
@@ -666,10 +667,9 @@ export const useGameStore = create<GameStore>()(
         if (!get().spendPixelCoins(cost)) return;
         set(state => ({
           goldUpgradeLevel: (state.goldUpgradeLevel ?? 0) + 1,
-          quests: state.quests.map(q =>
-            q.id === 'd_upgrade_10' || q.id === 'w_upgrade_50' && !q.done ? { ...q, current: Math.min(q.current+1, q.target) } : q
-          ),
         }));
+        get().bumpQuestProgress('d_upgrade_10', 1);
+        get().bumpQuestProgress('w_upgrade_50', 1);
       },
 
       getGoldMultiplier: () => {
@@ -692,10 +692,9 @@ export const useGameStore = create<GameStore>()(
         if (!get().spendPixelCoins(cost)) return;
         set(state => ({
           hero: { ...state.hero, level: state.hero.level + 1, xp: 0 },
-          quests: state.quests.map(q =>
-            q.id === 'd_upgrade_10' || q.id === 'w_upgrade_50' && !q.done ? { ...q, current: Math.min(q.current+1, q.target) } : q
-          ),
         }));
+        get().bumpQuestProgress('d_upgrade_10', 1);
+        get().bumpQuestProgress('w_upgrade_50', 1);
       },
 
       evolveHero: () => {
@@ -807,10 +806,9 @@ export const useGameStore = create<GameStore>()(
             ...state.collection,
             [templateId]: { ...owned, level: owned.level + 1, xp: 0 },
           },
-          quests: state.quests.map(q =>
-            q.id === 'd_upgrade_10' || q.id === 'w_upgrade_50' && !q.done ? { ...q, current: Math.min(q.current+1, q.target) } : q
-          ),
         }));
+        get().bumpQuestProgress('d_upgrade_10', 1);
+        get().bumpQuestProgress('w_upgrade_50', 1);
       },
 
       evolveCharacter: (templateId) => {
@@ -927,6 +925,7 @@ export const useGameStore = create<GameStore>()(
         set(s => ({ nekoGems: s.nekoGems - GACHA_COSTS.single }));
         const id = rollCharacter(get().maxPalierReached);
         const edition = get().addToCollection(id);
+        get().bumpQuestProgress('w_gacha_10', 1);
         broadcastAndSaveLocal();
         return { templateId: id, edition };
       },
@@ -935,6 +934,7 @@ export const useGameStore = create<GameStore>()(
         set(s => ({ nekoGems: s.nekoGems - GACHA_COSTS.multi10 }));
         const ids = rollMulti(get().maxPalierReached);
         const results = ids.map(id => ({ templateId: id, edition: get().addToCollection(id) }));
+        get().bumpQuestProgress('w_gacha_10', ids.length);
         broadcastAndSaveLocal();
         return results;
       },
@@ -943,6 +943,7 @@ export const useGameStore = create<GameStore>()(
         set(s => ({ nekoGems: s.nekoGems - GACHA_COSTS.multi100 }));
         const ids = rollMulti100(get().maxPalierReached);
         const results = ids.map(id => ({ templateId: id, edition: get().addToCollection(id) }));
+        get().bumpQuestProgress('w_gacha_10', ids.length);
         broadcastAndSaveLocal();
         return results;
       },
@@ -977,6 +978,12 @@ export const useGameStore = create<GameStore>()(
             },
           };
         });
+        // "Obtenir X personnages différents" compte les TEMPLATES uniques
+        // possédés (peu importe l'édition), pas le nombre d'instances.
+        const uniqueOwned = new Set(
+          Object.values(get().collection).map(c => c.templateId)
+        ).size;
+        get().setQuestProgress('e_collection_20', uniqueOwned);
         return edition;
       },
 
@@ -1001,6 +1008,27 @@ export const useGameStore = create<GameStore>()(
       },
 
       // ─── Quêtes ───────────────────────────────────────────────────────
+      // Helper générique et réutilisable pour toute future quête : cherche l'id
+      // dans les 3 tableaux (jour/semaine/événement) et incrémente celle trouvée.
+      // Appelable depuis n'importe où dans le store, ou depuis un autre store
+      // (ex: useGameStore.getState().bumpQuestProgress('w_expedition_1')).
+      bumpQuestProgress: (id, by = 1) => set(state => {
+        const bump = (arr: Quest[]) => arr.map(q => q.id === id && !q.done ? { ...q, current: Math.min(q.current + by, q.target) } : q);
+        return {
+          quests: bump(state.quests),
+          weeklyQuests: bump(state.weeklyQuests ?? []),
+          eventQuests: bump(state.eventQuests ?? []),
+        };
+      }),
+      // Fixe directement la progression (pour les quêtes "atteindre X", pas "cumuler +1").
+      setQuestProgress: (id, value) => set(state => {
+        const setVal = (arr: Quest[]) => arr.map(q => q.id === id && !q.done ? { ...q, current: Math.min(Math.max(q.current, value), q.target) } : q);
+        return {
+          quests: setVal(state.quests),
+          weeklyQuests: setVal(state.weeklyQuests ?? []),
+          eventQuests: setVal(state.eventQuests ?? []),
+        };
+      }),
       claimQuest: (id) => set(s => {
         const q = s.quests.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
@@ -1102,7 +1130,7 @@ export const useGameStore = create<GameStore>()(
           clickUpgradeLevel: 0,
           goldUpgradeLevel:  0,
           hero:              { level: 1, currentForm: 0, xp: 0 },
-          currentEnemy:      generateEnemy(1, startPalier),
+          currentEnemy:      generateEnemy(1, startPalier, state.maxPalierReached),
           bossActive:        false,
           bossTimeLeft:      0,
           bossAvoided:       false,
@@ -1235,6 +1263,16 @@ type QuestState = { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[]
 // quelle que soit la source du gain (kill, offline, jackpot...). Sans ce
 // helper, ces quêtes restent bloquées à 0 puisqu'aucune autre logique ne les
 // met à jour ailleurs dans le store.
+// Incrémente les quêtes "vaincre X boss de palier" (jour/semaine) à chaque
+// mort de boss, progression ou re-farm. Sans ce helper, ces quêtes restaient
+// bloquées à 0 puisque rien d'autre ne les met à jour ailleurs dans le store.
+function bumpBossQuests(quests: Quest[], weeklyQuests: Quest[]): { quests: Quest[]; weeklyQuests: Quest[] } {
+  return {
+    quests: quests.map(q => q.id === 'd_boss_kill' && !q.done ? { ...q, current: Math.min(q.current + 1, q.target) } : q),
+    weeklyQuests: weeklyQuests.map(q => q.id === 'w_boss_5' && !q.done ? { ...q, current: Math.min(q.current + 1, q.target) } : q),
+  };
+}
+
 function bumpCoinQuests(quests: Quest[], weeklyQuests: Quest[], amount: number): { quests: Quest[]; weeklyQuests: Quest[] } {
   if (amount <= 0) return { quests, weeklyQuests };
   return {
@@ -1298,7 +1336,16 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     const crownGain    = isNewProgress ? 1 : 0;
     // Événement de victoire (source de vérité pour l'écran de victoire).
     const bossVictory = { palier: next, gems: passGems, coins: baseCoins, crowns: crownGain, at: Date.now() };
-    return { pixelCoins:coins, nekoGems:gems + passGems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:1, palier:next, maxPalierReached:Math.max(state.maxPalierReached,next), bossActive:false, bossTimeLeft:0, bossAvoided:false, ultUsedThisFight:[], currentEnemy:generateEnemy(1,next), bossCrowns: bossCrownsBefore + crownGain, lastBossVictory: bossVictory } as Partial<GameState & { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[] }>;
+    const bossQuestUpdate = bumpBossQuests(coinQuestUpdate.quests, coinQuestUpdate.weeklyQuests);
+    // "Atteindre le palier X" : on fixe la progression au palier réellement
+    // atteint (pas un simple +1), et seulement lors d'une vraie progression.
+    const finalEventQuests = isNewProgress
+      ? eventQuests.map(q =>
+          (q.id === 'e_palier_10' || q.id === 'e_palier_20') && !q.done
+            ? { ...q, current: Math.min(Math.max(q.current, next), q.target) } : q
+        )
+      : eventQuests;
+    return { pixelCoins:coins, nekoGems:gems + passGems, quests:bossQuestUpdate.quests, weeklyQuests:bossQuestUpdate.weeklyQuests, eventQuests:finalEventQuests, wave:1, palier:next, maxPalierReached:Math.max(state.maxPalierReached,next), bossActive:false, bossTimeLeft:0, bossAvoided:false, ultUsedThisFight:[], currentEnemy:generateEnemy(1,next,Math.max(state.maxPalierReached,next)), bossCrowns: bossCrownsBefore + crownGain, lastBossVictory: bossVictory } as Partial<GameState & { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[] }>;
   }
   const nw = state.wave + 1;
   if (nw === 10) {
@@ -1306,9 +1353,9 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     // le boss ne se déclenche jamais (les boss ne sont pas refaisables).
     const isFarming = state.palier < state.maxPalierReached;
     if (isFarming || state.bossAvoided) {
-      return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:1, ultUsedThisFight:[], currentEnemy:generateEnemy(1, state.palier) };
+      return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:1, ultUsedThisFight:[], currentEnemy:generateEnemy(1, state.palier, state.maxPalierReached) };
     }
-    return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:10, bossActive:true, bossTimeLeft:getPalierConfig(state.palier).bossTimerSeconds, ultUsedThisFight:[], currentEnemy:generateEnemy(10,state.palier) };
+    return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:10, bossActive:true, bossTimeLeft:getPalierConfig(state.palier).bossTimerSeconds, ultUsedThisFight:[], currentEnemy:generateEnemy(10,state.palier,state.maxPalierReached) };
   }
   const equipDrop = getEquipmentDrop(
     state.palier,
@@ -1324,7 +1371,7 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     weeklyQuests:coinQuestUpdate.weeklyQuests,
     eventQuests,
     wave:nw,
-    ultUsedThisFight:[], currentEnemy:generateEnemy(nw,state.palier),
+    ultUsedThisFight:[], currentEnemy:generateEnemy(nw,state.palier,state.maxPalierReached),
     equipmentInventory:newEquipmentInventory,
     lastEquipmentDrop: equipDrop ?? null,
   };

@@ -7,8 +7,10 @@ import { toast } from '@/hooks/useToast';
 interface AchievementState {
   // id → progress value
   progress: Record<string, number>;
-  // id → unlocked
+  // id → unlocked (cible atteinte, mais récompense pas forcément réclamée)
   unlocked: Record<string, boolean>;
+  // id → récompense réclamée (bouton RÉCUP cliqué)
+  claimed: Record<string, boolean>;
   // titre actif choisi par le joueur
   activeTitle: string;
   // Titres débloqués
@@ -21,6 +23,8 @@ interface AchievementState {
   getAchievement: (id: string) => Achievement | undefined;
   getProgress: (id: string) => number;
   isUnlocked: (id: string) => boolean;
+  isClaimed: (id: string) => boolean;
+  claimAchievement: (id: string) => void;
   unlockedCount: () => number;
 }
 
@@ -29,12 +33,14 @@ export const useAchievementStore = create<AchievementState>()(
     (set, get) => ({
       progress: {},
       unlocked: {},
+      claimed: {},
       activeTitle: 'Novice',
       unlockedTitles: [],
 
       getAchievement: (id) => ACHIEVEMENTS.find(a => a.id === id),
       getProgress:    (id) => get().progress[id] ?? 0,
       isUnlocked:     (id) => !!get().unlocked[id],
+      isClaimed:      (id) => !!get().claimed[id],
       unlockedCount:  ()   => Object.values(get().unlocked).filter(Boolean).length,
 
       setActiveTitle: (title) => set({ activeTitle: title }),
@@ -50,22 +56,42 @@ export const useAchievementStore = create<AchievementState>()(
         set(s => ({
           progress: { ...s.progress, [id]: next },
           unlocked: done ? { ...s.unlocked, [id]: true } : s.unlocked,
-          unlockedTitles: (done && !already && achiev.reward?.type === 'title' && typeof achiev.reward.value === 'string')
+        }));
+
+        // Notification de déblocage — la récompense elle-même n'est créditée
+        // que via le bouton RÉCUP (claimAchievement), pas automatiquement ici.
+        if (done && !already) {
+          toast.levelup(`🏆 ${achiev.name}`, 'Récompense disponible — clique sur RÉCUP !');
+        }
+      },
+
+      // Réclame la récompense d'un succès débloqué (bouton RÉCUP côté UI).
+      claimAchievement: (id) => {
+        const achiev = ACHIEVEMENTS.find(a => a.id === id);
+        const already = get().claimed[id];
+        if (!achiev || !get().unlocked[id] || already) return;
+
+        set(s => ({
+          claimed: { ...s.claimed, [id]: true },
+          unlockedTitles: (achiev.reward?.type === 'title' && typeof achiev.reward.value === 'string' && !s.unlockedTitles.includes(achiev.reward.value))
             ? [...s.unlockedTitles, achiev.reward.value as string]
             : s.unlockedTitles,
         }));
 
-        // Toast de déverrouillage
-        if (done && !already) {
-          const rewardMsg = achiev.reward
-            ? achiev.reward.type === 'gems'
-              ? `+${achiev.reward.value} 💎`
-              : achiev.reward.type === 'title'
-                ? `Titre : « ${achiev.reward.value} »`
-                : ''
-            : '';
-          toast.levelup(`🏆 ${achiev.name}`, rewardMsg || achiev.description);
+        if (achiev.reward?.type === 'gems' && typeof achiev.reward.value === 'number') {
+          // Import différé pour éviter un cycle d'import gameStore <-> achievementStore
+          const { useGameStore } = require('@/store/gameStore');
+          useGameStore.setState((gs: { nekoGems: number }) => ({ nekoGems: gs.nekoGems + (achiev.reward!.value as number) }));
         }
+
+        const rewardMsg = achiev.reward
+          ? achiev.reward.type === 'gems'
+            ? `+${achiev.reward.value} 💎`
+            : achiev.reward.type === 'title'
+              ? `Titre : « ${achiev.reward.value} »`
+              : ''
+          : '';
+        toast.levelup(`✅ Récompense reçue`, rewardMsg || achiev.description);
       },
 
       bumpProgress: (id, by = 1) => {
@@ -78,6 +104,7 @@ export const useAchievementStore = create<AchievementState>()(
       partialize: (s) => ({
         progress: s.progress,
         unlocked: s.unlocked,
+        claimed: s.claimed,
         activeTitle: s.activeTitle,
         unlockedTitles: s.unlockedTitles,
       }),
@@ -86,15 +113,6 @@ export const useAchievementStore = create<AchievementState>()(
 );
 
 // ── Helpers appelés depuis gameStore / GameLayout ─────────────────────────
-
-export function trackClicks(totalClicks: number) {
-  const s = useAchievementStore.getState();
-  s.setProgress('first_click', Math.min(totalClicks, 1));
-  s.setProgress('clicks_100',    Math.min(totalClicks, 100));
-  s.setProgress('clicks_1000',   Math.min(totalClicks, 1000));
-  s.setProgress('clicks_10000',  Math.min(totalClicks, 10000));
-  s.setProgress('clicks_100000', Math.min(totalClicks, 100000));
-}
 
 export function trackBossKill(bossCrowns: number) {
   const s = useAchievementStore.getState();

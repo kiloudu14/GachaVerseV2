@@ -147,6 +147,9 @@ export const useExpeditionStore = create<ExpeditionStore>()(
           pixelCoins: s.pixelCoins + coins,
           nekoGems:   s.nekoGems   + gems,
         }));
+        // Quêtes "terminer N expédition(s)"
+        useGameStore.getState().bumpQuestProgress('w_expedition_1', 1);
+        useGameStore.getState().bumpQuestProgress('e_expedition_5', 1);
 
         // Appliquer le drop spécial
         if (dropGained > 0 && def.rewards.dropId) {
@@ -245,6 +248,7 @@ export const useExpeditionStore = create<ExpeditionStore>()(
         // Appliquer la récompense
         if (recipe.reward.type === 'character' && recipe.reward.characterId) {
           useGameStore.getState().addToCollection(recipe.reward.characterId);
+          useGameStore.getState().bumpQuestProgress('e_forge_1', 1);
           toast.palier(`⚗ FORGE RÉUSSIE`, `${recipe.reward.icon} ${recipe.reward.label} obtenu !`);
         } else if (recipe.reward.type === 'gems' && recipe.reward.amount) {
           useGameStore.setState(s => ({ nekoGems: s.nekoGems + (recipe.reward.amount ?? 0) }));
