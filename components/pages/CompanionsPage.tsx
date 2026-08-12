@@ -442,7 +442,7 @@ export function CompanionsPage() {
                         boxShadow: isEquipped ? `0 0 16px ${cfg.glow}15` : undefined,
                       }}
                   >
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                       <CharacterCardThumb
                         templateId={tpl.id}
                         formIndex={ownedChar.currentForm}
