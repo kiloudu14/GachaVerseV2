@@ -31,6 +31,8 @@ import { formatNumber } from '@/lib/game/format';
 import { getPalierConfig } from '@/types/game';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { WelcomeBackModal } from '@/components/game/WelcomeBackModal';
+import { isApproved } from '@/lib/firebase/accessRequests';
+import { PendingApprovalScreen } from '@/components/layout/PendingApprovalScreen';
 import type { OfflineGain } from '@/store/gameStore';
 import { NAV_ICONS } from '@/components/ui/NavIcons';
 import { ToastContainer } from '@/components/ui/ToastContainer';
@@ -101,8 +103,21 @@ export function GameLayout() {
   const goToPage = (p: Page) => { setPage(p); setDrawerOpen(false); };
   const [victory, setVictory] = useState<{ palier: number; gems: number; coins: number } | null>(null);
   const { pixelCoins, nekoGems, palier, wave, maxPalierReached, quests, ensureDailyQuests, username, lastEquipmentDrop, setLastEquipmentDrop, lastBossVictory, clearBossVictory } = useGameStore();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { forceSave } = useCloudSave(user?.uid ?? null);
+
+  // ── Compte validé manuellement ? ──────────────────────────────────────────
+  // Tant que approved !== true, on bloque l'accès au jeu (voir le rendu plus
+  // bas). `null` = vérification en cours, on n'affiche rien pour éviter un
+  // flash du jeu avant que le statut ne soit confirmé.
+  const [approved, setApproved] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!user) { setApproved(null); return; }
+    let cancelled = false;
+    isApproved(user.uid).then(ok => { if (!cancelled) setApproved(ok); });
+    return () => { cancelled = true; };
+  }, [user]);
+
   const cfg = getPalierConfig(palier);
   const isCombat = COMBAT_PAGES.includes(page);
   const progressPct = Math.round((wave / 10) * 100);
@@ -227,6 +242,11 @@ export function GameLayout() {
   // Bloquer les multi-instances
   if (instanceStatus === 'duplicate' || instanceStatus === 'takeover') {
     return <DuplicateTabScreen onTakeover={requestTakeover} isTakingOver={instanceStatus === 'takeover'} />;
+  }
+
+  // Compte connecté mais pas encore validé manuellement : accès bloqué.
+  if (user && approved === false) {
+    return <PendingApprovalScreen email={user.email} onLogout={logout} />;
   }
 
   // Splash screen au premier chargement
