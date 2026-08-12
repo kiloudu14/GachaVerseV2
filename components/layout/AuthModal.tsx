@@ -4,18 +4,24 @@ import { useAuth } from '@/hooks/useAuth';
 
 export function AuthModal({ onClose }: { onClose: () => void }) {
   const { signIn, signUp, signInGoogle, user, logout } = useAuth();
-  const [mode, setMode]         = useState<'signin'|'signup'>('signin');
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [mode, setMode]                 = useState<'signin'|'signup'>('signin');
+  const [email, setEmail]               = useState('');
+  const [password, setPassword]         = useState('');
+  const [username, setUsername]         = useState('');
+  const [discordUsername, setDiscordUsername] = useState('');
+  const [error, setError]               = useState('');
+  const [loading, setLoading]           = useState(false);
 
   const handleSubmit = async () => {
     if (!email || !password) { setError('Champs requis'); return; }
+    if (mode === 'signup' && (!username || !discordUsername)) {
+      setError('Pseudo jeu et Discord requis');
+      return;
+    }
     setLoading(true); setError('');
     try {
       if (mode === 'signin') await signIn(email, password);
-      else await signUp(email, password);
+      else await signUp(email, password, username, discordUsername);
       onClose();
     } catch (e: unknown) { setError(e instanceof Error ? e.message : 'Erreur'); }
     finally { setLoading(false); }
@@ -45,11 +51,22 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
-        {[{ph:'email@example.com',val:email,set:setEmail,type:'email'},{ph:'Mot de passe',val:password,set:setPassword,type:'password'}].map((f,i) => (
-          <input key={i} type={f.type} placeholder={f.ph} value={f.val} onChange={e => f.set(e.target.value)}
-            onKeyDown={e => e.key==='Enter' && handleSubmit()}
-            style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
-        ))}
+        {mode === 'signin' ? (
+          <>
+            {[{ph:'email@example.com',val:email,set:setEmail,type:'email'},{ph:'Mot de passe',val:password,set:setPassword,type:'password'}].map((f,i) => (
+              <input key={i} type={f.type} placeholder={f.ph} value={f.val} onChange={e => f.set(e.target.value)}
+                onKeyDown={e => e.key==='Enter' && handleSubmit()}
+                style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
+            ))}
+          </>
+        ) : (
+          <>
+            <input type="text" placeholder="Pseudo en jeu" value={username} onChange={e => setUsername(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSubmit()} style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
+            <input type="email" placeholder="email@example.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSubmit()} style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
+            <input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSubmit()} style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
+            <input type="text" placeholder="Discord (@nom ou nom#1234)" value={discordUsername} onChange={e => setDiscordUsername(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSubmit()} style={{ background: '#08090f', border: '1px solid var(--c-border)', color: 'var(--c-text)', padding: '10px 12px', fontFamily: 'var(--font-pixel)', fontSize: '9px', outline: 'none', borderRadius: '2px' }} />
+          </>
+        )}
         {error && <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--c-red)', textAlign: 'center' }}>{error}</div>}
         <button onClick={handleSubmit} disabled={loading} style={{ padding: '12px', background: '#8b5cf622', border: '2px solid #8b5cf6', color: '#a78bfa', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-pixel)', fontSize: '9px', boxShadow: '0 0 8px #8b5cf644' }}>
           {loading ? '...' : mode==='signin' ? 'SE CONNECTER' : 'CRÉER MON COMPTE'}
