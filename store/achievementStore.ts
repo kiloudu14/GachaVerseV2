@@ -36,7 +36,7 @@ export const useAchievementStore = create<AchievementState>()(
       unlocked: {},
       claimed: {},
       activeTitle: 'Novice',
-      unlockedTitles: [],
+      unlockedTitles: ['Novice'],
 
       getAchievement: (id) => ACHIEVEMENTS.find(a => a.id === id),
       getProgress:    (id) => get().progress[id] ?? 0,
@@ -106,7 +106,7 @@ export const useAchievementStore = create<AchievementState>()(
         unlocked: {},
         claimed: {},
         activeTitle: 'Novice',
-        unlockedTitles: [],
+        unlockedTitles: ['Novice'],
       }),
     }),
     {
@@ -118,19 +118,33 @@ export const useAchievementStore = create<AchievementState>()(
         activeTitle: s.activeTitle,
         unlockedTitles: s.unlockedTitles,
       }),
+      // Migration pour les sauvegardes existantes : "Novice" doit toujours
+      // être débloqué (c'est le titre de départ gratuit), même pour les
+      // parties commencées avant l'ajout de ce correctif.
+      onRehydrateStorage: () => (state) => {
+        if (state && !state.unlockedTitles.includes('Novice')) {
+          state.unlockedTitles = [...state.unlockedTitles, 'Novice'];
+        }
+      },
     }
   )
 );
 
 // ── Helpers appelés depuis gameStore / GameLayout ─────────────────────────
 
-export function trackBossKill(bossCrowns: number) {
+// "Vaincre X boss" (first_boss, bosses_5/20/100) : compte TOUS les boss vaincus,
+// re-farm inclus. Ne pas confondre avec les couronnes (crowns_50), qui elles
+// ne sont accordées que sur une VRAIE progression de palier.
+export function trackBossKills(totalBossKills: number) {
   const s = useAchievementStore.getState();
-  s.setProgress('first_boss', Math.min(bossCrowns, 1));
-  s.setProgress('bosses_5',   Math.min(bossCrowns, 5));
-  s.setProgress('bosses_20',  Math.min(bossCrowns, 20));
-  s.setProgress('bosses_100', Math.min(bossCrowns, 100));
-  s.setProgress('crowns_50',  Math.min(bossCrowns, 50));
+  s.setProgress('first_boss', Math.min(totalBossKills, 1));
+  s.setProgress('bosses_5',   Math.min(totalBossKills, 5));
+  s.setProgress('bosses_20',  Math.min(totalBossKills, 20));
+  s.setProgress('bosses_100', Math.min(totalBossKills, 100));
+}
+
+export function trackBossCrowns(bossCrowns: number) {
+  useAchievementStore.getState().setProgress('crowns_50', Math.min(bossCrowns, 50));
 }
 
 export function trackPalier(palier: number) {

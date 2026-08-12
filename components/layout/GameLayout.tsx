@@ -37,7 +37,7 @@ import { ToastContainer } from '@/components/ui/ToastContainer';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { BossVictoryScreen } from '@/components/game/BossVictoryScreen';
 import { toast } from '@/hooks/useToast';
-import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam, trackKills, trackQuestsCompleted, trackUpgrades, trackGems, trackPrestige, trackVoidOrbs, trackUnlockedTitles, trackGachaPulls, trackShinyEditions, trackRank7, trackSynergyMax } from '@/store/achievementStore';
+import { useAchievementStore, trackBossKills, trackBossCrowns, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam, trackKills, trackQuestsCompleted, trackUpgrades, trackGems, trackPrestige, trackVoidOrbs, trackUnlockedTitles, trackGachaPulls, trackShinyEditions, trackRank7, trackSynergyMax } from '@/store/achievementStore';
 import { makeInstanceKey } from '@/lib/game/editions';
 
 type Page = 'home' | 'upgrades' | 'companions' | 'collection' | 'gacha' | 'shop' | 'quests' | 'events' | 'settings' | 'leaderboard' | 'marketplace' | 'champions' | 'achievements' | 'profile' | 'expeditions' | 'forge' | 'prestige';
@@ -165,14 +165,15 @@ export function GameLayout() {
 
   // ── Achievement trackers ─────────────────────────────────────────────────
   const totalDps = useGameStore(s => s.getTotalDps());
-  const { bossCrowns, collection: col, equippedTeam, totalKills, totalQuestsCompleted, totalUpgradesPerformed, totalGachaPulls, voidOrbs } = useGameStore();
+  const { bossCrowns, collection: col, equippedTeam, totalKills, totalQuestsCompleted, totalUpgradesPerformed, totalGachaPulls, voidOrbs, totalBossKills } = useGameStore();
   const { CHARACTER_POOL: charPool } = require('@/lib/game/characters');
   const { computeActiveSynergies } = require('@/lib/game/synergies');
   const { usePrestigeStore } = require('@/store/prestigeStore');
   const { useAchievementStore: useAchStoreForTitles } = require('@/store/achievementStore');
   const prestigeLevel = usePrestigeStore((s: { level: number }) => s.level);
   const unlockedTitlesCount = useAchStoreForTitles((s: { unlockedTitles: string[] }) => s.unlockedTitles.length);
-  useEffect(() => { trackBossKill(bossCrowns); }, [bossCrowns]);
+  useEffect(() => { trackBossKills(totalBossKills); }, [totalBossKills]);
+  useEffect(() => { trackBossCrowns(bossCrowns); }, [bossCrowns]);
   useEffect(() => { trackPalier(maxPalierReached); }, [maxPalierReached]);
   useEffect(() => { trackCoins(pixelCoins); }, [pixelCoins]);
   useEffect(() => { trackGems(nekoGems); }, [nekoGems]);
