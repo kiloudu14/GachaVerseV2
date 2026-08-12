@@ -42,6 +42,7 @@ interface ExpeditionStore {
   getActiveForChar: (charId: string) => ActiveExpedition | undefined;
   isCharOnExpedition: (charId: string) => boolean;
   getFinished:   () => ActiveExpedition[];
+  resetExpeditions: () => void;
 }
 
 let _seq = 0;
@@ -52,6 +53,9 @@ export const useExpeditionStore = create<ExpeditionStore>()(
       active:        [],
       dropInventory: {},
       craftedRecipes: [],
+
+      // Remet les expéditions à zéro (utilisé par "Réinitialiser mon compte").
+      resetExpeditions: () => set({ active: [], dropInventory: {}, craftedRecipes: [] }),
 
       getDropCount: (dropId) => get().dropInventory[dropId] ?? 0,
 

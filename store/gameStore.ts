@@ -1238,8 +1238,23 @@ export const useGameStore = create<GameStore>()(
       },
 
       resetGame: () => {
+        // localStorage.clear() vide bien le disque, mais les AUTRES stores
+        // Zustand (succès, prestige, expéditions, ultimes) gardent leurs
+        // données EN MÉMOIRE dans le navigateur tant que la page n'est pas
+        // rechargée — et les réécrivent aussitôt sur le disque au moindre
+        // changement d'état, annulant le clear(). Il faut les réinitialiser
+        // explicitement, pas juste vider le stockage.
         try { localStorage.clear(); } catch {}
         set(makeInitial());
+        try {
+          useAchievementStore.getState().resetAchievements();
+          usePrestigeStore.getState().resetPrestige();
+          useUltimateStore.getState().resetUltimates();
+          // Import différé : expeditionStore importe déjà gameStore, un import
+          // statique créerait un cycle.
+          const { useExpeditionStore } = require('@/store/expeditionStore');
+          useExpeditionStore.getState().resetExpeditions();
+        } catch {}
       },
     }),
     {

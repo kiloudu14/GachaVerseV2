@@ -37,6 +37,7 @@ interface UltState {
   getActiveEnemyDamageTakenMultiplier: () => number;
   getActiveBonusDpsFlat:               (heroDpc: number, teamDps: number) => number;
   getActiveDamageToCoinPct:            () => number;
+  resetUltimates: () => void;
 }
 
 const STACK_CAP = 30;   // plafond de stacks (stackPerClickPct)
@@ -51,6 +52,12 @@ export const useUltimateStore = create<UltState>()(
   clickStacks: {},
   comboMultipliers: {},
   pendingNextClickMultiplier: 1,
+
+  // Remet les cooldowns/effets à zéro (utilisé par "Réinitialiser mon compte").
+  resetUltimates: () => set({
+    cooldowns: {}, activeUlts: [], animating: null,
+    clickStacks: {}, comboMultipliers: {}, pendingNextClickMultiplier: 1,
+  }),
 
   startCooldown: (id, dur) =>
     set(s => ({ cooldowns: { ...s.cooldowns, [id]: dur } })),

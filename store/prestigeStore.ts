@@ -28,6 +28,7 @@ interface PrestigeStore {
   getStartGems:     () => number;
   getStartPalier:   () => number;
   getUpgradeDiscount: () => number;
+  resetPrestige: () => void;
 }
 
 export const usePrestigeStore = create<PrestigeStore>()(
@@ -36,6 +37,9 @@ export const usePrestigeStore = create<PrestigeStore>()(
       level:     0,
       points:    0,
       purchased: {},
+
+      // Remet le prestige à zéro (utilisé par "Réinitialiser mon compte").
+      resetPrestige: () => set({ level: 0, points: 0, purchased: {} }),
 
       canPrestige: (maxPalierReached) => maxPalierReached >= 40,
 

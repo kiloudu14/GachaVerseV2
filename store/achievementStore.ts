@@ -26,6 +26,7 @@ interface AchievementState {
   isClaimed: (id: string) => boolean;
   claimAchievement: (id: string) => void;
   unlockedCount: () => number;
+  resetAchievements: () => void;
 }
 
 export const useAchievementStore = create<AchievementState>()(
@@ -98,6 +99,15 @@ export const useAchievementStore = create<AchievementState>()(
         const current = get().progress[id] ?? 0;
         get().setProgress(id, current + by);
       },
+
+      // Remet les succès à zéro (utilisé par "Réinitialiser mon compte").
+      resetAchievements: () => set({
+        progress: {},
+        unlocked: {},
+        claimed: {},
+        activeTitle: 'Novice',
+        unlockedTitles: [],
+      }),
     }),
     {
       name: 'gachaverse_achievements',
