@@ -37,7 +37,7 @@ import { ToastContainer } from '@/components/ui/ToastContainer';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { BossVictoryScreen } from '@/components/game/BossVictoryScreen';
 import { toast } from '@/hooks/useToast';
-import { useAchievementStore, trackClicks, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam } from '@/store/achievementStore';
+import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam } from '@/store/achievementStore';
 import { makeInstanceKey } from '@/lib/game/editions';
 
 type Page = 'home' | 'upgrades' | 'companions' | 'collection' | 'gacha' | 'shop' | 'quests' | 'events' | 'settings' | 'leaderboard' | 'marketplace' | 'champions' | 'achievements' | 'profile' | 'expeditions' | 'forge' | 'prestige';
@@ -151,9 +151,8 @@ export function GameLayout() {
 
   // ── Achievement trackers ─────────────────────────────────────────────────
   const totalDps = useGameStore(s => s.getTotalDps());
-  const { totalClicks, bossCrowns, collection: col, equippedTeam } = useGameStore();
+  const { bossCrowns, collection: col, equippedTeam } = useGameStore();
   const { CHARACTER_POOL: charPool } = require('@/lib/game/characters');
-  useEffect(() => { trackClicks(totalClicks); }, [totalClicks]);
   useEffect(() => { trackBossKill(bossCrowns); }, [bossCrowns]);
   useEffect(() => { trackPalier(maxPalierReached); }, [maxPalierReached]);
   useEffect(() => { trackCoins(pixelCoins); }, [pixelCoins]);
