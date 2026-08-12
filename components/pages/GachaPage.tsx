@@ -508,21 +508,30 @@ function GachaRevealOverlay({ results, onClose }: { results: Res[]; onClose: () 
             {results.length === 1 ? '✦ TIRAGE UNIQUE' : `✦ INVOCATION ×${results.length}`}
           </div>
 
-          {/* Cartes */}
-          <div style={{
-            display:'flex', flexWrap:'wrap', gap:results.length > 5 ? 10 : 14,
-            justifyContent:'center', alignItems:'flex-end',
-          }}>
-            {results.map((res, i) => (
-              <FlipCard
-                key={i}
-                res={res}
-                index={i}
-                total={results.length}
-                autoFlip={autoFlip}
-                delay={i * 120}
-              />
-            ))}
+          {/* Cartes (scrollable for large pulls) */}
+          <div style={{ width:'100%', maxWidth:1100 }}>
+            <div style={{
+              maxHeight: results.length > 30 ? '62vh' : '48vh',
+              overflowY: results.length > 5 ? 'auto' : 'visible',
+              padding: results.length > 5 ? '12px' : 0,
+              display: 'flex', justifyContent: 'center',
+            }}>
+              <div style={{
+                display:'flex', flexWrap:'wrap', gap:results.length > 5 ? 10 : 14,
+                justifyContent:'center', alignItems:'flex-start',
+              }}>
+                {results.map((res, i) => (
+                  <FlipCard
+                    key={i}
+                    res={res}
+                    index={i}
+                    total={results.length}
+                    autoFlip={autoFlip}
+                    delay={i * 120}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Boutons */}
