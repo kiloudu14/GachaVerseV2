@@ -1,9 +1,9 @@
 // ── Bonus d'or par titre équipé ────────────────────────────────────────────
-// Les 33 titres sont classés du plus facile (Novice, +5%) au plus dur
-// (Oligarque — 1 milliard de Pixel-Coins accumulés, +60%), avec une montée
-// linéaire entre les deux. Le classement suit la difficulté réelle des succès
-// qui les débloquent (et non l'ordre du fichier, les catégories n'étant pas
-// comparables entre elles en valeur brute).
+// Les titres sont classés du plus facile (Novice, +5%) au plus dur
+// (Architecte du Panthéon — 5 personnages en Base+Or+Diamant à la fois, +75%),
+// avec une montée linéaire entre les deux. Le classement suit la difficulté
+// réelle des succès qui les débloquent (et non l'ordre du fichier, les
+// catégories n'étant pas comparables entre elles en valeur brute).
 const TITLE_ORDER: string[] = [
   'Novice', 'Premier Sang', 'Briseur de Cornes', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
   'Astre', 'Étincelant', 'Voyageur', 'Émissaire', 'Légat', 'Souverain',
@@ -16,10 +16,13 @@ const TITLE_ORDER: string[] = [
   'Dévastateur', 'Grand Invocateur', 'Garde d\'Élite',
   'Annihilateur', 'Cataclysme', 'Ploutocrate', 'Ascendant', 'Prisme Absolu',
   'Oligarque',
+  // ── Extrêmement difficiles (au-delà de tout ce qui précède) ────────────
+  'Finisseur', 'Légende Vivante', 'Apocalypse', 'Insatiable Absolu', 'Singularité',
+  'Renaissant', 'Élu Suprême', 'Empereur', 'Éternel', 'Architecte du Panthéon',
 ];
 
 const MIN_BONUS_PCT = 5;   // Novice
-const MAX_BONUS_PCT = 60;  // Oligarque
+const MAX_BONUS_PCT = 75;  // Architecte du Panthéon (était 60, plafond relevé pour ce nouveau palier)
 
 export const TITLE_GOLD_BONUS_PCT: Record<string, number> = Object.fromEntries(
   TITLE_ORDER.map((title, i) => [

@@ -139,6 +139,7 @@ export function trackPalier(palier: number) {
   s.setProgress('palier_10', Math.min(palier, 10));
   s.setProgress('palier_15', Math.min(palier, 15));
   s.setProgress('palier_20', Math.min(palier, 20));
+  s.setProgress('palier_40', Math.min(palier, 40));
 }
 
 export function trackCoins(coins: number) {
@@ -147,6 +148,7 @@ export function trackCoins(coins: number) {
   s.setProgress('coins_10m',  Math.min(coins, 10000000));
   s.setProgress('coins_1b',   Math.min(coins, 1000000000));
   s.setProgress('coins_10b',  Math.min(coins, 10000000000));
+  s.setProgress('coins_100b', Math.min(coins, 100000000000));
 }
 
 export function trackDps(dps: number) {
@@ -154,9 +156,10 @@ export function trackDps(dps: number) {
   s.setProgress('dps_1000', Math.min(dps, 1000));
   s.setProgress('dps_1m',   Math.min(dps, 1000000));
   s.setProgress('dps_100m', Math.min(dps, 100000000));
+  s.setProgress('dps_1b',   Math.min(dps, 1000000000));
 }
 
-export function trackCollection(ownedCount: number, hasLegendary: boolean, hasTranscendant: boolean, totalPool: number) {
+export function trackCollection(ownedCount: number, hasLegendary: boolean, hasTranscendant: boolean, totalPool: number, transcendantCount: number = hasTranscendant ? 1 : 0) {
   const s = useAchievementStore.getState();
   s.setProgress('collect_1',  Math.min(ownedCount, 1));
   s.setProgress('collect_5',  Math.min(ownedCount, 5));
@@ -165,6 +168,7 @@ export function trackCollection(ownedCount: number, hasLegendary: boolean, hasTr
   s.setProgress('collect_all', ownedCount >= totalPool ? 999 : ownedCount);
   if (hasLegendary)     s.setProgress('legendary_1',     1);
   if (hasTranscendant)  s.setProgress('transcendant_1',  1);
+  s.setProgress('transcendant_3', Math.min(transcendantCount, 3));
 }
 
 export function trackEquippedTeam(filledSlots: number) {
@@ -179,6 +183,7 @@ export function trackGachaPulls(total: number) {
   s.setProgress('pull_100',  Math.min(total, 100));
   s.setProgress('pull_500',  Math.min(total, 500));
   s.setProgress('pull_1000', Math.min(total, 1000));
+  s.setProgress('pull_5000', Math.min(total, 5000));
 }
 
 export function trackQuestsCompleted(count: number) {
@@ -187,15 +192,17 @@ export function trackQuestsCompleted(count: number) {
   s.setProgress('quest_20',  Math.min(count, 20));
   s.setProgress('quest_50',  Math.min(count, 50));
   s.setProgress('quest_100', Math.min(count, 100));
+  s.setProgress('quest_500', Math.min(count, 500));
 }
 
 export function trackKills(totalKills: number) {
   const s = useAchievementStore.getState();
-  s.setProgress('kills_1',      Math.min(totalKills, 1));
-  s.setProgress('kills_500',    Math.min(totalKills, 500));
-  s.setProgress('kills_5000',   Math.min(totalKills, 5000));
-  s.setProgress('kills_50000',  Math.min(totalKills, 50000));
-  s.setProgress('kills_500000', Math.min(totalKills, 500000));
+  s.setProgress('kills_1',       Math.min(totalKills, 1));
+  s.setProgress('kills_500',     Math.min(totalKills, 500));
+  s.setProgress('kills_5000',    Math.min(totalKills, 5000));
+  s.setProgress('kills_50000',   Math.min(totalKills, 50000));
+  s.setProgress('kills_500000',  Math.min(totalKills, 500000));
+  s.setProgress('kills_1000000', Math.min(totalKills, 1000000));
 }
 
 export function trackUpgrades(totalUpgrades: number) {
@@ -213,7 +220,9 @@ export function trackGems(gems: number) {
 }
 
 export function trackPrestige(level: number) {
-  useAchievementStore.getState().setProgress('prestige_10', Math.min(level, 10));
+  const s = useAchievementStore.getState();
+  s.setProgress('prestige_10', Math.min(level, 10));
+  s.setProgress('prestige_25', Math.min(level, 25));
 }
 
 export function trackVoidOrbs(orbs: number) {
@@ -225,13 +234,15 @@ export function trackUnlockedTitles(count: number) {
 }
 
 /** Éditions shiny (Or/Diamant) : détectées en scannant la collection. */
-export function trackShinyEditions(goldOrDiamondCount: number, hasGold: boolean, hasDiamond: boolean, diamondUniqueCount: number, hasTrio: boolean) {
+export function trackShinyEditions(goldOrDiamondCount: number, hasGold: boolean, hasDiamond: boolean, diamondUniqueCount: number, hasTrio: boolean, pantheonCount: number) {
   const s = useAchievementStore.getState();
   if (hasGold)    s.setProgress('gold_1', 1);
   if (hasDiamond) s.setProgress('diamond_1', 1);
   if (hasTrio)    s.setProgress('trio_perfect', 1);
   s.setProgress('shiny_10', Math.min(goldOrDiamondCount, 10));
   s.setProgress('diamond_3', Math.min(diamondUniqueCount, 3));
+  s.setProgress('diamond_10', Math.min(diamondUniqueCount, 10));
+  s.setProgress('pantheon_5', Math.min(pantheonCount, 5));
 }
 
 /** Rangs 7★ : détectés en scannant la collection + l'équipe active. */

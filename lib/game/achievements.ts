@@ -370,6 +370,78 @@ export const ACHIEVEMENTS: Achievement[] = [
     description:'Améliore un personnage, ton héros ou ton Coffre d\'Or 200 fois au total.', target:200,
     reward:{ type:'gems', value:220 },
   },
+
+  // ── EXTRÊMEMENT DIFFICILES ──────────────────────────────────────────────
+  {
+    id:'diamond_10', category:'collection', icon:'💎',
+    title:'Éternel', name:'Diamant Éternel',
+    description:'Possède 10 personnages différents en édition Diamant.', target:10,
+    reward:{ type:'gems', value:2000 },
+    secret:true,
+  },
+  {
+    id:'palier_40', category:'progression', icon:'🏁',
+    title:'Finisseur', name:'Le Bout du Voyage',
+    description:'Atteins le palier 40, la fin du voyage.', target:40,
+    reward:{ type:'gems', value:1000 },
+    secret:true,
+  },
+  {
+    id:'dps_1b', category:'combat', icon:'🌀',
+    title:'Singularité', name:'Singularité',
+    description:'Atteins 1 000 000 000 DPS.', target:1000000000,
+    reward:{ type:'gems', value:1500 },
+    secret:true,
+  },
+  {
+    id:'coins_100b', category:'progression', icon:'🏛',
+    title:'Empereur', name:'Empereur Économique',
+    description:'Accumule 100 000 000 000 Pixel-Coins.', target:100000000000,
+    reward:{ type:'gems', value:1200 },
+    secret:true,
+  },
+  {
+    id:'prestige_25', category:'progression', icon:'🔄',
+    title:'Renaissant', name:'Renaissance Infinie',
+    description:'Atteins le niveau 25 de Prestige.', target:25,
+    reward:{ type:'gems', value:1500 },
+    secret:true,
+  },
+  {
+    id:'pantheon_5', category:'collection', icon:'🏺',
+    title:'Architecte du Panthéon', name:'Panthéon Complet',
+    description:'Possède 5 personnages différents en Base, Or ET Diamant à la fois.', target:5,
+    reward:{ type:'gems', value:2000 },
+    secret:true,
+  },
+  {
+    id:'transcendant_3', category:'collection', icon:'🌈',
+    title:'Élu Suprême', name:'Élu des Élus',
+    description:'Possède 3 personnages Transcendants différents.', target:3,
+    reward:{ type:'gems', value:1800 },
+    secret:true,
+  },
+  {
+    id:'pull_5000', category:'gacha', icon:'🎡',
+    title:'Insatiable Absolu', name:'Addiction Sans Limite',
+    description:'Effectue 5 000 tirages gacha.', target:5000,
+    reward:{ type:'gems', value:1000 },
+    secret:true,
+  },
+  {
+    id:'quest_500', category:'social', icon:'📖',
+    title:'Légende Vivante', name:'Héros Légendaire',
+    description:'Complète 500 quêtes au total.', target:500,
+    reward:{ type:'gems', value:1000 },
+    secret:true,
+  },
+  {
+    id:'kills_1000000', category:'combat', icon:'🔥',
+    title:'Apocalypse', name:'Extermination Totale',
+    description:'Vaincs 1 000 000 de monstres à vie.', target:1000000,
+    reward:{ type:'gems', value:1500 },
+    secret:true,
+  },
 ];
 
 // Catégorie label

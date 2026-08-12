@@ -199,7 +199,8 @@ export function GameLayout() {
     );
     const hasL  = owned.some((c: {rarity: string}) => ['L','M','S','CO','P','T'].includes(c.rarity));
     const hasT  = owned.some((c: {rarity: string}) => c.rarity === 'T');
-    trackCollection(owned.length, hasL, hasT, charPool.length);
+    const transcendantCount = owned.filter((c: {rarity: string}) => c.rarity === 'T').length;
+    trackCollection(owned.length, hasL, hasT, charPool.length, transcendantCount);
     trackEquippedTeam(equippedTeam.filter(Boolean).length);
 
     // Éditions shiny : scan direct des instances de collection (les clés
@@ -212,8 +213,9 @@ export function GameLayout() {
     // Trio parfait : un templateId présent avec ses 3 éditions à la fois.
     const byTemplate: Record<string, Set<string>> = {};
     for (const o of instances) (byTemplate[o.templateId] ??= new Set()).add(o.edition ?? 'base');
-    const hasTrio = Object.values(byTemplate).some(s => s.has('base') && s.has('gold') && s.has('diamond'));
-    trackShinyEditions(goldOrDiamond.length, hasGold, hasDiamond, diamondTemplates.size, hasTrio);
+    const trioTemplates = Object.values(byTemplate).filter(s => s.has('base') && s.has('gold') && s.has('diamond'));
+    const hasTrio = trioTemplates.length > 0;
+    trackShinyEditions(goldOrDiamond.length, hasGold, hasDiamond, diamondTemplates.size, hasTrio, trioTemplates.length);
 
     // Rangs 7★ : combien d'instances au rang max, et l'équipe entière l'est-elle ?
     const count7Star = instances.filter(o => o.rank >= 7).length;
