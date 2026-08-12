@@ -90,8 +90,6 @@ export function CharacterCardThumb({ templateId, formIndex = 0, name, rarity, ed
       </div>
       {/* Halo pulsé */}
       <div style={{
-        position:'absolute', inset:-3, borderRadius:10, pointerEvents:'none',
-        boxShadow:`0 0 14px ${ed.glow}, 0 0 26px ${ed.glow}88`,
         animation:'editionPulse 1.8s ease-in-out infinite',
       }} />
       {/* Badge d'édition */}

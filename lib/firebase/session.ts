@@ -1,25 +1,28 @@
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, runTransaction, setDoc } from 'firebase/firestore';
 import { db } from './config';
 
 const LOCAL_SESSION_KEY = 'nekoz_session_claim';
+const SESSION_TTL_MS = 30_000;
 
 export interface SessionClaim {
   uid: string;
   browserId: string;
+  sessionToken: string;
   claimedAt: number;
   lastSeenAt: number;
+  expiresAt: number;
   active: boolean;
 }
 
 function getBrowserId(): string {
   if (typeof window === 'undefined') return 'server';
 
-  let browserId = localStorage.getItem(LOCAL_SESSION_KEY);
-  if (browserId) {
+  const raw = localStorage.getItem(LOCAL_SESSION_KEY);
+  if (raw) {
     try {
-      const parsed = JSON.parse(browserId) as { browserId?: string };
+      const parsed = JSON.parse(raw) as { browserId?: string };
       if (parsed.browserId) return parsed.browserId;
-    } catch {} 
+    } catch {}
   }
 
   const generated = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -27,31 +30,66 @@ function getBrowserId(): string {
   return generated;
 }
 
-export async function claimSession(uid: string): Promise<void> {
-  if (!db || !uid) return;
+function getSessionToken(): string {
+  if (typeof window === 'undefined') return 'server-token';
+
+  const raw = localStorage.getItem(LOCAL_SESSION_KEY);
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as { sessionToken?: string };
+      if (parsed.sessionToken) return parsed.sessionToken;
+    } catch {}
+  }
+
+  const generated = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const current = JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY) ?? '{}') as { browserId?: string };
+  localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify({ ...current, sessionToken: generated }));
+  return generated;
+}
+
+export async function claimSession(uid: string): Promise<boolean> {
+  if (!db || !uid) return false;
 
   const browserId = getBrowserId();
+  const sessionToken = getSessionToken();
+  const now = Date.now();
   const sessionRef = doc(db, 'sessions', uid);
 
   try {
-    await setDoc(
-      sessionRef,
-      {
+    await runTransaction(db, async (tx) => {
+      const current = await tx.get(sessionRef);
+      const data = current.data() as Partial<SessionClaim> | undefined;
+      const isFresh = !!data?.active && !!data.expiresAt && data.expiresAt > now;
+
+      if (isFresh && data.browserId && data.browserId !== browserId) {
+        throw new Error('SESSION_CONFLICT');
+      }
+
+      const nextClaim: SessionClaim = {
         uid,
         browserId,
+        sessionToken,
         active: true,
-        claimedAt: Date.now(),
-        lastSeenAt: Date.now(),
-      },
-      { merge: true }
-    );
+        claimedAt: now,
+        lastSeenAt: now,
+        expiresAt: now + SESSION_TTL_MS,
+      };
+
+      tx.set(sessionRef, nextClaim, { merge: true });
+    });
 
     localStorage.setItem(
       LOCAL_SESSION_KEY,
-      JSON.stringify({ uid, browserId, claimedAt: Date.now() })
+      JSON.stringify({ uid, browserId, sessionToken, claimedAt: now })
     );
+    return true;
   } catch (error) {
+    if (String(error).includes('SESSION_CONFLICT')) {
+      console.warn('[Session] account already active on another browser/device');
+      return false;
+    }
     console.error('[Session] claimSession failed:', error);
+    return false;
   }
 }
 
@@ -61,12 +99,20 @@ export function watchSession(uid: string, onConflict: () => void): () => void {
   }
 
   const browserId = getBrowserId();
+  const sessionToken = getSessionToken();
   const ref = doc(db, 'sessions', uid);
 
   const unsub = onSnapshot(ref, (snap) => {
     const data = snap.data() as Partial<SessionClaim> | undefined;
     if (!data || !data.active) return;
-    if (data.browserId && data.browserId !== browserId) {
+
+    const isExpired = typeof data.expiresAt === 'number' && data.expiresAt <= Date.now();
+    if (isExpired) return;
+
+    const otherBrowser = !!data.browserId && data.browserId !== browserId;
+    const otherSession = !!data.sessionToken && data.sessionToken !== sessionToken;
+
+    if (otherBrowser || otherSession) {
       onConflict();
     }
   });

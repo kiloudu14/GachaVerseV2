@@ -86,6 +86,12 @@ export function SettingsPage({ onForceSave }: { onForceSave?: () => Promise<void
     }
   };
 
+  const isLocal = typeof window !== 'undefined' && (
+    process.env.NODE_ENV === 'development' ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname.startsWith('127.')
+  );
+
   // ── Reset ─────────────────────────────────────────────────────────────
   const handleReset = () => {
     if (!confirmReset) { setConfirmReset(true); return; }
@@ -202,7 +208,7 @@ export function SettingsPage({ onForceSave }: { onForceSave?: () => Promise<void
             <span style={{ fontFamily:'var(--f-title)', fontSize:'14px', fontWeight:700, color:'#c084fc', letterSpacing:'2px' }}>🎁 CODE CADEAU</span>
           </div>
 
-          {!user ? (
+          {!user && !isLocal ? (
             <div style={{ fontFamily:'var(--f-ui)', fontSize:'13px', color:'var(--text-dim)' }}>
               Connecte-toi d&apos;abord pour pouvoir valider un code cadeau.
             </div>
