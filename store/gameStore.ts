@@ -274,6 +274,7 @@ interface GameStore extends GameState {
 
 const makeInitial = () => ({
   pixelCoins: 0, nekoGems: 10, totalClicks: 0,
+  totalKills: 0, totalQuestsCompleted: 0, totalUpgradesPerformed: 0,
   wave: 1, palier: 1, maxPalierReached: 1,
   currentEnemy: generateEnemy(1, 1),
   baseDpc: 1, clickUpgradeLevel: 0, goldUpgradeLevel: 0,
@@ -658,6 +659,7 @@ export const useGameStore = create<GameStore>()(
         }));
         get().bumpQuestProgress('d_upgrade_10', 1);
         get().bumpQuestProgress('w_upgrade_50', 1);
+        set(s => ({ totalUpgradesPerformed: (s.totalUpgradesPerformed ?? 0) + 1 }));
       },
 
       upgradeGold: () => {
@@ -670,6 +672,7 @@ export const useGameStore = create<GameStore>()(
         }));
         get().bumpQuestProgress('d_upgrade_10', 1);
         get().bumpQuestProgress('w_upgrade_50', 1);
+        set(s => ({ totalUpgradesPerformed: (s.totalUpgradesPerformed ?? 0) + 1 }));
       },
 
       getGoldMultiplier: () => {
@@ -695,6 +698,7 @@ export const useGameStore = create<GameStore>()(
         }));
         get().bumpQuestProgress('d_upgrade_10', 1);
         get().bumpQuestProgress('w_upgrade_50', 1);
+        set(s => ({ totalUpgradesPerformed: (s.totalUpgradesPerformed ?? 0) + 1 }));
       },
 
       evolveHero: () => {
@@ -809,6 +813,7 @@ export const useGameStore = create<GameStore>()(
         }));
         get().bumpQuestProgress('d_upgrade_10', 1);
         get().bumpQuestProgress('w_upgrade_50', 1);
+        set(s => ({ totalUpgradesPerformed: (s.totalUpgradesPerformed ?? 0) + 1 }));
       },
 
       evolveCharacter: (templateId) => {
@@ -1036,6 +1041,7 @@ export const useGameStore = create<GameStore>()(
           quests: s.quests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems  + q.reward : s.nekoGems,
           pixelCoins: q.rewardType==='coins' ? s.pixelCoins + q.reward : s.pixelCoins,
+          totalQuestsCompleted: (s.totalQuestsCompleted ?? 0) + 1,
         };
       }),
 
@@ -1079,6 +1085,7 @@ export const useGameStore = create<GameStore>()(
           weeklyQuests: s.weeklyQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
           pixelCoins: q.rewardType==='coins' ? s.pixelCoins + q.reward : s.pixelCoins,
+          totalQuestsCompleted: (s.totalQuestsCompleted ?? 0) + 1,
         };
       }),
 
@@ -1089,6 +1096,7 @@ export const useGameStore = create<GameStore>()(
           eventQuests: s.eventQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
           pixelCoins: q.rewardType==='coins' ? s.pixelCoins + q.reward : s.pixelCoins,
+          totalQuestsCompleted: (s.totalQuestsCompleted ?? 0) + 1,
         };
       }),
 
@@ -1238,6 +1246,7 @@ export const useGameStore = create<GameStore>()(
       name: 'nekoz-world-v7',
       partialize: (s) => ({
         pixelCoins:s.pixelCoins, nekoGems:s.nekoGems, totalClicks:s.totalClicks,
+        totalKills:s.totalKills ?? 0, totalQuestsCompleted:s.totalQuestsCompleted ?? 0, totalUpgradesPerformed:s.totalUpgradesPerformed ?? 0,
         wave:s.wave, palier:s.palier, maxPalierReached:s.maxPalierReached,
         currentEnemy:s.currentEnemy, baseDpc:s.baseDpc, clickUpgradeLevel:s.clickUpgradeLevel,
         equippedTeam:s.equippedTeam, collection:s.collection, hero:s.hero, goldUpgradeLevel:s.goldUpgradeLevel ?? 0,
@@ -1345,7 +1354,7 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
             ? { ...q, current: Math.min(Math.max(q.current, next), q.target) } : q
         )
       : eventQuests;
-    return { pixelCoins:coins, nekoGems:gems + passGems, quests:bossQuestUpdate.quests, weeklyQuests:bossQuestUpdate.weeklyQuests, eventQuests:finalEventQuests, wave:1, palier:next, maxPalierReached:Math.max(state.maxPalierReached,next), bossActive:false, bossTimeLeft:0, bossAvoided:false, ultUsedThisFight:[], currentEnemy:generateEnemy(1,next,Math.max(state.maxPalierReached,next)), bossCrowns: bossCrownsBefore + crownGain, lastBossVictory: bossVictory } as Partial<GameState & { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[] }>;
+    return { pixelCoins:coins, nekoGems:gems + passGems, quests:bossQuestUpdate.quests, weeklyQuests:bossQuestUpdate.weeklyQuests, eventQuests:finalEventQuests, wave:1, palier:next, maxPalierReached:Math.max(state.maxPalierReached,next), bossActive:false, bossTimeLeft:0, bossAvoided:false, ultUsedThisFight:[], currentEnemy:generateEnemy(1,next,Math.max(state.maxPalierReached,next)), bossCrowns: bossCrownsBefore + crownGain, lastBossVictory: bossVictory, totalKills: (state.totalKills ?? 0) + 1 } as Partial<GameState & { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[] }>;
   }
   const nw = state.wave + 1;
   if (nw === 10) {
@@ -1353,9 +1362,9 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     // le boss ne se déclenche jamais (les boss ne sont pas refaisables).
     const isFarming = state.palier < state.maxPalierReached;
     if (isFarming || state.bossAvoided) {
-      return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:1, ultUsedThisFight:[], currentEnemy:generateEnemy(1, state.palier, state.maxPalierReached) };
+      return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:1, ultUsedThisFight:[], currentEnemy:generateEnemy(1, state.palier, state.maxPalierReached), totalKills: (state.totalKills ?? 0) + 1 };
     }
-    return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:10, bossActive:true, bossTimeLeft:getPalierConfig(state.palier).bossTimerSeconds, ultUsedThisFight:[], currentEnemy:generateEnemy(10,state.palier,state.maxPalierReached) };
+    return { pixelCoins:coins, nekoGems:gems, quests:coinQuestUpdate.quests, weeklyQuests:coinQuestUpdate.weeklyQuests, eventQuests, wave:10, bossActive:true, bossTimeLeft:getPalierConfig(state.palier).bossTimerSeconds, ultUsedThisFight:[], currentEnemy:generateEnemy(10,state.palier,state.maxPalierReached), totalKills: (state.totalKills ?? 0) + 1 };
   }
   const equipDrop = getEquipmentDrop(
     state.palier,
@@ -1374,5 +1383,6 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     ultUsedThisFight:[], currentEnemy:generateEnemy(nw,state.palier,state.maxPalierReached),
     equipmentInventory:newEquipmentInventory,
     lastEquipmentDrop: equipDrop ?? null,
+    totalKills: (state.totalKills ?? 0) + 1,
   };
 }

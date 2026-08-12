@@ -5,12 +5,12 @@
 // qui les débloquent (et non l'ordre du fichier, les catégories n'étant pas
 // comparables entre elles en valeur brute).
 const TITLE_ORDER: string[] = [
-  'Novice', 'Briseur de Cornes', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
-  'Cliqueur', 'Voyageur', 'Meneur', 'Tacticien', 'Chasseur', 'Aventurier',
-  'Frappeur', 'Conquérant', 'Optimisateur', 'Archiviste', 'Parieur', 'Forgeron',
-  'Déchaîné', 'Dompteur de Mondes', 'Tueur de Dieux', 'Collectionneur', 'Économe', 'Invocateur', 'Puissant',
-  'Légende du Clic', 'Maître du Multivers', 'Millionnaire', 'Complétiste',
-  'Dévastateur', 'Grand Invocateur',
+  'Novice', 'Premier Sang', 'Briseur de Cornes', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
+  'Voyageur', 'Émissaire', 'Meneur', 'Tacticien', 'Chasseur', 'Exterminateur', 'Aventurier',
+  'Conquérant', 'Optimisateur', 'Archiviste', 'Parieur', 'Forgeron', 'Faucheur',
+  'Dompteur de Mondes', 'Tueur de Dieux', 'Collectionneur', 'Économe', 'Invocateur', 'Puissant', 'Fléau',
+  'Maître du Multivers', 'Millionnaire', 'Complétiste',
+  'Dévastateur', 'Grand Invocateur', 'Annihilateur',
   'Oligarque',
 ];
 

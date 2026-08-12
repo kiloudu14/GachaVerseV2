@@ -37,7 +37,7 @@ import { ToastContainer } from '@/components/ui/ToastContainer';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { BossVictoryScreen } from '@/components/game/BossVictoryScreen';
 import { toast } from '@/hooks/useToast';
-import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam } from '@/store/achievementStore';
+import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam, trackKills, trackQuestsCompleted, trackUpgrades } from '@/store/achievementStore';
 import { makeInstanceKey } from '@/lib/game/editions';
 
 type Page = 'home' | 'upgrades' | 'companions' | 'collection' | 'gacha' | 'shop' | 'quests' | 'events' | 'settings' | 'leaderboard' | 'marketplace' | 'champions' | 'achievements' | 'profile' | 'expeditions' | 'forge' | 'prestige';
@@ -115,14 +115,28 @@ export function GameLayout() {
   useEffect(() => { ensureDailyQuests(); }, [ensureDailyQuests]);
 
   // ── Gains hors-ligne : calcul unique une fois le splash terminé ───────────
+  // IMPORTANT : on attend aussi la fin de la réhydratation Zustand (localStorage),
+  // sinon lastActiveAt peut encore valoir sa valeur par défaut ("maintenant") au
+  // lieu de la vraie dernière session — le calcul croirait alors qu'on vient de
+  // jouer il y a une seconde, et ne renverrait jamais de récap.
   const [offlineGain, setOfflineGain] = useState<OfflineGain | null>(null);
+  const [hasHydrated, setHasHydrated] = useState(() => useGameStore.persist?.hasHydrated?.() ?? false);
   const offlineClaimedRef = useRef(false);
   useEffect(() => {
-    if (!splashDone || offlineClaimedRef.current) return;
+    if (hasHydrated) return;
+    if (!useGameStore.persist) { setHasHydrated(true); return; } // pas de persist (SSR/fallback) : ne bloque rien
+    const unsub = useGameStore.persist.onFinishHydration(() => setHasHydrated(true));
+    // Sécurité : si la réhydratation était déjà finie entre le calcul initial
+    // du useState et le montage de cet effet, on ne resterait pas bloqué.
+    if (useGameStore.persist.hasHydrated()) setHasHydrated(true);
+    return unsub;
+  }, [hasHydrated]);
+  useEffect(() => {
+    if (!splashDone || !hasHydrated || offlineClaimedRef.current) return;
     offlineClaimedRef.current = true;
     const g = useGameStore.getState().claimOfflineEarnings();
     if (g && g.coins > 0) setOfflineGain(g);
-  }, [splashDone]);
+  }, [splashDone, hasHydrated]);
 
   // Écran de victoire : piloté par un VRAI événement de kill de boss émis par le
   // store (et non par une surveillance du palier, qui se déclenchait à tort au
@@ -151,12 +165,15 @@ export function GameLayout() {
 
   // ── Achievement trackers ─────────────────────────────────────────────────
   const totalDps = useGameStore(s => s.getTotalDps());
-  const { bossCrowns, collection: col, equippedTeam } = useGameStore();
+  const { bossCrowns, collection: col, equippedTeam, totalKills, totalQuestsCompleted, totalUpgradesPerformed } = useGameStore();
   const { CHARACTER_POOL: charPool } = require('@/lib/game/characters');
   useEffect(() => { trackBossKill(bossCrowns); }, [bossCrowns]);
   useEffect(() => { trackPalier(maxPalierReached); }, [maxPalierReached]);
   useEffect(() => { trackCoins(pixelCoins); }, [pixelCoins]);
   useEffect(() => { trackDps(totalDps); }, [totalDps]);
+  useEffect(() => { trackKills(totalKills); }, [totalKills]);
+  useEffect(() => { trackQuestsCompleted(totalQuestsCompleted); }, [totalQuestsCompleted]);
+  useEffect(() => { trackUpgrades(totalUpgradesPerformed); }, [totalUpgradesPerformed]);
   useEffect(() => {
     // Possédé si N'IMPORTE QUELLE édition l'est (Base/Or/Diamant) — sinon un
     // perso obtenu uniquement en shiny ne compterait pas pour ces succès.

@@ -110,8 +110,8 @@ export function canEvolveHero(forms: EvoForm[], hero: HeroState): boolean {
 
 export function calcCharDps(tpl: CharacterTemplate, owned: OwnedCharacter): number {
   const formMult   = tpl.forms?.[owned.currentForm]?.dpsFormMult ?? 1;
-  // Croissance par niveau : +6% au lieu de +5% — compense la montée des HP
-  const levelMult  = 1 + (owned.level - 1) * 0.06;
+  // Croissance par niveau : +10% (était +6%) — perso plus impactant à monter
+  const levelMult  = 1 + (owned.level - 1) * 0.10;
   const rankMult   = [1, 1.4, 1.9, 2.6, 3.5, 5.5, 9.0][Math.min(owned.rank - 1, 6)];
   const editionMult = getEditionStatMult(owned.edition); // ×1 base / ×1.2 or / ×1.5 diamant
   return Math.floor(tpl.baseDps * formMult * levelMult * rankMult * editionMult);
@@ -147,7 +147,7 @@ export function calcClickUpgradeCost(level: number): number {
 // ── Coûts de niveau ───────────────────────────────────────────────────────
 export function levelUpCost(level: number, rarity: Rarity): number {
   const rarityBase: Record<Rarity, number> = {
-    C:8, U:15, R:25, E:60, L:150, M:400, S:1200, CO:4000, P:12000, T:40000,
+    C:16, U:30, R:50, E:120, L:300, M:800, S:2400, CO:8000, P:24000, T:80000,
   };
   // Croissance 1.07 au lieu de 1.085 — plus accessible aux niveaux élevés
   return Math.floor(rarityBase[rarity] * Math.pow(1.07, level - 1));
@@ -162,7 +162,11 @@ export function heroLevelUpCost(level: number): number {
 // ── Coût d'évolution ─────────────────────────────────────────────────────
 export function evoCost(rarity: Rarity, currentForm: number): number {
   const base: Record<Rarity, number> = {
-    C:0, U:0, R:0, E:0, L:1000000, M:3000000, S:8000000, CO:15000000, P:25000000, T:200000000
+    C:50_000_000,  U:50_000_000,  R:50_000_000,  E:50_000_000,       // Commun à Épique
+    L:500_000_000, M:500_000_000, S:500_000_000,                     // Légendaire à Stellaire
+    CO:1_000_000_000,                                                // Cosmique
+    P:3_000_000_000,                                                 // Primordial (entre Cosmique et Transcendant)
+    T:10_000_000_000,                                                // Transcendant
   };
   return (base[rarity] ?? 0) * Math.pow(3, currentForm);
 }
@@ -228,6 +232,7 @@ export interface Enemy {
 
 export interface GameState {
   pixelCoins: number; nekoGems: number; totalClicks: number;
+  totalKills: number; totalQuestsCompleted: number; totalUpgradesPerformed: number;
   wave: number; palier: number; maxPalierReached: number;
   currentEnemy: Enemy; baseDpc: number; clickUpgradeLevel: number;
   equippedTeam: (string | null)[];

@@ -175,5 +175,21 @@ export function trackClickUpgrade(level: number) {
 export function trackQuestsCompleted(count: number) {
   const s = useAchievementStore.getState();
   s.setProgress('quest_10', Math.min(count, 10));
+  s.setProgress('quest_20', Math.min(count, 20));
   s.setProgress('quest_50', Math.min(count, 50));
+}
+
+export function trackKills(totalKills: number) {
+  const s = useAchievementStore.getState();
+  s.setProgress('kills_1',      Math.min(totalKills, 1));
+  s.setProgress('kills_500',    Math.min(totalKills, 500));
+  s.setProgress('kills_5000',   Math.min(totalKills, 5000));
+  s.setProgress('kills_50000',  Math.min(totalKills, 50000));
+  s.setProgress('kills_500000', Math.min(totalKills, 500000));
+}
+
+export function trackUpgrades(totalUpgrades: number) {
+  const s = useAchievementStore.getState();
+  s.setProgress('upgrade_10', Math.min(totalUpgrades, 10));
+  s.setProgress('upgrade_50', Math.min(totalUpgrades, 50));
 }

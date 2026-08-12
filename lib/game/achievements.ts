@@ -20,34 +20,35 @@ export interface Achievement {
 export const ACHIEVEMENTS: Achievement[] = [
   // ── COMBAT ──────────────────────────────────────────────────────────────
   {
-    id:'first_click', category:'combat', icon:'👊',
-    title:'Novice', name:'Premier Coup',
-    description:'Effectue ton premier clic.', target:1,
-    reward:{ type:'title', value:'Novice' },
-  },
-  {
-    id:'clicks_100', category:'combat', icon:'⚡',
-    title:'Cliqueur', name:'Sans Relâche',
-    description:'Clique 100 fois.', target:100,
+    id:'kills_1', category:'combat', icon:'🗡',
+    title:'Premier Sang', name:'Baptême du Feu',
+    description:'Vaincs ton premier monstre.', target:1,
     reward:{ type:'gems', value:5 },
   },
   {
-    id:'clicks_1000', category:'combat', icon:'💥',
-    title:'Frappeur', name:'Mains de Fer',
-    description:'Clique 1 000 fois.', target:1000,
+    id:'kills_500', category:'combat', icon:'⚔',
+    title:'Exterminateur', name:'Chasse Ouverte',
+    description:'Vaincs 500 monstres au total.', target:500,
     reward:{ type:'gems', value:15 },
   },
   {
-    id:'clicks_10000', category:'combat', icon:'🔥',
-    title:'Déchaîné', name:'Cliqueur Fou',
-    description:'Clique 10 000 fois.', target:10000,
+    id:'kills_5000', category:'combat', icon:'💥',
+    title:'Faucheur', name:'Purge Totale',
+    description:'Vaincs 5 000 monstres au total.', target:5000,
     reward:{ type:'gems', value:50 },
   },
   {
-    id:'clicks_100000', category:'combat', icon:'⚔',
-    title:'Légende du Clic', name:'Sans Limite',
-    description:'Clique 100 000 fois.', target:100000,
-    reward:{ type:'gems', value:200 },
+    id:'kills_50000', category:'combat', icon:'🔥',
+    title:'Fléau', name:'Apocalypse Ambulante',
+    description:'Vaincs 50 000 monstres au total.', target:50000,
+    reward:{ type:'gems', value:150 },
+  },
+  {
+    id:'kills_500000', category:'combat', icon:'☄',
+    title:'Annihilateur', name:'Fin du Monde',
+    description:'Vaincs 500 000 monstres au total.', target:500000,
+    reward:{ type:'gems', value:500 },
+    secret:true,
   },
   {
     id:'first_boss', category:'combat', icon:'💀',
@@ -128,13 +129,13 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id:'upgrade_10', category:'progression', icon:'⬆',
     title:'Optimisateur', name:'Toujours Plus Fort',
-    description:'Améliore l\'attaque 10 fois.', target:10,
+    description:'Améliore un personnage, ton héros ou ton Coffre d\'Or 10 fois au total.', target:10,
     reward:{ type:'gems', value:10 },
   },
   {
     id:'upgrade_50', category:'progression', icon:'🔧',
     title:'Forgeron', name:'Perfectionniste',
-    description:'Améliore l\'attaque 50 fois.', target:50,
+    description:'Améliore un personnage, ton héros ou ton Coffre d\'Or 50 fois au total.', target:50,
     reward:{ type:'gems', value:50 },
   },
 
@@ -221,6 +222,12 @@ export const ACHIEVEMENTS: Achievement[] = [
     title:'Serviteur', name:'Dix Missions',
     description:'Complète 10 quêtes.', target:10,
     reward:{ type:'gems', value:20 },
+  },
+  {
+    id:'quest_20', category:'social', icon:'📯',
+    title:'Émissaire', name:'Vingt Missions',
+    description:'Complète 20 quêtes.', target:20,
+    reward:{ type:'gems', value:45 },
   },
   {
     id:'quest_50', category:'social', icon:'🗺',
