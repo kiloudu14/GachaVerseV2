@@ -29,7 +29,7 @@ export const SHADOW_MONARCH_BOSS: EventBossDef = {
   description: 'Une présence écrasante émane de cette silhouette sombre. Ses soldats de l\'ombre attendent vos ordres... ou votre mort.',
   bgGradient:  'linear-gradient(180deg,#0a0014,#05000a)',
   accentColor: '#c084fc',
-  availableUntil: new Date('2026-08-15T23:59:59Z').getTime(),
+  availableUntil: new Date('2026-08-22T23:59:59Z').getTime(),
   dropTable: [
     // Objets spéciaux — 2.75 % au total
     { weight: 0.50, result: { type:'character', id:'jinwoo'                } },
@@ -54,7 +54,7 @@ export const ARTHUR_LEYWIN_BOSS: EventBossDef = {
   description: 'Le jeune héritier du soleil, prêt à frapper avec la puissance d\'une lame d\'éther.',
   bgGradient:  'linear-gradient(180deg,#071b2a,#081115)',
   accentColor: '#fbbf24',
-  availableUntil: new Date('2026-08-15T23:59:59Z').getTime(),
+  availableUntil: new Date('2026-08-22T23:59:59Z').getTime(),
   targetSeconds: 300,
   dropTable: [
     // Objets spéciaux — 2.75 % au total
@@ -80,7 +80,7 @@ export const EMINENCE_SHADOW_BOSS: EventBossDef = {
   description: "Il ne cherche ni la gloire ni la reconnaissance. Il agit dans l'ombre, et frappe quand nul ne l'attend.",
   bgGradient:  'linear-gradient(180deg,#100a24,#05030d)',
   accentColor: '#a78bfa',
-  availableUntil: new Date('2026-08-15T23:59:59Z').getTime(),
+  availableUntil: new Date('2026-08-22T23:59:59Z').getTime(),
   targetSeconds: 300,
   dropTable: [
     // Objets spéciaux — 2.75 % au total
