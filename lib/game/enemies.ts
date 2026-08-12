@@ -32,7 +32,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Saibaman',       sprite: sp(1,'saibaman5'),   hpMult:1.6             },
     { name:'Saibaman',       sprite: sp(1,'saibaman6'),   hpMult:1.8             },
     { name:'Végéta',         sprite: sp(1,'vegeta'),      hpMult:3.5             },
-    { name:'Végéta Ozaru',   sprite: sp(1,'vegeta_ozaru'),isBoss:true, hpMult:8  },
+    { name:'Végéta Ozaru',   sprite: sp(1,'vegeta_ozaru'),isBoss:true, hpMult:8.5  },
   ],
   // ── PALIER 2 : One Piece — Saga East Blue ────────────────────────────────
   2: [
@@ -45,7 +45,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Arlong',         sprite: sp(2,'arlong'),      hpMult:3.2             },
     { name:'Baggy',          sprite: sp(2,'baggy2'),      hpMult:2.5             },
     { name:'Baggy',          sprite: sp(2,'baggy3'),      hpMult:3.0             },
-    { name:'Smoker',         sprite: sp(2,'smoker'),      isBoss:true, hpMult:8  },
+    { name:'Smoker',         sprite: sp(2,'smoker'),      isBoss:true, hpMult:8.5  },
   ],
   // ── PALIER 3 : Naruto — Examen Chūnin ────────────────────────────────────
   3: [
@@ -58,7 +58,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Temari',         sprite: sp(3,'temari'),      hpMult:2.2             },
     { name:'Kabuto',         sprite: sp(3,'kabuto'),      hpMult:2.8             },
     { name:'Orochimaru',     sprite: sp(3,'orochimaru2'), hpMult:3.5             },
-    { name:'Shukaku',        sprite: sp(3,'shukaku'),     isBoss:true, hpMult:9  },
+    { name:'Shukaku',        sprite: sp(3,'shukaku'),     isBoss:true, hpMult:9.5  },
   ],
   // ── PALIER 4 : Pokémon — Région de Kanto ─────────────────────────────────
   4: [
@@ -71,7 +71,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Auguste & Magmar',      sprite: sp(4,'auguste'),    hpMult:2.8          },
     { name:'Giovanni & Rhinéféros', sprite: sp(4,'giovanni'),   hpMult:3.5          },
     { name:'Blue & Roucarnage',     sprite: sp(4,'blue'),       hpMult:4.0          },
-    { name:'Mewtwo',                sprite: sp(4,'mewtwo'),     isBoss:true, hpMult:9 },
+    { name:'Mewtwo',                sprite: sp(4,'mewtwo'),     isBoss:true, hpMult:9.5 },
   ],
   // ── PALIER 5 : Persona 5 — Palais de Tokyo ───────────────────────────────
   5: [
@@ -84,7 +84,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Noir',           sprite: sp(5,'noir'),        hpMult:2.8             },
     { name:'Violet',         sprite: sp(5,'violet'),      hpMult:3.2             },
     { name:'Crow',           sprite: sp(5,'crow'),        hpMult:3.8             },
-    { name:'Joker',          sprite: sp(5,'joker'),       isBoss:true, hpMult:9  },
+    { name:'Joker',          sprite: sp(5,'joker'),       isBoss:true, hpMult:9.5  },
   ],
   // ── PALIER 6 : Poppy Playtime — Usine Playtime Co. ───────────────────────
   6: [
@@ -97,7 +97,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'The Doctor',       sprite: sp(6,'the_doctor'),     hpMult:3.2         },
     { name:'Doey',             sprite: sp(6,'doey'),           hpMult:3.8         },
     { name:'Lily Lovebraids',  sprite: sp(6,'lily'),           hpMult:4.5         },
-    { name:'The Prototype',    sprite: sp(6,'prototype'),      isBoss:true, hpMult:10 },
+    { name:'The Prototype',    sprite: sp(6,'prototype'),      isBoss:true, hpMult:10.5 },
   ],
   // ── PALIER 7 : Black Clover — Royaume de Clover ──────────────────────────
   7: [
@@ -110,7 +110,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Zagred (Le Démon)',  sprite: sp(7,'zagred'),        hpMult:3.8          },
     { name:'Vanica Zogratis',    sprite: sp(7,'vanica'),        hpMult:4.5          },
     { name:'Zenon Zogratis',     sprite: sp(7,'zenon'),         hpMult:5.5          },
-    { name:'Dante Zogratis',     sprite: sp(7,'dante'),         isBoss:true, hpMult:10 },
+    { name:'Dante Zogratis',     sprite: sp(7,'dante'),         isBoss:true, hpMult:11 },
   ],
   // ── PALIER 8 : Brotato — Terres de Brotato ───────────────────────────────
   8: [
@@ -123,7 +123,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Hornder Bruiser',   sprite: sp(8,'hornder'),       hpMult:3.0           },
     { name:'Slasher',           sprite: sp(8,'slasher'),       hpMult:3.5           },
     { name:'Invoker',           sprite: sp(8,'invoker'),       hpMult:4.5           },
-    { name:'Dead Whale',        sprite: sp(8,'dead_whale'),    isBoss:true, hpMult:10 },
+    { name:'Dead Whale',        sprite: sp(8,'dead_whale'),    isBoss:true, hpMult:11.5 },
   ],
   // ── PALIER 9 : Slime Datta Ken — Monde de Jura Tempest ───────────────────
   9: [
@@ -136,7 +136,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Charybde',          sprite: sp(9,'charybde'),      hpMult:3.5           },
     { name:'Hinata',            sprite: sp(9,'hinata'),        hpMult:4.0           },
     { name:'Clayman',           sprite: sp(9,'clayman'),       hpMult:5.0           },
-    { name:'Yuki',              sprite: sp(9,'yuki'),          isBoss:true, hpMult:10 },
+    { name:'Yuki',              sprite: sp(9,'yuki'),          isBoss:true, hpMult:12 },
   ],
   // ── PALIER 10 : Minecraft — Overworld ────────────────────────────────────
   10: [
@@ -149,7 +149,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Pillager',          sprite: sp(10,'pillager'),     hpMult:3.0            },
     { name:'Ravager',           sprite: sp(10,'ravager'),      hpMult:4.0            },
     { name:'Guardian',          sprite: sp(10,'guardian'),     hpMult:5.0            },
-    { name:'Elder Guardian',    sprite: sp(10,'elder_guardian'),isBoss:true, hpMult:11 },
+    { name:'Elder Guardian',    sprite: sp(10,'elder_guardian'),isBoss:true, hpMult:12 },
   ],
   // ── PALIER 11 : Subnautica — Planète 4546B ───────────────────────────────
   11: [
@@ -162,7 +162,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Reefback Leviathan',sprite: sp(11,'reefback'),     hpMult:3.5            },
     { name:'Reaper Leviathan',  sprite: sp(11,'reaper_lev'),   hpMult:5.0            },
     { name:'Ghost Leviathan',   sprite: sp(11,'ghost_lev'),    hpMult:7.0            },
-    { name:'Sea Emperor Leviathan',sprite:sp(11,'sea_emperor'),isBoss:true, hpMult:12 },
+    { name:'Sea Emperor Leviathan',sprite:sp(11,'sea_emperor'),isBoss:true, hpMult:12.5 },
   ],
   // ── PALIER 12 : Bleach — Société des Âmes ────────────────────────────────
   12: [
@@ -175,7 +175,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Grimmjow',          sprite: sp(12,'grimmjow'),     hpMult:4.5            },
     { name:'Ulquiorra',         sprite: sp(12,'ulquiorra'),    hpMult:5.5            },
     { name:'Aizen',             sprite: sp(12,'aizen'),        hpMult:7.0            },
-    { name:'Yhwach',            sprite: sp(12,'yhwach'),       isBoss:true, hpMult:12 },
+    { name:'Yhwach',            sprite: sp(12,'yhwach'),       isBoss:true, hpMult:12.5 },
   ],
   // ── PALIER 13 : Fate — Guerre du Saint Graal ─────────────────────────────
   13: [
@@ -214,7 +214,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Crane',                     sprite: sp(15,'crane'),             hpMult:3.2    },
     { name:'Laser',                     sprite: sp(15,'laser'),             hpMult:4.0    },
     { name:'Dress',                     sprite: sp(15,'dress'),             hpMult:5.0    },
-    { name:'Nonne',                     sprite: sp(15,'nonne'),             isBoss:true, hpMult:13 },
+    { name:'Nonne',                     sprite: sp(15,'nonne'),             isBoss:true, hpMult:13.5 },
   ],
   // ── PALIER 16 : Danganronpa — Académie Kibougamine ───────────────────────
   16: [
@@ -227,7 +227,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Celeste',            sprite: sp(16,'celeste'),       hpMult:3.5           },
     { name:'Kiibo',              sprite: sp(16,'kiibo'),         hpMult:4.0           },
     { name:'Rantaro',            sprite: sp(16,'rantaro'),       hpMult:5.0           },
-    { name:'Maki',               sprite: sp(16,'maki'),          isBoss:true, hpMult:13 },
+    { name:'Maki',               sprite: sp(16,'maki'),          isBoss:true, hpMult:13.5 },
   ],
   // ── PALIER 17 : Digital Circus — Chapiteau du Cirque ─────────────────────
   17: [
@@ -240,7 +240,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Jax',               sprite: sp(17,'jax'),           hpMult:3.5           },
     { name:'Kinger',             sprite: sp(17,'kinger'),        hpMult:4.5           },
     { name:'Bubble',             sprite: sp(17,'bubble'),        hpMult:5.5           },
-    { name:'Caine',              sprite: sp(17,'caine'),         isBoss:true, hpMult:13 },
+    { name:'Caine',              sprite: sp(17,'caine'),         isBoss:true, hpMult:13.5 },
   ],
   // ── PALIER 18 : Sword Art Online — Aincrad ───────────────────────────────
   18: [
@@ -292,7 +292,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Gaoshun',            sprite: sp(21,'gaoshun'),       hpMult:2.8           },
     { name:'Mao Mao',            sprite: sp(21,'mao_mao'),       hpMult:3.5           },
     { name:'Lakan',              sprite: sp(21,'lakan'),         hpMult:5.0           },
-    { name:'Jinshi',             sprite: sp(21,'jinshi'),        isBoss:true, hpMult:14 },
+    { name:'Jinshi',             sprite: sp(21,'jinshi'),        isBoss:true, hpMult:14.5 },
   ],
   // ── PALIER 22 : Chainsaw Man — Secteur de la Sécurité Publique ───────────
   22: [
@@ -305,7 +305,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Power',              sprite: sp(22,'power'),         hpMult:3.5           },
     { name:'Aki',                sprite: sp(22,'aki'),           hpMult:4.0           },
     { name:'Pochita',            sprite: sp(22,'pochita'),       hpMult:5.0           },
-    { name:'Makima',             sprite: sp(22,'makima'),        isBoss:true, hpMult:14 },
+    { name:'Makima',             sprite: sp(22,'makima'),        isBoss:true, hpMult:14.5 },
   ],
   // ── PALIER 23 : Spy x Family — Opération Strix ───────────────────────────
   23: [
@@ -318,7 +318,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Anya',               sprite: sp(23,'anya'),          hpMult:2.8           },
     { name:'Yuri',               sprite: sp(23,'yuri'),          hpMult:3.5           },
     { name:'Yor',                sprite: sp(23,'yor'),           hpMult:4.5           },
-    { name:'Loid',               sprite: sp(23,'loid'),          isBoss:true, hpMult:14 },
+    { name:'Loid',               sprite: sp(23,'loid'),          isBoss:true, hpMult:14.5 },
   ],
   // ── PALIER 24 : Dragon Ball — Arc Namek ──────────────────────────────────
   24: [
