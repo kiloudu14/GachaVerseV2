@@ -22,12 +22,33 @@ function markCodeUsedLocally(codeKey: string) {
 }
 
 export async function redeemGiftCode(userId: string | null, rawCode: string): Promise<RedeemResult> {
-  if (!userId) return { success: false, reason: 'not_logged_in' };
+  const isLocal = typeof window !== 'undefined' && (
+    process.env.NODE_ENV === 'development' ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname.startsWith('127.')
+  );
+
+  // Allow local redemption when developing or running on localhost without a user
+  if (!userId && !isLocal) return { success: false, reason: 'not_logged_in' };
 
   const def = findGiftCode(rawCode);
   if (!def) return { success: false, reason: 'invalid' };
 
   const codeKey = normalizeGiftCode(rawCode);
+
+  if (!userId && isLocal) {
+    // Local-only redemption: do not touch Firestore, use localStorage to mark used
+    if (getLocalUsedCodes().includes(codeKey)) return { success: false, reason: 'already_used' };
+    markCodeUsedLocally(codeKey);
+    return {
+      success:    true,
+      gems:       def.gems       ?? 0,
+      pixelCoins: def.pixelCoins ?? 0,
+      characters: def.characters ?? [],
+      maxCharacters: def.maxCharacters ?? [],
+      items:      def.items      ?? [],
+    };
+  }
 
   // ── 1. Vérification locale (rapide, hors-ligne) ──────────────────────
   if (getLocalUsedCodes().includes(codeKey)) {
