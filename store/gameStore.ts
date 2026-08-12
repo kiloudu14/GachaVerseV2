@@ -274,7 +274,7 @@ interface GameStore extends GameState {
 
 const makeInitial = () => ({
   pixelCoins: 0, nekoGems: 10, totalClicks: 0,
-  totalKills: 0, totalQuestsCompleted: 0, totalUpgradesPerformed: 0,
+  totalKills: 0, totalQuestsCompleted: 0, totalUpgradesPerformed: 0, totalGachaPulls: 0,
   wave: 1, palier: 1, maxPalierReached: 1,
   currentEnemy: generateEnemy(1, 1),
   baseDpc: 1, clickUpgradeLevel: 0, goldUpgradeLevel: 0,
@@ -931,6 +931,7 @@ export const useGameStore = create<GameStore>()(
         const id = rollCharacter(get().maxPalierReached);
         const edition = get().addToCollection(id);
         get().bumpQuestProgress('w_gacha_10', 1);
+        set(s => ({ totalGachaPulls: (s.totalGachaPulls ?? 0) + 1 }));
         broadcastAndSaveLocal();
         return { templateId: id, edition };
       },
@@ -940,6 +941,7 @@ export const useGameStore = create<GameStore>()(
         const ids = rollMulti(get().maxPalierReached);
         const results = ids.map(id => ({ templateId: id, edition: get().addToCollection(id) }));
         get().bumpQuestProgress('w_gacha_10', ids.length);
+        set(s => ({ totalGachaPulls: (s.totalGachaPulls ?? 0) + ids.length }));
         broadcastAndSaveLocal();
         return results;
       },
@@ -949,6 +951,7 @@ export const useGameStore = create<GameStore>()(
         const ids = rollMulti100(get().maxPalierReached);
         const results = ids.map(id => ({ templateId: id, edition: get().addToCollection(id) }));
         get().bumpQuestProgress('w_gacha_10', ids.length);
+        set(s => ({ totalGachaPulls: (s.totalGachaPulls ?? 0) + ids.length }));
         broadcastAndSaveLocal();
         return results;
       },
@@ -1261,7 +1264,7 @@ export const useGameStore = create<GameStore>()(
       name: 'nekoz-world-v7',
       partialize: (s) => ({
         pixelCoins:s.pixelCoins, nekoGems:s.nekoGems, totalClicks:s.totalClicks,
-        totalKills:s.totalKills ?? 0, totalQuestsCompleted:s.totalQuestsCompleted ?? 0, totalUpgradesPerformed:s.totalUpgradesPerformed ?? 0,
+        totalKills:s.totalKills ?? 0, totalQuestsCompleted:s.totalQuestsCompleted ?? 0, totalUpgradesPerformed:s.totalUpgradesPerformed ?? 0, totalGachaPulls:s.totalGachaPulls ?? 0,
         wave:s.wave, palier:s.palier, maxPalierReached:s.maxPalierReached,
         currentEnemy:s.currentEnemy, baseDpc:s.baseDpc, clickUpgradeLevel:s.clickUpgradeLevel,
         equippedTeam:s.equippedTeam, collection:s.collection, hero:s.hero, goldUpgradeLevel:s.goldUpgradeLevel ?? 0,

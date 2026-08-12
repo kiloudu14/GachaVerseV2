@@ -9,7 +9,6 @@ import { RARITY_CONFIG, Rarity, CardEdition } from '@/types/game';
 import { makeInstanceKey } from '@/lib/game/editions';
 import { formatNumber } from '@/lib/game/format';
 import { useFallbackImage, buildImageCandidates } from '@/lib/image-fallback';
-import { trackGachaPulls } from '@/store/achievementStore';
 
 /* ─────────────────────────────────────────────────────────────────
    CONSTANTS
@@ -591,8 +590,6 @@ export function GachaPage() {
   const [pulling,     setPulling]     = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [showPool,    setShowPool]    = useState(false);
-  const totalPullsRef = useRef(0);
-
   // Taux dynamiques calculés pour le palier max du joueur
   const currentRates = getDynamicRates(maxPalierReached);
 
@@ -605,8 +602,6 @@ export function GachaPage() {
     setPulling(true);
     const res = pullSingle();
     if (res) {
-      totalPullsRef.current += 1;
-      trackGachaPulls(totalPullsRef.current);
       const wasNew = !collection[makeInstanceKey(res.templateId, res.edition)];
       setResults([{ templateId: res.templateId, isNew: wasNew, edition: res.edition }]);
       setShowOverlay(true);
@@ -619,8 +614,6 @@ export function GachaPage() {
     setPulling(true);
     const results = pullMulti();
     if (results) {
-      totalPullsRef.current += results.length;
-      trackGachaPulls(totalPullsRef.current);
       setResults(results.map(r => ({ templateId: r.templateId, isNew: !collection[makeInstanceKey(r.templateId, r.edition)], edition: r.edition })));
       setShowOverlay(true);
     }
@@ -632,8 +625,6 @@ export function GachaPage() {
     setPulling(true);
     const results = pullMulti100();
     if (results) {
-      totalPullsRef.current += results.length;
-      trackGachaPulls(totalPullsRef.current);
       setResults(results.map(r => ({ templateId: r.templateId, isNew: !collection[makeInstanceKey(r.templateId, r.edition)], edition: r.edition })));
       setShowOverlay(true);
     }

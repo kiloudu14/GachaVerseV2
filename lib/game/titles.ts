@@ -6,11 +6,15 @@
 // comparables entre elles en valeur brute).
 const TITLE_ORDER: string[] = [
   'Novice', 'Premier Sang', 'Briseur de Cornes', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
-  'Voyageur', 'Émissaire', 'Meneur', 'Tacticien', 'Chasseur', 'Exterminateur', 'Aventurier',
-  'Conquérant', 'Optimisateur', 'Archiviste', 'Parieur', 'Forgeron', 'Faucheur',
-  'Dompteur de Mondes', 'Tueur de Dieux', 'Collectionneur', 'Économe', 'Invocateur', 'Puissant', 'Fléau',
+  'Astre', 'Étincelant', 'Voyageur', 'Émissaire', 'Légat', 'Souverain',
+  'Meneur', 'Tacticien', 'Chasseur', 'Exterminateur', 'Trésorier', 'Aventurier',
+  'Conquérant', 'Optimisateur', 'Archiviste', 'Scintillant', 'Parieur', 'Forgeron', 'Faucheur', 'Insatiable',
+  'Dompteur de Mondes', 'Tueur de Dieux', 'Collectionneur', 'Économe', 'Nébuleuse', 'Invocateur', 'Puissant', 'Fléau',
+  'Harmonie Totale', 'Maître Artisan', 'Décoré', 'Fossoyeur',
   'Maître du Multivers', 'Millionnaire', 'Complétiste',
-  'Dévastateur', 'Grand Invocateur', 'Annihilateur',
+  'Éclat Pur', 'Trinité', 'Néant Incarné',
+  'Dévastateur', 'Grand Invocateur', 'Garde d\'Élite',
+  'Annihilateur', 'Cataclysme', 'Ploutocrate', 'Ascendant', 'Prisme Absolu',
   'Oligarque',
 ];
 

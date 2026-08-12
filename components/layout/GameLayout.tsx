@@ -37,7 +37,7 @@ import { ToastContainer } from '@/components/ui/ToastContainer';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { BossVictoryScreen } from '@/components/game/BossVictoryScreen';
 import { toast } from '@/hooks/useToast';
-import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam, trackKills, trackQuestsCompleted, trackUpgrades } from '@/store/achievementStore';
+import { useAchievementStore, trackBossKill, trackPalier, trackCoins, trackDps, trackCollection, trackEquippedTeam, trackKills, trackQuestsCompleted, trackUpgrades, trackGems, trackPrestige, trackVoidOrbs, trackUnlockedTitles, trackGachaPulls, trackShinyEditions, trackRank7, trackSynergyMax } from '@/store/achievementStore';
 import { makeInstanceKey } from '@/lib/game/editions';
 
 type Page = 'home' | 'upgrades' | 'companions' | 'collection' | 'gacha' | 'shop' | 'quests' | 'events' | 'settings' | 'leaderboard' | 'marketplace' | 'champions' | 'achievements' | 'profile' | 'expeditions' | 'forge' | 'prestige';
@@ -165,11 +165,28 @@ export function GameLayout() {
 
   // ── Achievement trackers ─────────────────────────────────────────────────
   const totalDps = useGameStore(s => s.getTotalDps());
-  const { bossCrowns, collection: col, equippedTeam, totalKills, totalQuestsCompleted, totalUpgradesPerformed } = useGameStore();
+  const { bossCrowns, collection: col, equippedTeam, totalKills, totalQuestsCompleted, totalUpgradesPerformed, totalGachaPulls, voidOrbs } = useGameStore();
   const { CHARACTER_POOL: charPool } = require('@/lib/game/characters');
+  const { computeActiveSynergies } = require('@/lib/game/synergies');
+  const { usePrestigeStore } = require('@/store/prestigeStore');
+  const { useAchievementStore: useAchStoreForTitles } = require('@/store/achievementStore');
+  const prestigeLevel = usePrestigeStore((s: { level: number }) => s.level);
+  const unlockedTitlesCount = useAchStoreForTitles((s: { unlockedTitles: string[] }) => s.unlockedTitles.length);
   useEffect(() => { trackBossKill(bossCrowns); }, [bossCrowns]);
   useEffect(() => { trackPalier(maxPalierReached); }, [maxPalierReached]);
   useEffect(() => { trackCoins(pixelCoins); }, [pixelCoins]);
+  useEffect(() => { trackGems(nekoGems); }, [nekoGems]);
+  useEffect(() => { trackPrestige(prestigeLevel); }, [prestigeLevel]);
+  useEffect(() => { trackVoidOrbs(voidOrbs); }, [voidOrbs]);
+  useEffect(() => { trackUnlockedTitles(unlockedTitlesCount); }, [unlockedTitlesCount]);
+  useEffect(() => { trackGachaPulls(totalGachaPulls); }, [totalGachaPulls]);
+  useEffect(() => {
+    const active = computeActiveSynergies(equippedTeam);
+    const hasMax = active.some((a: { def: { thresholds: unknown[] }; threshold: unknown }) =>
+      a.threshold === a.def.thresholds[a.def.thresholds.length - 1]
+    );
+    trackSynergyMax(hasMax);
+  }, [equippedTeam]);
   useEffect(() => { trackDps(totalDps); }, [totalDps]);
   useEffect(() => { trackKills(totalKills); }, [totalKills]);
   useEffect(() => { trackQuestsCompleted(totalQuestsCompleted); }, [totalQuestsCompleted]);
@@ -184,6 +201,24 @@ export function GameLayout() {
     const hasT  = owned.some((c: {rarity: string}) => c.rarity === 'T');
     trackCollection(owned.length, hasL, hasT, charPool.length);
     trackEquippedTeam(equippedTeam.filter(Boolean).length);
+
+    // Éditions shiny : scan direct des instances de collection (les clés
+    // composites "id::gold"/"id::diamond" encodent déjà l'édition).
+    const instances = Object.values(col) as { templateId: string; edition?: string; rank: number }[];
+    const goldOrDiamond = instances.filter(o => o.edition === 'gold' || o.edition === 'diamond');
+    const hasGold    = instances.some(o => o.edition === 'gold');
+    const hasDiamond = instances.some(o => o.edition === 'diamond');
+    const diamondTemplates = new Set(instances.filter(o => o.edition === 'diamond').map(o => o.templateId));
+    // Trio parfait : un templateId présent avec ses 3 éditions à la fois.
+    const byTemplate: Record<string, Set<string>> = {};
+    for (const o of instances) (byTemplate[o.templateId] ??= new Set()).add(o.edition ?? 'base');
+    const hasTrio = Object.values(byTemplate).some(s => s.has('base') && s.has('gold') && s.has('diamond'));
+    trackShinyEditions(goldOrDiamond.length, hasGold, hasDiamond, diamondTemplates.size, hasTrio);
+
+    // Rangs 7★ : combien d'instances au rang max, et l'équipe entière l'est-elle ?
+    const count7Star = instances.filter(o => o.rank >= 7).length;
+    const fullTeamRank7 = equippedTeam.length === 4 && equippedTeam.every(id => id && col[id]?.rank >= 7);
+    trackRank7(count7Star, fullTeamRank7);
   }, [col, equippedTeam, charPool]);
 
   // Bloquer les multi-instances

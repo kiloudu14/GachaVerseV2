@@ -232,7 +232,7 @@ export interface Enemy {
 
 export interface GameState {
   pixelCoins: number; nekoGems: number; totalClicks: number;
-  totalKills: number; totalQuestsCompleted: number; totalUpgradesPerformed: number;
+  totalKills: number; totalQuestsCompleted: number; totalUpgradesPerformed: number; totalGachaPulls: number;
   wave: number; palier: number; maxPalierReached: number;
   currentEnemy: Enemy; baseDpc: number; clickUpgradeLevel: number;
   equippedTeam: (string | null)[];
