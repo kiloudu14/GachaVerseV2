@@ -12,6 +12,7 @@ import { formatNumber } from '@/lib/game/format';
 import { RARITY_CONFIG } from '@/types/game';
 import { getAffinityForId } from '@/lib/game/affinities';
 import { AffinityBadge } from '@/components/ui/AffinityBadge';
+import { AffinityTooltip } from '@/components/ui/AffinityTooltip';
 import { EDITION_CONFIG } from '@/lib/game/editions';
 
 const RARITY_PRIORITY: Record<string, number> = {
@@ -67,6 +68,7 @@ export function CompanionsPage() {
       : 1)) : 1;
   const selectedDpsWithEquip = Math.floor(selectedDps * selectedEquipMult);
   const selectedUlt = selectedTpl ? getUltimateDef(selectedTpl.id) : null;
+  const selectedAffinity = selectedTpl ? getAffinityForId(selectedTpl.id) : undefined;
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '24px 28px' }}>
@@ -248,7 +250,11 @@ export function CompanionsPage() {
                     <div style={{ fontFamily: 'var(--f-title)', fontWeight: 700, fontSize: 18, color: '#fff', lineHeight: 1.15, marginBottom: 8 }}>{getCharFormName(selectedTpl, selectedCharacter.currentForm)}</div>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                       <RarityBadge rarity={selectedTpl.rarity} />
-                      <AffinityBadge affinity={getAffinityForId(selectedTpl.id)} size="sm" />
+                      {selectedAffinity ? (
+                        <AffinityTooltip affinity={selectedAffinity}>
+                          <AffinityBadge affinity={selectedAffinity} size="sm" />
+                        </AffinityTooltip>
+                      ) : null}
                       <span style={{ fontFamily: 'var(--f-ui)', fontSize: 10, fontWeight: 700, letterSpacing: 0.5, color: 'var(--text-sub)', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: 999, padding: '2px 9px' }}>{selectedTpl.universe}</span>
                     </div>
                   </div>

@@ -12,11 +12,13 @@ import { PALIER_DROPS } from '@/lib/game/expeditions';
 import { getAffinityForId } from '@/lib/game/affinities';
 import { parseInstanceKey } from '@/lib/game/editions';
 import { AffinityBadge } from '@/components/ui/AffinityBadge';
+import { AffinityTooltip } from '@/components/ui/AffinityTooltip';
 import { RandomEventOverlay } from '@/components/game/events/RandomEventOverlay';
 import { getCharacterById, getCharFormName } from '@/lib/game/characters';
 import { getEquipmentDef } from '@/lib/game/items';
 import { computeActiveSynergies } from '@/lib/game/synergies';
 import { BattleParticles } from '@/components/game/BattleParticles';
+
 
 interface Dmg { id: number; x: number; y: number; val: number; crit: boolean; }
 
@@ -371,6 +373,8 @@ function PalierTravelModal({
   );
 }
 
+// Tooltip moved to components/ui/AffinityTooltip.tsx
+
 // ─────────────────────────────────────────────────────────────────────────────
 export function BattleZone() {
   const { currentEnemy, equippedTeam, getTotalDps, retreatFromBoss, challengeBoss, travelToPalier, wave, palier, maxPalierReached, bossActive, bossAvoided, bossTimeLeft, lastEquipmentDrop, setLastEquipmentDrop, ultUsedThisFight, getEventDpsMult } = useGameStore();
@@ -379,6 +383,7 @@ export function BattleZone() {
   const ultStore    = useUltimateStore();
   const dpsUltMult  = ultStore.activeUlts.reduce((m, a) => m * (a.effect.dpsMultiplier ?? 1), 1);
   const dps = Math.floor(getTotalDps()); // inclut déjà dpsMultiplier/selfDpsMultiplier (calculé dans gameStore)
+  const enemyAffinity = getAffinityForId(currentEnemy.name);
   const cfg = getPalierConfig(palier);
   const isFarming = palier < maxPalierReached; // voyage sur un palier déjà validé
   const hp  = (currentEnemy.currentHp / currentEnemy.maxHp) * 100;
@@ -488,7 +493,9 @@ export function BattleZone() {
           <h2 style={{ fontFamily:'var(--f-title)', fontSize:currentEnemy.isBoss?'18px':'15px', fontWeight:700, color:'white', letterSpacing:2, textShadow:currentEnemy.isBoss?'0 0 24px rgba(239,68,68,0.7)':'0 0 16px rgba(255,255,255,0.2)', margin:0 }}>
             {currentEnemy.name}
           </h2>
-          <AffinityBadge affinity={getAffinityForId(currentEnemy.name)} size="sm" />
+          <AffinityTooltip affinity={enemyAffinity}>
+            <AffinityBadge affinity={enemyAffinity} size="sm" />
+          </AffinityTooltip>
           {(() => {
             const em = getEventDpsMult();
             if (em === 1) return null;
