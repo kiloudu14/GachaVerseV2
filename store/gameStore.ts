@@ -125,8 +125,10 @@ const BASE_IDLE_DPS_HP_FRACTION = 0.006; // ~167 s pour tuer un mob sans aucun c
 // ─── Gains hors-ligne (idle) ────────────────────────────────────────────
 // Multiplicateur appliqué au revenu passif (DPS) accumulé hors-ligne.
 export const OFFLINE_MULT_TIERS  = [0.5, 0.55, 0.6, 0.65, 0.7];
-// Durée max créditée hors-ligne, en heures.
-export const OFFLINE_CAP_TIERS_H = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24];
+// Échelle du gain réel hors-ligne : 0.30 au niveau 1, jusqu'à 0.90 au niveau max.
+export const OFFLINE_REWARD_SCALE_TIERS = [0.30, 0.42, 0.55, 0.72, 0.90];
+// Durée max créditée hors-ligne, en heures : 2h au niveau 1, 12h au niveau max.
+export const OFFLINE_CAP_TIERS_H = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 // Coûts en couronnes (👑) pour passer au niveau suivant (index = niveau actuel).
 export const OFFLINE_MULT_COSTS  = [20, 45, 80, 130];                              // 5 paliers → 4 upgrades
 export const OFFLINE_CAP_COSTS   = [10, 18, 28, 42, 60, 82, 108, 140, 178, 220];   // 11 paliers → 10 upgrades
@@ -261,6 +263,7 @@ interface GameStore extends GameState {
   clearBossVictory: () => void;
   getOfflineMult: () => number;
   getOfflineCapHours: () => number;
+  getOfflineRewardScale: () => number;
   getOfflineCoinsPerHour: () => number;
   getOfflineKillsPerHour: () => number;
   getOfflineGemsPerHour: () => number;
@@ -1158,6 +1161,7 @@ export const useGameStore = create<GameStore>()(
       // ─── Gains hors-ligne (idle) ──────────────────────────────────────
       getOfflineMult: () => OFFLINE_MULT_TIERS[Math.min(get().offlineMultLevel ?? 0, OFFLINE_MULT_TIERS.length - 1)],
       getOfflineCapHours: () => OFFLINE_CAP_TIERS_H[Math.min(get().offlineCapLevel ?? 0, OFFLINE_CAP_TIERS_H.length - 1)],
+      getOfflineRewardScale: () => OFFLINE_REWARD_SCALE_TIERS[Math.min(get().offlineMultLevel ?? 0, OFFLINE_REWARD_SCALE_TIERS.length - 1)],
 
       // Nombre de mobs NORMAUX tués par heure (aucun boss n'est simulé hors-ligne).
       getOfflineKillsPerHour: () => {
@@ -1221,9 +1225,10 @@ export const useGameStore = create<GameStore>()(
 
         // Simulation de mobs NORMAUX uniquement : aucun boss → aucune couronne,
         // aucun passage de palier, et les gemmes viennent du drop des mobs.
+        const rewardScale = s.getOfflineRewardScale();
         const kills = Math.floor(s.getOfflineKillsPerHour() * hours);
-        const coins = Math.floor(s.getOfflineCoinsPerHour()  * hours);
-        const gems  = Math.floor(s.getOfflineGemsPerHour()   * hours);
+        const coins = Math.floor(s.getOfflineCoinsPerHour()  * hours * rewardScale);
+        const gems  = Math.floor(s.getOfflineGemsPerHour()   * hours * rewardScale);
 
         const gain: OfflineGain = { coins, gems, kills, seconds, rawSeconds, capped: rawSeconds > capSeconds, at: now };
         set(state => {

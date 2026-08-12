@@ -23,7 +23,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     id:'kills_1', category:'combat', icon:'🗡',
     title:'Premier Sang', name:'Baptême du Feu',
     description:'Vaincs ton premier monstre.', target:1,
-    reward:{ type:'gems', value:5 },
+    reward:{ type:'title', value:'Premier Sang' },
   },
   {
     id:'kills_500', category:'combat', icon:'⚔',

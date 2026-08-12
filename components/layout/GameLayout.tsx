@@ -147,11 +147,11 @@ export function GameLayout() {
     return unsub;
   }, [hasHydrated]);
   useEffect(() => {
-    if (!splashDone || !hasHydrated || offlineClaimedRef.current) return;
+    if (!hasHydrated || offlineClaimedRef.current) return;
     offlineClaimedRef.current = true;
     const g = useGameStore.getState().claimOfflineEarnings();
-    if (g && g.coins > 0) setOfflineGain(g);
-  }, [splashDone, hasHydrated]);
+    if (g && (g.coins > 0 || g.gems > 0 || g.kills > 0)) setOfflineGain(g);
+  }, [hasHydrated]);
 
   // Écran de victoire : piloté par un VRAI événement de kill de boss émis par le
   // store (et non par une surveillance du palier, qui se déclenchait à tort au
