@@ -209,6 +209,8 @@ interface GameStore extends GameState {
   setGamePaused: (v: boolean) => void;
   // Timestamp de la dernière sauvegarde locale (anti-rollback)
   savedAt: number;
+  // Flag to temporarily suppress toasts/notifications during state restore
+  suppressToasts: boolean;
   // Combat
   clickEnemy: () => ClickResult;
   retreatFromBoss: () => void;
