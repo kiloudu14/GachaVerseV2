@@ -37,6 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      // Rattrape aussi les sessions déjà ouvertes (Firebase reconnecte
+      // automatiquement l'utilisateur sans repasser par signIn/signInGoogle) :
+      // sans ça, les comptes qui n'ont pas de fiche "users" restent bloqués
+      // (permissions Firestore) sur tout ce qui vérifie leur statut "approved",
+      // comme la lecture du classement — même après le correctif précédent.
+      if (u) ensureUserDoc(u.uid, u.email ?? '', u.displayName ?? '');
     });
     return unsub;
   }, []);
