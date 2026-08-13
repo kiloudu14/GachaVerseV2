@@ -6,12 +6,9 @@ import { getPendingRequests, getApprovedUsers, approveUser, AccessRequest } from
 import { findPlayer, getPlayerSave, correctPlayerBalance, getPlayerCollection, removePlayerCharacter, addPlayerCharacter, setPlayerCharacterLevel, PlayerLookup, PlayerSaveSummary, OwnedCharacterSummary } from '@/lib/firebase/adminTools';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
+import { isAdminEmail } from '@/lib/admin';
 
 type Audit = { userId: string | null; type: string; payload: Record<string, any>; createdAt: number };
-
-// ⚠️ Remplace par TON email de connexion — seul ce compte peut accéder à
-// cette page. À modifier avant de déployer.
-const ADMIN_EMAILS = ['mehdixshinobie@gmail.com'];
 
 export default function AdminPage() {
   const { user, loading } = useAuth();
@@ -102,7 +99,7 @@ export default function AdminPage() {
     setCorrectBusy(false);
   };
 
-  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
+  const isAdmin = isAdminEmail(user?.email);
 
   const load = async () => {
     setRefreshing(true);
