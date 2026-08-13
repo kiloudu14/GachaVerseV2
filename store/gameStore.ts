@@ -299,6 +299,8 @@ const makeInitial = () => ({
   weeklyQuestsDayKey: getThisWeekKey(),
   eventQuests: EVENT_QUESTS.map(q => ({ ...q, current: 0, done: false })),
   musicVolume: 0.5, musicMuted: false, eventMusicActive: false,
+  // Flag to temporarily suppress toasts/notifications during state restore
+  suppressToasts: false,
   bossCrowns: 0, voidOrbs: 0,
   inventory: {} as Record<string, number>,
   equipmentInventory: {} as Record<string, number>,

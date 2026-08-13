@@ -62,7 +62,16 @@ export const useAchievementStore = create<AchievementState>()(
         // Notification de déblocage — la récompense elle-même n'est créditée
         // que via le bouton RÉCUP (claimAchievement), pas automatiquement ici.
         if (done && !already) {
-          toast.levelup(`🏆 ${achiev.name}`, 'Récompense disponible — clique sur RÉCUP !');
+          try {
+            // Avoid showing toasts when the app is restoring state (e.g. on login).
+            const gs = require('@/store/gameStore').useGameStore.getState();
+            if (!gs.suppressToasts) {
+              toast.levelup(`🏆 ${achiev.name}`, 'Récompense disponible — clique sur RÉCUP !');
+            }
+          } catch (e) {
+            // If require fails for any reason, fallback to showing the toast.
+            toast.levelup(`🏆 ${achiev.name}`, 'Récompense disponible — clique sur RÉCUP !');
+          }
         }
       },
 
@@ -92,7 +101,14 @@ export const useAchievementStore = create<AchievementState>()(
               ? `Titre : « ${achiev.reward.value} »`
               : ''
           : '';
-        toast.levelup(`✅ Récompense reçue`, rewardMsg || achiev.description);
+        try {
+          const gs = require('@/store/gameStore').useGameStore.getState();
+          if (!gs.suppressToasts) {
+            toast.levelup(`✅ Récompense reçue`, rewardMsg || achiev.description);
+          }
+        } catch (e) {
+          toast.levelup(`✅ Récompense reçue`, rewardMsg || achiev.description);
+        }
       },
 
       bumpProgress: (id, by = 1) => {

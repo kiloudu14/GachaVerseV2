@@ -87,7 +87,12 @@ async function loadAndApply(userId: string) {
     console.log('[CloudSave] Meilleure source:', best.label, '—', new Date(best.ts).toLocaleTimeString());
 
     if (best.data && best.ts > (current.savedAt ?? 0)) {
+      // Suppress toasts/notifications while applying remote state to avoid
+      // duplicate achievement/quest toasts when the player logs in on another device.
+      try { useGameStore.setState({ suppressToasts: true }); } catch {}
       useGameStore.setState(best.data as Parameters<typeof useGameStore.setState>[0]);
+      // Allow effects to settle, then re-enable toasts.
+      setTimeout(() => { try { useGameStore.setState({ suppressToasts: false }); } catch {} }, 200);
     }
   } catch (e) {
     console.error('[CloudSave] Erreur loadAndApply:', e);
