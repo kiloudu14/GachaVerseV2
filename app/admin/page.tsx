@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/layout/AuthModal';
 import { getPendingRequests, getApprovedUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
+
+type Audit = { userId: string | null; type: string; payload: Record<string, any>; createdAt: number };
 
 // ⚠️ Remplace par TON email de connexion — seul ce compte peut accéder à
 // cette page. À modifier avant de déployer.
@@ -13,8 +17,10 @@ export default function AdminPage() {
   const [showAuth, setShowAuth]   = useState(false);
   const [pending, setPending]     = useState<AccessRequest[]>([]);
   const [approvedList, setApprovedList] = useState<AccessRequest[]>([]);
+  const [logs, setLogs] = useState<Audit[]>([]);
   const [busy, setBusy]           = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showTab, setShowTab] = useState<'requests'|'logs'>('requests');
 
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
 
@@ -24,6 +30,18 @@ export default function AdminPage() {
     setPending(p);
     setApprovedList(a);
     setRefreshing(false);
+  };
+
+  const loadLogs = async () => {
+    if (!db) return;
+    try {
+      const q = query(collection(db, 'auditLogs'), orderBy('createdAt', 'desc'), limit(200));
+      const snap = await getDocs(q);
+      const out: Audit[] = snap.docs.map(d => d.data() as Audit);
+      setLogs(out);
+    } catch (e) {
+      console.error('Failed to load logs', e);
+    }
   };
 
   useEffect(() => { if (isAdmin) load(); }, [isAdmin]);
@@ -61,11 +79,18 @@ export default function AdminPage() {
           {pending.length} demande(s) en attente · {approvedList.length} compte(s) déjà validé(s)
         </p>
 
-        <button onClick={load} disabled={refreshing} style={{ marginBottom: 20, padding: '8px 16px', borderRadius: 8, background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.4)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
-          {refreshing ? 'Actualisation…' : '🔄 Actualiser'}
-        </button>
+        <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+          <button onClick={() => { setShowTab('requests'); load(); }} disabled={refreshing} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='requests' ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(139,92,246,0.14)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+            {refreshing ? 'Actualisation…' : '🔄 Requests'}
+          </button>
+          <button onClick={() => { setShowTab('logs'); loadLogs(); }} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='logs' ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+            Logs
+          </button>
+        </div>
 
-        <h2 style={{ color: '#fbbf24', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>En attente</h2>
+        {showTab === 'requests' && (
+          <>
+            <h2 style={{ color: '#fbbf24', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>En attente</h2>
         {pending.length === 0 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 24 }}>Aucune demande en attente.</div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
           {pending.map(r => (
@@ -85,7 +110,39 @@ export default function AdminPage() {
           ))}
         </div>
 
-        <h2 style={{ color: '#4ade80', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>Déjà validés ({approvedList.length})</h2>
+          </>
+        )}
+
+        {showTab === 'logs' && (
+          <>
+            <h2 style={{ color: '#60a5fa', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>Événements récents</h2>
+            <div style={{ maxHeight: 600, overflow: 'auto', marginBottom: 20 }}>
+              {logs.length === 0 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Aucun log.</div>}
+              {logs.map((l, i) => (
+                <div key={i} style={{ padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', marginBottom:6, fontSize:12 }}>
+                  <div style={{ color: 'rgba(255,255,255,0.8)', fontWeight:700 }}>{l.type}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.45)', marginTop:4 }}>{l.userId ?? 'anon'} · {new Date(l.createdAt).toLocaleString()}</div>
+                  <pre style={{ color: 'rgba(255,255,255,0.35)', marginTop:6, whiteSpace:'pre-wrap' }}>{JSON.stringify(l.payload)}</pre>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {showTab === 'requests' && (
+          <>
+            <h2 style={{ color: '#4ade80', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>Déjà validés ({approvedList.length})</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {approvedList.map(r => (
+                <div key={r.uid} style={{ display: 'flex', gap: 12, padding: '8px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', fontSize: 12 }}>
+                  <span style={{ color: '#fff', fontWeight: 700, minWidth: 140 }}>{r.username}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.4)' }}>{r.email}</span>
+                  <span style={{ color: '#7289da' }}>{r.discordUsername}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {approvedList.map(r => (
             <div key={r.uid} style={{ display: 'flex', gap: 12, padding: '8px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', fontSize: 12 }}>

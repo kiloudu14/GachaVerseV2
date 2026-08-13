@@ -1,8 +1,9 @@
-import { doc, onSnapshot, runTransaction, setDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, runTransaction, updateDoc } from 'firebase/firestore';
 import { db } from './config';
 
 const LOCAL_SESSION_KEY = 'nekoz_session_claim';
 const SESSION_TTL_MS = 30_000;
+const SESSION_HEARTBEAT_MS = 15_000;
 
 export interface SessionClaim {
   uid: string;
@@ -48,7 +49,11 @@ function getSessionToken(): string {
 }
 
 export async function claimSession(uid: string): Promise<boolean> {
-  if (!db || !uid) return false;
+  if (!db) {
+    console.warn('[Session] Firestore non disponible — contournement en développement activé.');
+    return true;
+  }
+  if (!uid) return false;
 
   const browserId = getBrowserId();
   const sessionToken = getSessionToken();
@@ -59,10 +64,10 @@ export async function claimSession(uid: string): Promise<boolean> {
     await runTransaction(db, async (tx) => {
       const current = await tx.get(sessionRef);
       const data = current.data() as Partial<SessionClaim> | undefined;
-      const isFresh = !!data?.active && !!data.expiresAt && data.expiresAt > now;
+      const isFresh = !!data?.active && typeof data.expiresAt === 'number' && data.expiresAt > now;
 
-      if (isFresh && data.browserId && data.browserId !== browserId) {
-        throw new Error('SESSION_CONFLICT');
+      if (isFresh && data?.browserId && data.browserId !== browserId) {
+        console.warn('[Session] takeover: another active session exists — replacing it now.');
       }
 
       const nextClaim: SessionClaim = {
@@ -93,6 +98,39 @@ export async function claimSession(uid: string): Promise<boolean> {
   }
 }
 
+export async function heartbeatSession(uid: string): Promise<boolean> {
+  if (!db) {
+    console.warn('[Session] Firestore non disponible — heartbeat contourné en développement.');
+    return true;
+  }
+  if (!uid || typeof window === 'undefined') return false;
+
+  const browserId = getBrowserId();
+  const sessionToken = getSessionToken();
+  const ref = doc(db, 'sessions', uid);
+
+  try {
+    const current = await getDoc(ref);
+    const data = current.data() as Partial<SessionClaim> | undefined;
+    if (!data?.active) return false;
+    if (data.browserId && data.browserId !== browserId) return false;
+    if (data.sessionToken && data.sessionToken !== sessionToken) return false;
+
+    const now = Date.now();
+    await updateDoc(ref, {
+      lastSeenAt: now,
+      expiresAt: now + SESSION_TTL_MS,
+      sessionToken,
+      browserId,
+      active: true,
+    });
+    return true;
+  } catch (error) {
+    console.error('[Session] heartbeatSession failed:', error);
+    return false;
+  }
+}
+
 export function watchSession(uid: string, onConflict: () => void): () => void {
   if (!db || !uid || typeof window === 'undefined') {
     return () => {};
@@ -117,7 +155,14 @@ export function watchSession(uid: string, onConflict: () => void): () => void {
     }
   });
 
-  return unsub;
+  const interval = window.setInterval(() => {
+    heartbeatSession(uid).catch(() => {});
+  }, SESSION_HEARTBEAT_MS);
+
+  return () => {
+    unsub();
+    window.clearInterval(interval);
+  };
 }
 
 export function clearLocalSession(): void {
