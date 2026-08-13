@@ -12,7 +12,7 @@ import {
 import { auth } from '@/lib/firebase/config';
 import { logAudit } from '@/lib/firebase/audit';
 import { claimSession, watchSession, clearLocalSession } from '@/lib/firebase/session';
-import { createAccessRequest } from '@/lib/firebase/accessRequests';
+import { createAccessRequest, ensureUserDoc } from '@/lib/firebase/accessRequests';
 
 interface AuthContextType {
   user: User | null;
@@ -65,6 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ailleurs"), ce qui a fini par bloquer TOUT LE MONDE (admin compris).
     const ok = await claimSession(cred.user.uid);
     if (!ok) console.warn('[Auth] claimSession a échoué (verrou de session non posé), connexion autorisée quand même.');
+    // Rattrape les comptes qui n'auraient pas (encore) de fiche dans "users"
+    // (ex: comptes créés avant ce système) pour qu'ils apparaissent dans le panel admin.
+    await ensureUserDoc(cred.user.uid, cred.user.email ?? email, cred.user.displayName ?? '');
     // Log sign in
     logAudit(cred.user.uid, 'auth:signIn', { method: 'password', email });
   };
@@ -84,6 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const cred = await signInWithPopup(auth, provider);
     const ok = await claimSession(cred.user.uid);
     if (!ok) console.warn('[Auth] claimSession a échoué (verrou de session non posé), connexion autorisée quand même.');
+    // Les comptes Google ne passent jamais par createAccessRequest : sans ça,
+    // ils n'ont jamais de fiche "users" et n'apparaissent jamais dans le panel admin.
+    await ensureUserDoc(cred.user.uid, cred.user.email ?? '', cred.user.displayName ?? '');
     logAudit(cred.user.uid, 'auth:signIn', { method: 'google' });
   };
 
