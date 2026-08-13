@@ -427,7 +427,18 @@ export const useGameStore = create<GameStore>()(
         const enemyMult       = ult.getActiveEnemyDamageTakenMultiplier();
         const damageToCoinPct  = ult.getActiveDamageToCoinPct();
 
-        const finalDps = Math.floor((baseTeamDps + bonusFlat) * enemyMult * get().getEventDpsMult()) + Math.max(1, Math.floor(get().currentEnemy.maxHp * BASE_IDLE_DPS_HP_FRACTION));
+        // Filet de sécurité "sans aucun compagnon" : uniquement si l'équipe
+        // est VRAIMENT vide (0 perso équipé). Avant ce correctif, ce filet
+        // s'ajoutait TOUJOURS en plus du DPS réel, calculé comme un
+        // pourcentage des PV de l'ennemi — donc à PV d'ennemi très élevés
+        // (fin de partie), il dépassait largement le DPS réel de l'équipe et
+        // rendait toute la puissance du joueur insignifiante : n'importe
+        // quel ennemi mourait en ~167s peu importe l'équipe (voire sans
+        // équipe du tout), ce qui cassait complètement la difficulté.
+        const hasNoTeam = get().equippedTeam.every(id => !id);
+        const idleFloor = hasNoTeam ? Math.max(1, Math.floor(get().currentEnemy.maxHp * BASE_IDLE_DPS_HP_FRACTION)) : 0;
+
+        const finalDps = Math.floor((baseTeamDps + bonusFlat) * enemyMult * get().getEventDpsMult()) + idleFloor;
         if (finalDps <= 0) { set({ lastActiveAt: Date.now() }); return; }
 
         const bonusCoins = Math.floor(finalDps * damageToCoinPct / 100);
