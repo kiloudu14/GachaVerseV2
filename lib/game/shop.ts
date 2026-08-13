@@ -32,9 +32,16 @@ export const GEM_GOLD_PACKS: GemGoldPack[] = [
 
 // ── Orbe du Néant : recyclage des doublons au rang max (7★) ──────────────
 export function getVoidOrbsForRarity(rarity: Rarity): number {
-  if (rarity === 'C' || rarity === 'U' || rarity === 'R') return 1;
-  if (rarity === 'E' || rarity === 'L' || rarity === 'M') return 10;
-  return 50; // S, CO, P, T
+  if (rarity === 'C') return 1;
+  if (rarity === 'U') return 2;
+  if (rarity === 'R') return 4;
+  if (rarity === 'E') return 7;
+  if (rarity === 'L') return 10;
+  if (rarity === 'M') return 15;
+  if (rarity === 'S') return 25;
+  if (rarity === 'CO') return 50;
+  if (rarity === 'P') return 100;
+  return 500; // T
 }
 
 // ── Personnages boutique (3 par jour, payés en Orbes du Néant) ───────────

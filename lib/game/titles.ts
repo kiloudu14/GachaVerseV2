@@ -5,7 +5,7 @@
 // réelle des succès qui les débloquent (et non l'ordre du fichier, les
 // catégories n'étant pas comparables entre elles en valeur brute).
 const TITLE_ORDER: string[] = [
-  'Novice', 'Premier Sang', 'Briseur de Cornes', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
+  'Novice', 'Premier Sang', 'Briseur de Cornes', 'Six Seven', 'Recruteur', 'Chanceux', 'Élu', 'Joueur', 'Serviteur',
   'Astre', 'Étincelant', 'Voyageur', 'Émissaire', 'Légat', 'Souverain',
   'Meneur', 'Tacticien', 'Chasseur', 'Exterminateur', 'Trésorier', 'Aventurier',
   'Conquérant', 'Optimisateur', 'Archiviste', 'Scintillant', 'Parieur', 'Forgeron', 'Faucheur', 'Insatiable',
@@ -30,6 +30,7 @@ export const TITLE_GOLD_BONUS_PCT: Record<string, number> = Object.fromEntries(
     Math.round((MIN_BONUS_PCT + (MAX_BONUS_PCT - MIN_BONUS_PCT) * i / (TITLE_ORDER.length - 1)) * 10) / 10,
   ])
 );
+TITLE_GOLD_BONUS_PCT['Six Seven'] = 6.7;
 
 /** Multiplicateur d'or (1.05 → 1.60) du titre actuellement équipé. */
 export function getTitleGoldMultiplier(activeTitle: string): number {

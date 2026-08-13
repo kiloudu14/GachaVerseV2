@@ -69,6 +69,12 @@ export const ACHIEVEMENTS: Achievement[] = [
     reward:{ type:'gems', value:100 },
   },
   {
+    id:'bosses_67', category:'combat', icon:'🎯',
+    title:'Six Seven', name:'Mortels 67',
+    description:'Vaincs 67 boss.', target:67,
+    reward:{ type:'title', value:'Six Seven' },
+  },
+  {
     id:'dps_1000', category:'combat', icon:'📈',
     title:'Puissant', name:'Machine de Guerre',
     description:'Atteins 1 000 DPS.', target:1000,

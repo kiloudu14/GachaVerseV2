@@ -178,6 +178,7 @@ export function trackBossKills(totalBossKills: number) {
   s.setProgress('first_boss', Math.min(totalBossKills, 1));
   s.setProgress('bosses_5',   Math.min(totalBossKills, 5));
   s.setProgress('bosses_20',  Math.min(totalBossKills, 20));
+  s.setProgress('bosses_67',  Math.min(totalBossKills, 67));
   s.setProgress('bosses_100', Math.min(totalBossKills, 100));
 }
 
