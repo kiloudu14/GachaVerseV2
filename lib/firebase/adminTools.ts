@@ -15,7 +15,12 @@ export interface PlayerSaveSummary {
   lastSaved: number | null;
 }
 
-/** Cherche un joueur par pseudo OU email exact (recherche sur la collection "users"). */
+/**
+ * Cherche un joueur par pseudo OU email exact (collection "users"). Si rien
+ * n'est trouvé, tente de traiter la saisie comme un UID Firebase directement
+ * (utile pour les comptes créés AVANT le système de validation d'inscription,
+ * qui n'ont jamais eu de fiche dans "users" — seule leur sauvegarde existe).
+ */
 export async function findPlayer(search: string): Promise<PlayerLookup | null> {
   if (!db) return null;
   const trimmed = search.trim();
@@ -32,6 +37,13 @@ export async function findPlayer(search: string): Promise<PlayerLookup | null> {
     if (!byUsername.empty) {
       const d = byUsername.docs[0].data();
       return { uid: d.uid, email: d.email, username: d.username };
+    }
+    // Repli : la saisie est peut-être directement un UID (compte antérieur
+    // au système de validation, donc absent de "users") — on vérifie si une
+    // sauvegarde existe sous cet UID.
+    const saveSnap = await getDoc(doc(db, 'saves', trimmed));
+    if (saveSnap.exists()) {
+      return { uid: trimmed, email: '(compte antérieur au système de validation — email inconnu)', username: '(inconnu)' };
     }
     return null;
   } catch (e) {
