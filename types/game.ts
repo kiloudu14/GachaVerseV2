@@ -92,7 +92,9 @@ export function getLevelCap(character: CharacterTemplate, formIndex: number): nu
 }
 
 export function canEvolve(character: CharacterTemplate, owned: OwnedCharacter, inventory: Record<string, number> = {}): boolean {
-  if (!RARITY_CONFIG[character.rarity].canEvolve) return false;
+  // Autoriser explicitement quelques personnages à évoluer même si leur
+  // rareté n'autorise pas l'évolution par défaut (ex: Margith).
+  if (character.id !== 'margith' && !RARITY_CONFIG[character.rarity].canEvolve) return false;
   if (!character.forms || character.forms.length === 0) return false;
   const cap = getLevelCap(character, owned.currentForm);
   if (owned.level < cap) return false;
