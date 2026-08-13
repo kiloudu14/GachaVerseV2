@@ -180,7 +180,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050410', padding: '32px 20px', fontFamily: 'sans-serif' }}>
+    <div style={{ height: '100vh', overflowY: 'auto', background: '#050410', padding: '32px 20px', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <h1 style={{ color: '#a78bfa', fontSize: 22, fontWeight: 900, marginBottom: 6 }}>🛡️ Validation des comptes</h1>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 28 }}>
