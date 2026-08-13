@@ -62,6 +62,15 @@ export const GIFT_CODES: GiftCodeDef[] = [
     code:          'GOKU-DIAMOND-MAX',
     maxCharacters: ['goku'],
   },*/
+  // ── Personnages offerts (édition tirée normalement, pas de bonus max) ──
+  {
+    code:       'OUCHUU-CADEAU',
+    characters: ['ouchuu'],
+  },
+  {
+    code:       'YAMI-CADEAU',
+    characters: ['yami'],
+  },
 ];
 
 // Normalise une saisie utilisateur (espaces, casse) pour la comparaison
