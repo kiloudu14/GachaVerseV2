@@ -84,16 +84,41 @@ export async function getApprovedUsers(): Promise<AccessRequest[]> {
 }
 
 /**
- * Liste TOUS les comptes existants (collection "users"), quel que soit leur
- * statut de validation. Le uid du document correspond aussi à l'identifiant
- * de la sauvegarde cloud du joueur (collection "saves"), donc il sert
- * directement d'"id de save" affichable dans le panel admin.
+ * Liste TOUS les comptes existants, quel que soit leur statut de validation
+ * ET même s'ils n'ont jamais de fiche dans "users" (comptes créés avant ce
+ * système, ou connexions Google pas encore rattrapées par ensureUserDoc).
+ * On fusionne donc "users" (email + pseudo + discord) avec "saves" (source
+ * de vérité pour l'existence d'un compte, via son uid = id du document).
+ * Le uid sert directement d'"id de save" affichable dans le panel admin.
  */
 export async function getAllUsers(): Promise<AccessRequest[]> {
   if (!db) return [];
   try {
-    const snap = await getDocs(collection(db, 'users'));
-    return snap.docs.map(d => d.data() as AccessRequest).sort((a, b) => b.createdAt - a.createdAt);
+    const [usersSnap, savesSnap] = await Promise.all([
+      getDocs(collection(db, 'users')),
+      getDocs(collection(db, 'saves')),
+    ]);
+
+    const byUid = new Map<string, AccessRequest>();
+    for (const d of usersSnap.docs) {
+      byUid.set(d.id, d.data() as AccessRequest);
+    }
+    // Complète avec les comptes qui n'ont une trace que dans "saves"
+    // (jamais de fiche "users" créée) — email inconnu dans ce cas.
+    for (const d of savesSnap.docs) {
+      if (byUid.has(d.id)) continue;
+      const save = d.data() as { username?: string; lastSaved?: number };
+      byUid.set(d.id, {
+        uid: d.id,
+        email: '(compte antérieur au système de fiches — email inconnu)',
+        username: save.username || '(pseudo inconnu)',
+        discordUsername: '',
+        approved: true,
+        createdAt: save.lastSaved ?? 0,
+      });
+    }
+
+    return Array.from(byUid.values()).sort((a, b) => b.createdAt - a.createdAt);
   } catch (e) { console.error('[Access] getAllUsers:', e); return []; }
 }
 
