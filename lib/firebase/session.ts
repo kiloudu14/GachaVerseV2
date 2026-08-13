@@ -2,8 +2,8 @@ import { doc, getDoc, onSnapshot, runTransaction, updateDoc } from 'firebase/fir
 import { db } from './config';
 
 const LOCAL_SESSION_KEY = 'nekoz_session_claim';
-const SESSION_TTL_MS = 30_000;
-const SESSION_HEARTBEAT_MS = 15_000;
+const SESSION_TTL_MS = 150_000;       // était 30s, passé à 2min30 (marge = 2.5x le battement)
+const SESSION_HEARTBEAT_MS = 60_000;  // était 15s — réduit la charge Firestore (÷4)
 
 export interface SessionClaim {
   uid: string;
