@@ -17,6 +17,8 @@ export const GIFT_CODES: GiftCodeDef[] = [
 
   // Dev code: grants Atsushi (forme de base, niveau 1)
   //{ code: 'ATSUSHI-BASE-1', characters: ['atsushi'] },
+    // Dev code: grants Sea Emperor (base form)
+    { code: 'SEA-EMPEROR-BASE', characters: ['sea_emperor'] },
 
   // ── Codes 70M Coins ───────────────────────────────────────────────
   //{ code: 'NEKOZ-RICH-4F7H',  pixelCoins: 10_000_000 },
