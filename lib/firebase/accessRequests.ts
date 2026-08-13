@@ -10,14 +10,16 @@ export interface AccessRequest {
   createdAt:       number;
 }
 
-/** Crée la demande d'accès juste après la création du compte Firebase Auth. */
+/** Crée la fiche utilisateur juste après la création du compte Firebase Auth.
+ *  Le compte est immédiatement validé : il n'y a plus de demande d'accès à
+ *  approuver manuellement, l'inscription donne un accès direct au jeu. */
 export async function createAccessRequest(
   uid: string, email: string, username: string, discordUsername: string
 ): Promise<void> {
   if (!db) return;
   await setDoc(doc(db, 'users', uid), {
     uid, email, username, discordUsername,
-    approved: false,
+    approved: true,
     createdAt: Date.now(),
   });
 }
