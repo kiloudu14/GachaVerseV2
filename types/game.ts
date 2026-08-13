@@ -162,10 +162,10 @@ export function heroLevelUpCost(level: number): number {
 // ── Coût d'évolution ─────────────────────────────────────────────────────
 export function evoCost(rarity: Rarity, currentForm: number): number {
   const base: Record<Rarity, number> = {
-    C:50_000_000,  U:50_000_000,  R:50_000_000,  E:50_000_000,       // Commun à Épique
-    L:500_000_000, M:500_000_000, S:500_000_000,                     // Légendaire à Stellaire
-    CO:1_000_000_000,                                                // Cosmique
-    P:3_000_000_000,                                                 // Primordial (entre Cosmique et Transcendant)
+    C:50_000_000,  U:50_000_000,  R:50_000_000,  E:100_000_000,       // Commun à Épique
+    L:500_000_000, M:750_000_000, S:1_000_000_000,                     // Légendaire à Stellaire
+    CO:2_000_000_000,                                                // Cosmique
+    P:4_000_000_000,                                                 // Primordial (entre Cosmique et Transcendant)
     T:10_000_000_000,                                                // Transcendant
   };
   return (base[rarity] ?? 0) * Math.pow(3, currentForm);
