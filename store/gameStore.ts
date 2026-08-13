@@ -1256,6 +1256,7 @@ export const useGameStore = create<GameStore>()(
             pixelCoins: state.pixelCoins + coins,
             nekoGems:   state.nekoGems + gems,
             lastActiveAt: now,
+            savedAt: now,
             lastOfflineGain: gain,
             quests: cq.quests, weeklyQuests: cq.weeklyQuests,
           };
