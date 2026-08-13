@@ -9,16 +9,19 @@ import { formatNumber } from '@/lib/game/format';
 // donc il grimpe automatiquement avec la progression. Gemmes/couronnes restent fixes.
 type Symbol = {
   key: string; icon: string; label: string; weight: number;
-  coinMult?: number; gems?: number; crowns?: number; malusDivide?: number;
+  coinMult?: number; gems?: number; crowns?: number; malusDivide?: number; bankrupt?: boolean;
 };
 
 const SYMBOLS: Symbol[] = [
-  { key:'seven',  icon:'7️⃣', label:'JACKPOT 777', weight: 1,  coinMult: 500, gems: 100, crowns: 3 },
-  { key:'gem',    icon:'💎', label:'Gemmes',       weight: 4,  gems: 30 },
-  { key:'crown',  icon:'👑', label:'Couronne',     weight: 3,  crowns: 1 },
+  { key:'seven',  icon:'7️⃣', label:'JACKPOT 777', weight: 1,  coinMult: 500, gems: 150, crowns: 5 },
+  { key:'gem',    icon:'💎', label:'Gemmes',       weight: 4,  gems: 100 },
+  { key:'crown',  icon:'👑', label:'Couronne',     weight: 3,  crowns: 10 },
   { key:'coin',   icon:'🪙', label:'Pièces',       weight: 6,  coinMult: 100 },
-  { key:'clover', icon:'🍀', label:'Trèfle',       weight: 5,  coinMult: 85, gems: 5 },
+  { key:'clover', icon:'🍀', label:'Trèfle',       weight: 5,  coinMult: 85, gems: 10 },
   { key:'bomb',   icon:'💀', label:'Malus',        weight: 3,  malusDivide: 3 },
+  // Très rare (~5% des triples, ~2,25% de tous les tirages) — vide TOUS les
+  // Pixel-Coins du joueur. Poids calculé pour tomber pile sur 5% du pool.
+  { key:'bankrupt',  icon:'🪦', label:'BANQUEROUTE',   weight: 1.158, bankrupt: true },
 ];
 
 const MALUS_DURATION_MS = 600000; // ÷3 DPS pendant 10 min
@@ -56,6 +59,11 @@ export function JackpotEvent() {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Symbol | null>(null);
   const [done, setDone] = useState(false);
+  // Montant VERROUILLÉ au moment exact du tirage (pas recalculé à chaque
+  // rendu) : sinon, laisser la fenêtre ouverte pendant que la partie
+  // progresse faisait grimper le chiffre affiché avec le palier/vague
+  // atteint depuis, même si ce n'est pas ce qui a été réellement accordé.
+  const [lockedCoins, setLockedCoins] = useState(0);
 
   // Fenêtre du bouton clignotant : si non cliqué, l'event se termine.
   useEffect(() => {
@@ -70,6 +78,7 @@ export function JackpotEvent() {
   }, [phase, end]);
 
   const spinIv = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const spin = () => {
     if (spinning || done) return;
@@ -88,15 +97,37 @@ export function JackpotEvent() {
       setDone(true);
       if (isTriple) {
         setResult(target);
-        if (target.malusDivide) setEventDpsMult(1 / target.malusDivide, MALUS_DURATION_MS);
-        else grant(coinsFor(target), target.gems ?? 0, target.crowns ?? 0);
+        if (target.malusDivide) {
+          setEventDpsMult(1 / target.malusDivide, MALUS_DURATION_MS);
+        } else if (target.bankrupt) {
+          useGameStore.setState({ pixelCoins: 0 });
+        } else {
+          // Montant calculé UNE SEULE FOIS ici, verrouillé, puis accordé
+          // immédiatement — impossible d'attendre pour le faire grimper.
+          const coins = coinsFor(target);
+          setLockedCoins(coins);
+          grant(coins, target.gems ?? 0, target.crowns ?? 0);
+        }
       } else {
         setResult(null);
       }
+      // Fermeture automatique 3s après l'affichage du résultat — la
+      // récompense est déjà accordée à ce stade, ça ne fait qu'empêcher de
+      // laisser la fenêtre ouverte indéfiniment.
+      autoCloseTimeout.current = setTimeout(() => end(), 3000);
     }, 1600);
   };
 
-  useEffect(() => () => { if (spinIv.current) clearInterval(spinIv.current); }, []);
+  const handleManualClose = () => {
+    if (autoCloseTimeout.current) clearTimeout(autoCloseTimeout.current);
+    end();
+  };
+
+  useEffect(() => () => {
+    if (spinIv.current) clearInterval(spinIv.current);
+    if (autoCloseTimeout.current) clearTimeout(autoCloseTimeout.current);
+  }, []);
+
 
   // ── Phase 1 : bouton clignotant ──────────────────────────────────────
   if (phase === 'button') {
@@ -141,10 +172,15 @@ export function JackpotEvent() {
                   <div style={{ color:'#f87171', fontFamily:'var(--f-ui)', fontWeight:800, fontSize:14 }}>
                     💀💀💀 {result.label} : DPS ÷{result.malusDivide} pendant 10 min !
                   </div>
+                ) : result.bankrupt ? (
+                  <div style={{ color:'#f87171', fontFamily:'var(--f-ui)', fontWeight:900, fontSize:15 }}>
+                    🪦🪦🪦 {result.label} !<br />
+                    <span style={{ fontSize:12, fontWeight:700, opacity:0.85 }}>Tous tes Pixel-Coins sont partis en fumée…</span>
+                  </div>
                 ) : (
                   <div style={{ color:'var(--green)', fontFamily:'var(--f-ui)', fontWeight:800, fontSize:14 }}>
                     {result.icon} {result.label} !{' '}
-                    {result.coinMult ? `+${formatNumber(coinsFor(result))}🪙 ` : ''}
+                    {result.coinMult ? `+${formatNumber(lockedCoins)}🪙 ` : ''}
                     {result.gems ? `+${result.gems}💎 ` : ''}
                     {result.crowns ? `+${result.crowns}👑` : ''}
                   </div>
@@ -153,7 +189,7 @@ export function JackpotEvent() {
                 <div style={{ color:'var(--text-dim)', fontFamily:'var(--f-ui)', fontSize:13 }}>Pas d’alignement… pas de chance !</div>
               )}
             </div>
-            <button onClick={end} className="btn-secondary" style={{ width:'100%', padding:11, fontSize:14 }}>FERMER</button>
+            <button onClick={handleManualClose} className="btn-secondary" style={{ width:'100%', padding:11, fontSize:14 }}>FERMER</button>
           </>
         )}
       </div>
