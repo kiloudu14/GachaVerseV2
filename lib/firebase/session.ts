@@ -64,10 +64,10 @@ export async function claimSession(uid: string): Promise<boolean> {
     await runTransaction(db, async (tx) => {
       const current = await tx.get(sessionRef);
       const data = current.data() as Partial<SessionClaim> | undefined;
-      const isFresh = !!data?.active && !!data.expiresAt && data.expiresAt > now;
+      const isFresh = !!data?.active && typeof data.expiresAt === 'number' && data.expiresAt > now;
 
-      if (isFresh && data.browserId && data.browserId !== browserId) {
-        throw new Error('SESSION_CONFLICT');
+      if (isFresh && data?.browserId && data.browserId !== browserId) {
+        console.warn('[Session] takeover: another active session exists — replacing it now.');
       }
 
       const nextClaim: SessionClaim = {
