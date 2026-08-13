@@ -76,8 +76,8 @@ export const SYNERGIES: SynergyDef[] = [
     thresholds:[{ count:2, label:'+22% DPS Valkyrie',dpsBonus:22,globalBonus:0 }] },
   { id:'aot',         universe:'Attaque des Titans',   label:'Attaque des Titans',color:'#a3a3a3', glow:'#737373', icon:'🗡',
     thresholds:[{ count:2, label:'+20% DPS AoT',dpsBonus:20,globalBonus:0 }] },
-  { id: 'hollowknight', universe: 'Hollow Knight', label: 'Hollow Knight', color: '#a78bfa', glow: '#7c3aed', icon: '🐛',}
-    tresholds: [{ count: 2, label: '+18% DPS Hollow Knight', dpsBonus: 18, globalBonus: 0 }] },
+  { id: 'hollowknight', universe: 'Hollow Knight', label: 'Hollow Knight', color: '#a78bfa', glow: '#7c3aed', icon: '🐛',
+    thresholds: [{ count: 2, label: '+18% DPS Hollow Knight', dpsBonus: 18, globalBonus: 0 }] },
 ];
 
 // Déduplique par universe
