@@ -10,7 +10,7 @@ import { calcDpsWithSynergies, computeActiveSynergies } from '@/lib/game/synergi
 import { calcCharDps, EQUIPMENT_SLOT_LABELS, EQUIPMENT_SLOTS } from '@/types/game';
 import { formatNumber } from '@/lib/game/format';
 import { RARITY_CONFIG } from '@/types/game';
-import { getAffinityForId } from '@/lib/game/affinities';
+import { AFFINITY_ORDER, getAffinityForId } from '@/lib/game/affinities';
 import { AffinityBadge } from '@/components/ui/AffinityBadge';
 import { AffinityTooltip } from '@/components/ui/AffinityTooltip';
 import { EDITION_CONFIG } from '@/lib/game/editions';
@@ -35,6 +35,7 @@ export function CompanionsPage() {
     recycleEquipment,
     collectionFilter,
     collectionUniverse,
+    collectionAffinity,
     collectionSort,
     setCollectionFilters,
   } = useGameStore();
@@ -43,9 +44,11 @@ export function CompanionsPage() {
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const filter = collectionFilter as CollectionFilterMode;
   const universe = collectionUniverse as string | 'all';
+  const affinity = collectionAffinity as CollectionFilterMode extends never ? never : 'all' | ReturnType<typeof getAffinityForId>;
   const sort = collectionSort as CollectionSortMode;
   const setFilter = (next: CollectionFilterMode) => setCollectionFilters({ filter: next });
   const setUniverse = (next: string | 'all') => setCollectionFilters({ universe: next });
+  const setAffinity = (next: 'all' | ReturnType<typeof getAffinityForId>) => setCollectionFilters({ affinity: next });
   const setSort = (next: CollectionSortMode) => setCollectionFilters({ sort: next });
 
   const owned = Object.entries(collection).sort(([, a], [, b]) => {
@@ -57,11 +60,12 @@ export function CompanionsPage() {
   const filteredCollection = [...owned].filter(([instanceKey, ownedChar]) => {
     const tpl = getCharacterById(ownedChar.templateId);
     if (!tpl) return false;
-    if (filter === 'owned') return true;
+    const matchesAffinity = affinity === 'all' ? true : getAffinityForId(tpl.id) === affinity;
+    if (filter === 'owned') return matchesAffinity;
     if (filter === 'missing') return false;
-    if (filter !== 'all') return tpl.rarity === filter;
-    if (universe !== 'all') return tpl.universe === universe;
-    return true;
+    if (filter !== 'all') return tpl.rarity === filter && matchesAffinity;
+    if (universe !== 'all' && tpl.universe !== universe) return false;
+    return matchesAffinity;
   }).filter(([instanceKey, ownedChar]) => {
     const tpl = getCharacterById(ownedChar.templateId);
     if (!tpl) return false;
@@ -458,6 +462,8 @@ export function CompanionsPage() {
             onFilterChange={setFilter}
             universe={universe}
             onUniverseChange={setUniverse}
+            affinity={affinity}
+            onAffinityChange={setAffinity}
             sort={sort}
             onSortChange={setSort}
             universes={universeOptions}

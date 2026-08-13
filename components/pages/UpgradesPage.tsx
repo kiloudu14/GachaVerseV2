@@ -9,7 +9,8 @@ import { RarityBadge } from '@/components/ui/RarityBadge';
 import { CharacterCardThumb } from '@/components/ui/CharacterCardThumb';
 import { computeActiveSynergies, SYNERGIES_LIST as SYNERGIES } from '@/lib/game/synergies';
 import { parseInstanceKey } from '@/lib/game/editions';
-import { CollectionFilters, COLLECTION_RARITY_ORDER, type CollectionFilterMode, type CollectionSortMode } from '@/components/ui/CollectionFilters';
+import { getAffinityForId, AFFINITY_ORDER } from '@/lib/game/affinities';
+import { CollectionFilters, COLLECTION_RARITY_ORDER, type CollectionAffinityMode, type CollectionFilterMode, type CollectionSortMode } from '@/components/ui/CollectionFilters';
 
 const RARITY_PRIORITY: Record<string, number> = {
   T: 0, P: 1, CO: 2, S: 3, M: 4, L: 5, E: 6, R: 7, U: 8, C: 9,
@@ -271,7 +272,7 @@ function SynergiesPanel() {
 
 // ── PAGE ──────────────────────────────────────────────────────────────────
 export function UpgradesPage() {
-  const { pixelCoins, nekoGems, getTotalDps, collection, collectionFilter, collectionUniverse, collectionSort, setCollectionFilters } = useGameStore();
+  const { pixelCoins, nekoGems, getTotalDps, collection, collectionFilter, collectionUniverse, collectionAffinity, collectionSort, setCollectionFilters } = useGameStore();
   const ownedIds = Object.keys(collection).sort((a, b) => {
     const aRarity = getCharacterById(parseInstanceKey(a).templateId)?.rarity ?? 'C';
     const bRarity = getCharacterById(parseInstanceKey(b).templateId)?.rarity ?? 'C';
@@ -280,19 +281,22 @@ export function UpgradesPage() {
   const [mounted, setMounted] = useState(false);
   const filter = collectionFilter as CollectionFilterMode;
   const universe = collectionUniverse as string | 'all';
+  const affinity = collectionAffinity as CollectionAffinityMode;
   const sort = collectionSort as CollectionSortMode;
   const setFilter = (next: CollectionFilterMode) => setCollectionFilters({ filter: next });
   const setUniverse = (next: string | 'all') => setCollectionFilters({ universe: next });
+  const setAffinity = (next: CollectionAffinityMode) => setCollectionFilters({ affinity: next });
   const setSort = (next: CollectionSortMode) => setCollectionFilters({ sort: next });
   const universeOptions = Array.from(new Set(ownedIds.map(id => getCharacterById(parseInstanceKey(id).templateId)?.universe).filter(Boolean))) as string[];
   const filteredIds = ownedIds.filter(id => {
     const tpl = getCharacterById(parseInstanceKey(id).templateId);
     if (!tpl) return false;
-    if (filter === 'all') return universe === 'all' ? true : tpl.universe === universe;
-    if (filter === 'owned') return true;
+    const matchesAffinity = affinity === 'all' ? true : getAffinityForId(tpl.id) === affinity;
+    if (filter === 'all') return (universe === 'all' ? true : tpl.universe === universe) && matchesAffinity;
+    if (filter === 'owned') return matchesAffinity;
     if (filter === 'missing') return false;
     if (universe !== 'all' && tpl.universe !== universe) return false;
-    return tpl.rarity === filter;
+    return tpl.rarity === filter && matchesAffinity;
   }).sort((a, b) => {
     const aTpl = getCharacterById(parseInstanceKey(a).templateId)!;
     const bTpl = getCharacterById(parseInstanceKey(b).templateId)!;
@@ -349,6 +353,8 @@ export function UpgradesPage() {
               onFilterChange={setFilter}
               universe={universe}
               onUniverseChange={setUniverse}
+              affinity={affinity}
+              onAffinityChange={setAffinity}
               sort={sort}
               onSortChange={setSort}
               universes={universeOptions}

@@ -9,8 +9,9 @@ import { RarityBadge, RankStars } from '@/components/ui/RarityBadge';
 import { Rarity, RARITY_CONFIG, calcCharDps, OwnedCharacter, CardEdition } from '@/types/game';
 import { formatNumber } from '@/lib/game/format';
 import { PageScroll, SectionHeader } from '@/components/ui/Page';
-import { CollectionFilters, COLLECTION_RARITY_ORDER, CollectionFilterMode, CollectionSortMode } from '@/components/ui/CollectionFilters';
+import { CollectionFilters, COLLECTION_RARITY_ORDER, CollectionFilterMode, CollectionAffinityMode, CollectionSortMode } from '@/components/ui/CollectionFilters';
 import { EDITION_CONFIG, makeInstanceKey } from '@/lib/game/editions';
+import { getAffinityForId, type Affinity } from '@/lib/game/affinities';
 
 const RARITY_ORDER: Rarity[] = COLLECTION_RARITY_ORDER;
 
@@ -29,13 +30,15 @@ interface CollectionEntry {
 const ALL_EDITIONS: CardEdition[] = ['base', 'gold', 'diamond'];
 
 export function CollectionPage() {
-  const { collection, collectionFilter, collectionUniverse, collectionSort, setCollectionFilters } = useGameStore();
+  const { collection, collectionFilter, collectionUniverse, collectionAffinity, collectionSort, setCollectionFilters } = useGameStore();
   const [view, setView] = useState<'characters' | 'equipment'>('characters');
   const filter = collectionFilter as CollectionFilterMode;
   const universe = collectionUniverse as string | 'all';
+  const affinity = collectionAffinity as CollectionAffinityMode;
   const sort = collectionSort as CollectionSortMode;
   const setFilter = (next: CollectionFilterMode) => setCollectionFilters({ filter: next });
   const setUniverse = (next: string | 'all') => setCollectionFilters({ universe: next });
+  const setAffinity = (next: CollectionAffinityMode) => setCollectionFilters({ affinity: next });
   const setSort = (next: CollectionSortMode) => setCollectionFilters({ sort: next });
 
   // Chaque template possédé se décline en autant d'entrées que d'éditions
@@ -67,14 +70,15 @@ export function CollectionPage() {
   const filtered = useMemo(() => {
     return allEntries.filter(e => {
       const isOwned = !!e.owned;
-      if (filter === 'owned')   return isOwned;
-      if (filter === 'missing') return !isOwned;
-      if (filter !== 'all')     return e.tpl.rarity === filter;
-      return true;
+      const matchesAffinity = affinity === 'all' ? true : getAffinityForId(e.tpl.id) === affinity;
+      if (filter === 'owned')   return isOwned && matchesAffinity;
+      if (filter === 'missing') return !isOwned && matchesAffinity;
+      if (filter !== 'all')     return e.tpl.rarity === filter && matchesAffinity;
+      return matchesAffinity;
     }).filter(e =>
       universe === 'all' ? true : e.tpl.universe === universe
     );
-  }, [allEntries, filter, universe]);
+  }, [allEntries, filter, universe, affinity]);
 
   // ── Tri ─────────────────────────────────────────────────────────────────
   const sorted = useMemo(() => {
@@ -197,6 +201,8 @@ export function CollectionPage() {
               onFilterChange={setFilter}
               universe={universe}
               onUniverseChange={setUniverse}
+              affinity={affinity}
+              onAffinityChange={setAffinity}
               sort={sort}
               onSortChange={setSort}
               universes={UNIVERSES}

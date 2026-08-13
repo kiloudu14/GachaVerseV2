@@ -1,10 +1,12 @@
 'use client';
 
+import { AFFINITY_CONFIG, AFFINITY_ORDER, type Affinity } from '@/lib/game/affinities';
 import { RARITY_CONFIG, type Rarity } from '@/types/game';
 
 export const COLLECTION_RARITY_ORDER: Rarity[] = ['C', 'U', 'R', 'E', 'L', 'M', 'S', 'CO', 'P', 'T'];
 
 export type CollectionFilterMode = Rarity | 'all' | 'owned' | 'missing';
+export type CollectionAffinityMode = Affinity | 'all';
 export type CollectionSortMode = 'rarity' | 'dps_desc' | 'dps_asc' | 'name';
 
 export const COLLECTION_SORT_LABELS: Record<CollectionSortMode, string> = {
@@ -19,6 +21,8 @@ export function CollectionFilters({
   onFilterChange,
   universe,
   onUniverseChange,
+  affinity,
+  onAffinityChange,
   sort,
   onSortChange,
   universes,
@@ -27,6 +31,8 @@ export function CollectionFilters({
   onFilterChange: (value: CollectionFilterMode) => void;
   universe: string | 'all';
   onUniverseChange: (value: string | 'all') => void;
+  affinity: CollectionAffinityMode;
+  onAffinityChange: (value: CollectionAffinityMode) => void;
   sort: CollectionSortMode;
   onSortChange: (value: CollectionSortMode) => void;
   universes: string[];
@@ -104,6 +110,48 @@ export function CollectionFilters({
             {u}
           </button>
         ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontFamily: 'var(--f-ui)', fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '1px', marginRight: '2px' }}>TYPE</span>
+        <button
+          onClick={() => onAffinityChange('all')}
+          style={{
+            padding: '5px 12px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontFamily: 'var(--f-ui)',
+            fontWeight: 700,
+            fontSize: '10px',
+            background: affinity === 'all' ? 'rgba(34,211,238,0.15)' : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${affinity === 'all' ? 'rgba(34,211,238,0.4)' : 'var(--border)'}`,
+            color: affinity === 'all' ? '#67e8f9' : 'var(--text-dim)',
+          }}
+        >
+          TOUS
+        </button>
+        {AFFINITY_ORDER.map(a => {
+          const c = AFFINITY_CONFIG[a];
+          return (
+            <button
+              key={a}
+              onClick={() => onAffinityChange(a)}
+              style={{
+                padding: '5px 12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontFamily: 'var(--f-ui)',
+                fontWeight: 700,
+                fontSize: '10px',
+                background: affinity === a ? `${c.color}18` : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${affinity === a ? `${c.color}66` : 'var(--border)'}`,
+                color: affinity === a ? c.color : 'var(--text-dim)',
+              }}
+            >
+              {c.label}
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ display: 'flex', gap: '6px', alignItems: 'center', paddingBottom: '6px' }}>

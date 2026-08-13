@@ -207,8 +207,9 @@ interface GameStore extends GameState {
   // Filtres de collection persistants entre les pages / onglets
   collectionFilter: string;
   collectionUniverse: string | 'all';
+  collectionAffinity: string;
   collectionSort: string;
-  setCollectionFilters: (patch: { filter?: string; universe?: string | 'all'; sort?: string }) => void;
+  setCollectionFilters: (patch: { filter?: string; universe?: string | 'all'; affinity?: string; sort?: string }) => void;
   // Boutique quotidienne (Orbe du Néant)
   dailyShop: { dayKey: string; characterIds: string[]; purchased: string[] };
   ensureDailyShop: () => void;
@@ -330,6 +331,7 @@ const makeInitial = () => ({
   dailyShop: { dayKey: '', characterIds: [] as string[], purchased: [] as string[] },
   collectionFilter: 'all',
   collectionUniverse: 'all',
+  collectionAffinity: 'all',
   collectionSort: 'rarity',
   starterPackClaimed: false,
   gamePaused: false,
@@ -344,6 +346,7 @@ export const useGameStore = create<GameStore>()(
       setCollectionFilters: (patch) => set((state) => ({
         collectionFilter: patch.filter ?? state.collectionFilter,
         collectionUniverse: patch.universe ?? state.collectionUniverse,
+        collectionAffinity: patch.affinity ?? state.collectionAffinity,
         collectionSort: patch.sort ?? state.collectionSort,
       })),
 
