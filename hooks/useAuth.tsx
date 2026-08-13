@@ -57,11 +57,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     if (!auth) throw new Error('Firebase non configuré');
     const cred = await signInWithEmailAndPassword(auth, email, password);
+    // IMPORTANT : ne JAMAIS bloquer la connexion si claimSession échoue —
+    // dans la logique actuelle de session.ts, un échec est TOUJOURS une
+    // erreur technique (permissions Firestore, réseau...), jamais un vrai
+    // refus volontaire. Avant ce correctif, la moindre erreur déconnectait
+    // l'utilisateur immédiatement avec un message trompeur ("déjà connecté
+    // ailleurs"), ce qui a fini par bloquer TOUT LE MONDE (admin compris).
     const ok = await claimSession(cred.user.uid);
-    if (!ok) {
-      await signOut(auth);
-      throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
-    }
+    if (!ok) console.warn('[Auth] claimSession a échoué (verrou de session non posé), connexion autorisée quand même.');
     // Log sign in
     logAudit(cred.user.uid, 'auth:signIn', { method: 'password', email });
   };
@@ -80,10 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
     const ok = await claimSession(cred.user.uid);
-    if (!ok) {
-      await signOut(auth);
-      throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
-    }
+    if (!ok) console.warn('[Auth] claimSession a échoué (verrou de session non posé), connexion autorisée quand même.');
     logAudit(cred.user.uid, 'auth:signIn', { method: 'google' });
   };
 
