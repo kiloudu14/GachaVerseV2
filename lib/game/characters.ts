@@ -114,7 +114,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
   ce('ichigo', 'Ichigo', 'M', 580, 'Bleach', [
     f('ichigo_base', 'Ichigo',          'ichigo', 100, 1),
-    f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 4.5),
+    f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 5.5),
     f('ichigo_evo2', 'Ichigo — Vasto',  'ichigo', 300, 14),
   ]),
   c('ouma',  'Kokichi Ouma', 'M', 1010, 'Danganronpa'),
@@ -420,7 +420,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
   ce('atsushi',           'Atsushi',              'S', 1300, 'Bungou Stray Dogs', [
     f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
-    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 4),
+    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 5.5),
   ]),
   ce('mao_mao_ap', 'Mao Mao', 'S', 1380, "Les Carnets de l'Apothicaire", [
     f('mao_mao_ap_base', 'Mao Mao',             'mao_mao_ap', 100, 1),
