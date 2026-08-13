@@ -204,6 +204,12 @@ interface GameStore extends GameState {
   equipItem: (templateId: string, slot: EquipmentSlot, equipmentId: string) => void;
   unequipItem: (templateId: string, slot: EquipmentSlot) => void;
   setLastEquipmentDrop: (id: string | null) => void;
+  // Filtres de collection persistants entre les pages / onglets
+  collectionFilter: string;
+  collectionUniverse: string | 'all';
+  collectionAffinity: string;
+  collectionSort: string;
+  setCollectionFilters: (patch: { filter?: string; universe?: string | 'all'; affinity?: string; sort?: string }) => void;
   // Boutique quotidienne (Orbe du Néant)
   dailyShop: { dayKey: string; characterIds: string[]; purchased: string[] };
   ensureDailyShop: () => void;
@@ -323,6 +329,10 @@ const makeInitial = () => ({
   dpsBoostEndsAt: 0, goldBoostEndsAt: 0,
   eventDpsMult: 1, eventDpsMultEndsAt: 0,
   dailyShop: { dayKey: '', characterIds: [] as string[], purchased: [] as string[] },
+  collectionFilter: 'all',
+  collectionUniverse: 'all',
+  collectionAffinity: 'all',
+  collectionSort: 'rarity',
   starterPackClaimed: false,
   gamePaused: false,
   savedAt: 0,
@@ -332,6 +342,13 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       ...makeInitial(),
+
+      setCollectionFilters: (patch) => set((state) => ({
+        collectionFilter: patch.filter ?? state.collectionFilter,
+        collectionUniverse: patch.universe ?? state.collectionUniverse,
+        collectionAffinity: patch.affinity ?? state.collectionAffinity,
+        collectionSort: patch.sort ?? state.collectionSort,
+      })),
 
       // ─── Combat ───────────────────────────────────────────────────────
       retreatFromBoss: () => {

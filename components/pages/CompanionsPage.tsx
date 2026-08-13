@@ -10,11 +10,12 @@ import { calcDpsWithSynergies, computeActiveSynergies } from '@/lib/game/synergi
 import { calcCharDps, EQUIPMENT_SLOT_LABELS, EQUIPMENT_SLOTS } from '@/types/game';
 import { formatNumber } from '@/lib/game/format';
 import { RARITY_CONFIG } from '@/types/game';
-import { getAffinityForId } from '@/lib/game/affinities';
+import { AFFINITY_ORDER, getAffinityForId } from '@/lib/game/affinities';
 import { AffinityBadge } from '@/components/ui/AffinityBadge';
 import { AffinityTooltip } from '@/components/ui/AffinityTooltip';
 import { EDITION_CONFIG } from '@/lib/game/editions';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { CollectionFilters, COLLECTION_RARITY_ORDER, type CollectionFilterMode, type CollectionSortMode } from '@/components/ui/CollectionFilters';
 
 const RARITY_PRIORITY: Record<string, number> = {
   T: 0, P: 1, CO: 2, S: 3, M: 4, L: 5, E: 6, R: 7, U: 8, C: 9,
@@ -32,15 +33,56 @@ export function CompanionsPage() {
     equipItem,
     unequipItem,
     recycleEquipment,
+    collectionFilter,
+    collectionUniverse,
+    collectionAffinity,
+    collectionSort,
+    setCollectionFilters,
   } = useGameStore();
 
   const [selSlot, setSelSlot] = useState<number | null>(null);
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
+  const filter = collectionFilter as CollectionFilterMode;
+  const universe = collectionUniverse as string | 'all';
+  const affinity = collectionAffinity as CollectionFilterMode extends never ? never : 'all' | ReturnType<typeof getAffinityForId>;
+  const sort = collectionSort as CollectionSortMode;
+  const setFilter = (next: CollectionFilterMode) => setCollectionFilters({ filter: next });
+  const setUniverse = (next: string | 'all') => setCollectionFilters({ universe: next });
+  const setAffinity = (next: 'all' | ReturnType<typeof getAffinityForId>) => setCollectionFilters({ affinity: next });
+  const setSort = (next: CollectionSortMode) => setCollectionFilters({ sort: next });
 
   const owned = Object.entries(collection).sort(([, a], [, b]) => {
     const aRarity = getCharacterById(a.templateId)?.rarity ?? 'C';
     const bRarity = getCharacterById(b.templateId)?.rarity ?? 'C';
     return RARITY_PRIORITY[aRarity] - RARITY_PRIORITY[bRarity];
+  });
+  const universeOptions = Array.from(new Set(Object.values(collection).map(c => getCharacterById(c.templateId)?.universe).filter(Boolean))) as string[];
+  const filteredCollection = [...owned].filter(([instanceKey, ownedChar]) => {
+    const tpl = getCharacterById(ownedChar.templateId);
+    if (!tpl) return false;
+    const matchesAffinity = affinity === 'all' ? true : getAffinityForId(tpl.id) === affinity;
+    if (filter === 'owned') return matchesAffinity;
+    if (filter === 'missing') return false;
+    if (filter !== 'all') return tpl.rarity === filter && matchesAffinity;
+    if (universe !== 'all' && tpl.universe !== universe) return false;
+    return matchesAffinity;
+  }).filter(([instanceKey, ownedChar]) => {
+    const tpl = getCharacterById(ownedChar.templateId);
+    if (!tpl) return false;
+    return universe === 'all' ? true : tpl.universe === universe;
+  }).sort(([, a], [, b]) => {
+    const aTpl = getCharacterById(a.templateId)!;
+    const bTpl = getCharacterById(b.templateId)!;
+    if (sort === 'rarity') {
+      return (RARITY_PRIORITY[bTpl.rarity] ?? 9) - (RARITY_PRIORITY[aTpl.rarity] ?? 9);
+    }
+    if (sort === 'dps_desc') {
+      return calcCharDps(bTpl, b) - calcCharDps(aTpl, a);
+    }
+    if (sort === 'dps_asc') {
+      return calcCharDps(aTpl, a) - calcCharDps(bTpl, b);
+    }
+    return aTpl.name.localeCompare(bTpl.name);
   });
   const ownedItems = Object.entries(inventory).filter(([, qty]) => qty > 0);
   const ownedEquipment = Object.entries(equipmentInventory).filter(([, qty]) => qty > 0);
@@ -411,11 +453,23 @@ export function CompanionsPage() {
           <div className="companion-section__header">
             <div className="companion-section__title" style={{ color: 'var(--cyan)' }}>
               <span className="companion-section__decor" style={{ background: 'linear-gradient(180deg,var(--cyan),#0ea5e9)' }} />
-              Collection ({owned.length})
+              Collection ({filteredCollection.length})
             </div>
           </div>
 
-          {owned.length === 0 ? (
+          <CollectionFilters
+            filter={filter}
+            onFilterChange={setFilter}
+            universe={universe}
+            onUniverseChange={setUniverse}
+            affinity={affinity}
+            onAffinityChange={setAffinity}
+            sort={sort}
+            onSortChange={setSort}
+            universes={universeOptions}
+          />
+
+          {filteredCollection.length === 0 ? (
             <div className="companion-empty">
               <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
               <div style={{ fontFamily: 'var(--f-title)', fontSize: 16, color: 'var(--text-dim)', marginBottom: 6 }}>Aucun allié invoqué</div>
@@ -423,7 +477,7 @@ export function CompanionsPage() {
             </div>
           ) : (
             <div className="companion-item-grid">
-              {owned.map(([instanceKey, ownedChar]) => {
+              {filteredCollection.map(([instanceKey, ownedChar]) => {
                 const tpl = getCharacterById(ownedChar.templateId);
                 if (!tpl) return null;
                 const cfg = RARITY_CONFIG[tpl.rarity];
