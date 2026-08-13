@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, bumpBossQuests } from '@/store/gameStore';
 import { useUltimateStore } from '@/store/ultimateStore';
 import { EVENT_BOSSES, rollEventDrop, getEventBossMaxHp, EventBossDef, DropResult } from '@/lib/game/eventBoss';
 import { getItemDef } from '@/lib/game/items';
@@ -241,11 +241,17 @@ function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void })
     if (hp <= 0 && !dead) {
       setDead(true);
       const result = rollEventDrop(boss.id);
-      useGameStore.setState(s => ({
-        totalBossKills: s.totalBossKills + 1,
-        ...(result.type === 'gems' ? { nekoGems: s.nekoGems + (result.qty ?? 0) } : {}),
-        ...(result.type === 'bossCrowns' ? { bossCrowns: s.bossCrowns + (result.qty ?? 0) } : {}),
-      }));
+      useGameStore.setState(s => {
+        const questUpdate = bumpBossQuests(s.quests, s.weeklyQuests, s.eventQuests);
+        return {
+          quests: questUpdate.quests,
+          weeklyQuests: questUpdate.weeklyQuests,
+          eventQuests: questUpdate.eventQuests,
+          totalBossKills: s.totalBossKills + 1,
+          ...(result.type === 'gems' ? { nekoGems: s.nekoGems + (result.qty ?? 0) } : {}),
+          ...(result.type === 'bossCrowns' ? { bossCrowns: s.bossCrowns + (result.qty ?? 0) } : {}),
+        };
+      });
       if (result.type === 'character' && result.id) useGameStore.getState().addToCollection(result.id);
       else if (result.type === 'item' && result.id) addItem(result.id, result.qty ?? 1);
       setTimeout(() => setDrop(result), 800);

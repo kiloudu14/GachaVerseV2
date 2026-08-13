@@ -1315,13 +1315,18 @@ type QuestState = { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[]
 // quelle que soit la source du gain (kill, offline, jackpot...). Sans ce
 // helper, ces quêtes restent bloquées à 0 puisqu'aucune autre logique ne les
 // met à jour ailleurs dans le store.
-// Incrémente les quêtes "vaincre X boss de palier" (jour/semaine) à chaque
-// mort de boss, progression ou re-farm. Sans ce helper, ces quêtes restaient
-// bloquées à 0 puisque rien d'autre ne les met à jour ailleurs dans le store.
-function bumpBossQuests(quests: Quest[], weeklyQuests: Quest[]): { quests: Quest[]; weeklyQuests: Quest[] } {
+// Incrémente les quêtes "vaincre X boss" (palier / semaine / événement) à chaque
+// mort de boss, progression ou re-farm. Les boss d'événement doivent passer par
+// ce helper pour être comptés comme des boss dans les quêtes et succés.
+export function bumpBossQuests(
+  quests: Quest[],
+  weeklyQuests: Quest[],
+  eventQuests: Quest[] = []
+): { quests: Quest[]; weeklyQuests: Quest[]; eventQuests: Quest[] } {
   return {
     quests: quests.map(q => q.id === 'd_boss_kill' && !q.done ? { ...q, current: Math.min(q.current + 1, q.target) } : q),
     weeklyQuests: weeklyQuests.map(q => q.id === 'w_boss_5' && !q.done ? { ...q, current: Math.min(q.current + 1, q.target) } : q),
+    eventQuests: eventQuests.map(q => q.id === 'e_boss_20' && !q.done ? { ...q, current: Math.min(q.current + 1, q.target) } : q),
   };
 }
 
@@ -1388,7 +1393,7 @@ function resolveEnemyDeath(state: GameState & QuestState): Partial<GameState & Q
     const crownGain    = isNewProgress ? 1 : 0;
     // Événement de victoire (source de vérité pour l'écran de victoire).
     const bossVictory = { palier: next, gems: passGems, coins: baseCoins, crowns: crownGain, at: Date.now() };
-    const bossQuestUpdate = bumpBossQuests(coinQuestUpdate.quests, coinQuestUpdate.weeklyQuests);
+    const bossQuestUpdate = bumpBossQuests(coinQuestUpdate.quests, coinQuestUpdate.weeklyQuests, eventQuests);
     // "Atteindre le palier X" : on fixe la progression au palier réellement
     // atteint (pas un simple +1), et seulement lors d'une vraie progression.
     const finalEventQuests = isNewProgress
