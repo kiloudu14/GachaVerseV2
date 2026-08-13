@@ -15,8 +15,8 @@ export interface EditionInfo {
 
 export const EDITION_CONFIG: Record<CardEdition, EditionInfo> = {
   base:    { label: 'Édition Standard', color: '#9ca3af', glow: '#6b7280', statMult: 1,   dropChancePct: 99.92 },
-  gold:    { label: 'Édition Or',       color: '#fbbf24', glow: '#f59e0b', statMult: 1.2, dropChancePct: 0.07 },
-  diamond: { label: 'Édition Diamant',  color: '#67e8f9', glow: '#22d3ee', statMult: 1.5, dropChancePct: 0.01 },
+  gold:    { label: 'Édition Or',       color: '#fbbf24', glow: '#f59e0b', statMult: 1.75, dropChancePct: 0.07 },
+  diamond: { label: 'Édition Diamant',  color: '#67e8f9', glow: '#22d3ee', statMult: 2.5, dropChancePct: 0.01 },
 };
 
 /** Tire une édition au hasard, pondérée par les chances ci-dessus. */
