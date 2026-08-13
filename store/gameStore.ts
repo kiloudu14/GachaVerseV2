@@ -1045,6 +1045,11 @@ export const useGameStore = create<GameStore>()(
       claimQuest: (id) => set(s => {
         const q = s.quests.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claim', { questId: id });
+        } catch {}
         return {
           quests: s.quests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems  + q.reward : s.nekoGems,
@@ -1089,6 +1094,11 @@ export const useGameStore = create<GameStore>()(
       claimWeeklyQuest: (id) => set(s => {
         const q = s.weeklyQuests?.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claimWeekly', { questId: id });
+        } catch {}
         return {
           weeklyQuests: s.weeklyQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
@@ -1100,6 +1110,11 @@ export const useGameStore = create<GameStore>()(
       claimEventQuest: (id) => set(s => {
         const q = s.eventQuests?.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claimEvent', { questId: id });
+        } catch {}
         return {
           eventQuests: s.eventQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
