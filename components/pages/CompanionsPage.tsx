@@ -6,7 +6,7 @@ import { RarityBadge, RankStars } from '@/components/ui/RarityBadge';
 import { getCharacterById, getCharFormName } from '@/lib/game/characters';
 import { getUltimateDef } from '@/lib/game/ultimates';
 import { ITEM_DEFS, getEquipmentDef } from '@/lib/game/items';
-import { computeActiveSynergies } from '@/lib/game/synergies';
+import { calcDpsWithSynergies, computeActiveSynergies } from '@/lib/game/synergies';
 import { calcCharDps, EQUIPMENT_SLOT_LABELS, EQUIPMENT_SLOTS } from '@/types/game';
 import { formatNumber } from '@/lib/game/format';
 import { RARITY_CONFIG } from '@/types/game';
@@ -49,25 +49,33 @@ export function CompanionsPage() {
   const activeSynergies = computeActiveSynergies(equippedTeam);
   const selectedSynergy = selectedTpl ? activeSynergies.find(s => s.def.universe === selectedTpl.universe) : null;
 
-  const totalDps = equippedTeam.reduce((sum, id) => {
-    const owned = id ? collection[id] : null;
-    if (!owned) return sum;
-    const tpl = getCharacterById(owned.templateId);
-    return tpl ? sum + calcCharDps(tpl, owned) : sum;
-  }, 0);
-
-  const selectedDps = selectedTpl && selectedCharacter ? calcCharDps(selectedTpl, selectedCharacter) : 0;
-  const selectedEquipMult = selectedCharacter ? (
-    Object.values(selectedCharacter.equippedItems ?? {}).reduce((mult, eqId) => {
+  const getEquipmentMultiplier = (ownedChar: typeof collection[string], tpl: ReturnType<typeof getCharacterById>) => {
+    if (!ownedChar || !tpl) return 1;
+    const weaponDef = getEquipmentDef(ownedChar.equippedItems?.weapon ?? '');
+    const weaponBonusMult = weaponDef?.bonusFor?.templateId === tpl.id ? weaponDef.bonusFor.multiplier : 1;
+    return Object.values(ownedChar.equippedItems ?? {}).reduce((mult, eqId) => {
       if (!eqId) return mult;
       const def = getEquipmentDef(eqId);
       return def ? mult * def.dpsMultiplier : mult;
-    }, 1) * (selectedTpl && selectedCharacter && selectedCharacter.equippedItems?.weapon
-      ? (getEquipmentDef(selectedCharacter.equippedItems.weapon)?.bonusFor?.templateId === selectedTpl.id
-        ? getEquipmentDef(selectedCharacter.equippedItems.weapon)!.bonusFor!.multiplier
-        : 1)
-      : 1)) : 1;
-  const selectedDpsWithEquip = Math.floor(selectedDps * selectedEquipMult);
+    }, 1) * weaponBonusMult;
+  };
+
+  const totalDps = equippedTeam.reduce((sum, id) => {
+    if (!id) return sum;
+    const owned = collection[id];
+    if (!owned) return sum;
+    const tpl = getCharacterById(owned.templateId);
+    if (!tpl) return sum;
+    const base = calcCharDps(tpl, owned);
+    const equippedMult = getEquipmentMultiplier(owned, tpl);
+    return sum + calcDpsWithSynergies(id, Math.floor(base * equippedMult), activeSynergies);
+  }, 0);
+
+  const selectedDps = selectedTpl && selectedCharacter ? calcCharDps(selectedTpl, selectedCharacter) : 0;
+  const selectedEquipMult = selectedCharacter && selectedTpl ? getEquipmentMultiplier(selectedCharacter, selectedTpl) : 1;
+  const selectedDpsWithEquip = selectedCharacter && selectedTpl && selectedCharacterId
+    ? calcDpsWithSynergies(selectedCharacterId, Math.floor(selectedDps * selectedEquipMult), activeSynergies)
+    : 0;
   const selectedUlt = selectedTpl ? getUltimateDef(selectedTpl.id) : null;
   const selectedAffinity = selectedTpl ? getAffinityForId(selectedTpl.id) : undefined;
 
