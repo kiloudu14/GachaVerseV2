@@ -103,6 +103,18 @@ function GoldUpgradeCard() {
   );
 }
 
+// ── Détermine la source d'obtention de l'item d'évolution ─────────────────
+function getItemSource(itemId: string): string {
+  const jinwooItems = ['elixir_vie', 'manteau_ombre', 'beru'];
+  const arthurItems = ['cristal_ether', 'epee_ether', 'sylvia'];
+  const eminenceItems = ['masque_cid', 'epee_slime', 'slime_eminence'];
+  
+  if (jinwooItems.includes(itemId)) return 'Monarque des Ombres';
+  if (arthurItems.includes(itemId)) return 'Arthur Leywin';
+  if (eminenceItems.includes(itemId)) return 'Éminence de l\'Ombre';
+  return 'Événement';
+}
+
 // ── Carte personnage avec PP ──────────────────────────────────────────────
 function CharCard({ templateId }: { templateId: string }) {
   const { collection, pixelCoins, levelUpCharacter, evolveCharacter, inventory } = useGameStore();
@@ -163,7 +175,7 @@ function CharCard({ templateId }: { templateId: string }) {
         {atCap && !canEvo_ && reqItem && !hasItem && (
           <div style={{ padding:'7px 10px', background:'rgba(168,85,247,0.08)', border:'1px solid rgba(168,85,247,0.25)', borderRadius:8, display:'flex', alignItems:'center', gap:8 }}>
             <span style={{ fontSize:14 }}>{reqItem.icon}</span>
-            <span style={{ fontFamily:'var(--f-ui)', fontSize:11, color:'#c084fc' }}>Requiert : <b>{reqItem.name}</b> (Monarque des Ombres)</span>
+            <span style={{ fontFamily:'var(--f-ui)', fontSize:11, color:'#c084fc' }}>Requiert : <b>{reqItem.name}</b> ({getItemSource(reqItem.id)})</span>
           </div>
         )}
         {canEvo_ && (
