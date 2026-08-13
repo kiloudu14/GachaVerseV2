@@ -554,12 +554,11 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
 
   // HP : 50 × 1.12^(global-1)
   const baseHp = Math.floor(50 * Math.pow(1.12, global - 1));
-  // Boss uniquement, à partir du palier 20 : +15% de PV supplémentaires par
-  // palier au-delà de 20, pour compenser la puissance cumulée (niveau, rang,
-  // équipement, synergies...) qui grandit plus vite que la courbe de base sur
-  // la fin de partie.
-  const lateBossExtra = (isBoss && palier >= 20) ? Math.pow(1.15, palier - 19) : 1;
-  const maxHp  = Math.floor(baseHp * hpMult * lateBossExtra);
+  // À partir du palier 15 : -8% de PV supplémentaires par palier, pour TOUS
+  // les ennemis (mobs et boss) — la courbe de base devenait trop lourde à
+  // ce stade du jeu par rapport à la puissance réelle des joueurs.
+  const lateGameHpReduction = palier >= 15 ? Math.pow(0.92, palier - 14) : 1;
+  const maxHp  = Math.floor(baseHp * hpMult * lateGameHpReduction);
 
   // Coins : base × growth^(global-1), boss × bossMult
   // On applique en plus un scale global pour calibrer la vitesse d'obtention des coins.
