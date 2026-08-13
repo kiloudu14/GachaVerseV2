@@ -1,5 +1,7 @@
 import { doc, getDoc, updateDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from './config';
+import { getCharacterById } from '@/lib/game/characters';
+import { makeInstanceKey, CardEdition } from '@/lib/game/editions';
 
 export interface PlayerLookup {
   uid: string;
@@ -13,6 +15,16 @@ export interface PlayerSaveSummary {
   bossCrowns: number;
   maxPalierReached: number;
   lastSaved: number | null;
+}
+
+// Résumé léger d'un personnage possédé, pour l'affichage dans l'outil admin.
+export interface OwnedCharacterSummary {
+  instanceKey: string;
+  templateId: string;
+  name: string;      // nom lisible, résolu via CHARACTER_POOL
+  edition: string;
+  level: number;
+  rank: number;
 }
 
 /**
@@ -91,6 +103,97 @@ export async function correctPlayerBalance(
     return true;
   } catch (e) {
     console.error('[AdminTools] correctPlayerBalance:', e);
+    return false;
+  }
+}
+
+// ── Gestion de la collection de personnages ────────────────────────────────
+
+/** Liste tous les personnages possédés par le joueur, avec un nom lisible. */
+export async function getPlayerCollection(uid: string): Promise<OwnedCharacterSummary[]> {
+  if (!db) return [];
+  try {
+    const snap = await getDoc(doc(db, 'saves', uid));
+    if (!snap.exists()) return [];
+    const raw = (snap.data().collection ?? {}) as Record<string, { templateId: string; edition?: string; level: number; rank: number }>;
+    return Object.entries(raw).map(([instanceKey, c]) => ({
+      instanceKey,
+      templateId: c.templateId,
+      name: getCharacterById(c.templateId)?.name ?? c.templateId,
+      edition: c.edition ?? 'base',
+      level: c.level ?? 1,
+      rank: c.rank ?? 1,
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  } catch (e) {
+    console.error('[AdminTools] getPlayerCollection:', e);
+    return [];
+  }
+}
+
+/** Retire un personnage (une édition précise) de la collection d'un joueur. */
+export async function removePlayerCharacter(uid: string, instanceKey: string): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const snap = await getDoc(doc(db, 'saves', uid));
+    if (!snap.exists()) return false;
+    const collectionData = { ...(snap.data().collection ?? {}) };
+    delete collectionData[instanceKey];
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    return true;
+  } catch (e) {
+    console.error('[AdminTools] removePlayerCharacter:', e);
+    return false;
+  }
+}
+
+/**
+ * Ajoute (ou remplace si déjà possédé) un personnage à la collection d'un
+ * joueur, avec le niveau/rang donnés. Le templateId est vérifié contre la
+ * vraie liste des personnages du jeu pour éviter de créer une entrée invalide.
+ */
+export async function addPlayerCharacter(
+  uid: string, templateId: string, edition: CardEdition, level: number, rank: number
+): Promise<{ ok: boolean; error?: string }> {
+  if (!db) return { ok: false, error: 'Firebase non configuré' };
+  const tpl = getCharacterById(templateId);
+  if (!tpl) return { ok: false, error: `Personnage "${templateId}" introuvable — vérifie l'id exact` };
+  try {
+    const snap = await getDoc(doc(db, 'saves', uid));
+    if (!snap.exists()) return { ok: false, error: 'Sauvegarde introuvable pour ce joueur' };
+    const instanceKey = makeInstanceKey(templateId, edition);
+    const collectionData = { ...(snap.data().collection ?? {}) };
+    const existing = collectionData[instanceKey];
+    collectionData[instanceKey] = {
+      templateId,
+      edition,
+      level: Math.max(1, Math.min(999, Math.floor(level))),
+      rank: Math.max(1, Math.min(7, Math.floor(rank))),
+      copies: existing?.copies ?? 1,
+      currentForm: existing?.currentForm ?? 0,
+      xp: existing?.xp ?? 0,
+      equippedItems: existing?.equippedItems,
+    };
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    return { ok: true };
+  } catch (e) {
+    console.error('[AdminTools] addPlayerCharacter:', e);
+    return { ok: false, error: 'Erreur lors de l\'écriture' };
+  }
+}
+
+/** Change juste le niveau d'un personnage déjà possédé (sans toucher au reste). */
+export async function setPlayerCharacterLevel(uid: string, instanceKey: string, newLevel: number): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const snap = await getDoc(doc(db, 'saves', uid));
+    if (!snap.exists()) return false;
+    const collectionData = { ...(snap.data().collection ?? {}) };
+    if (!collectionData[instanceKey]) return false;
+    collectionData[instanceKey] = { ...collectionData[instanceKey], level: Math.max(1, Math.min(999, Math.floor(newLevel))) };
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    return true;
+  } catch (e) {
+    console.error('[AdminTools] setPlayerCharacterLevel:', e);
     return false;
   }
 }

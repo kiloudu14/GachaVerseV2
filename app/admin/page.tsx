@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/layout/AuthModal';
 import { getPendingRequests, getApprovedUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
-import { findPlayer, getPlayerSave, correctPlayerBalance, PlayerLookup, PlayerSaveSummary } from '@/lib/firebase/adminTools';
+import { findPlayer, getPlayerSave, correctPlayerBalance, getPlayerCollection, removePlayerCharacter, addPlayerCharacter, setPlayerCharacterLevel, PlayerLookup, PlayerSaveSummary, OwnedCharacterSummary } from '@/lib/firebase/adminTools';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
@@ -34,9 +34,49 @@ export default function AdminPage() {
   const [correctBusy, setCorrectBusy] = useState(false);
   const [correctMsg, setCorrectMsg]   = useState<string | null>(null);
 
+  // ── Gestion de la collection de personnages ────────────────────────────
+  const [playerChars, setPlayerChars] = useState<OwnedCharacterSummary[]>([]);
+  const [charBusy, setCharBusy]       = useState<string | null>(null); // instanceKey en cours d'action
+  const [levelEdits, setLevelEdits]   = useState<Record<string, string>>({});
+  const [newCharId, setNewCharId]     = useState('');
+  const [newCharEdition, setNewCharEdition] = useState<'base'|'gold'|'diamond'>('base');
+  const [newCharLevel, setNewCharLevel]     = useState('1');
+  const [newCharRank, setNewCharRank]       = useState('1');
+  const [addCharMsg, setAddCharMsg]   = useState<string | null>(null);
+  const [addCharBusy, setAddCharBusy] = useState(false);
+
+  const loadPlayerChars = async (uid: string) => setPlayerChars(await getPlayerCollection(uid));
+
+  const handleRemoveChar = async (instanceKey: string) => {
+    if (!foundPlayer) return;
+    setCharBusy(instanceKey);
+    const ok = await removePlayerCharacter(foundPlayer.uid, instanceKey);
+    if (ok) await loadPlayerChars(foundPlayer.uid);
+    setCharBusy(null);
+  };
+
+  const handleSetLevel = async (instanceKey: string) => {
+    if (!foundPlayer) return;
+    const val = Number(levelEdits[instanceKey]);
+    if (!val || val < 1) return;
+    setCharBusy(instanceKey);
+    const ok = await setPlayerCharacterLevel(foundPlayer.uid, instanceKey, val);
+    if (ok) await loadPlayerChars(foundPlayer.uid);
+    setCharBusy(null);
+  };
+
+  const handleAddChar = async () => {
+    if (!foundPlayer || !newCharId.trim()) return;
+    setAddCharBusy(true); setAddCharMsg(null);
+    const res = await addPlayerCharacter(foundPlayer.uid, newCharId.trim(), newCharEdition, Number(newCharLevel) || 1, Number(newCharRank) || 1);
+    setAddCharMsg(res.ok ? '✅ Personnage ajouté.' : `❌ ${res.error}`);
+    if (res.ok) { await loadPlayerChars(foundPlayer.uid); setNewCharId(''); }
+    setAddCharBusy(false);
+  };
+
   const handleSearchPlayer = async () => {
     setSearchStatus('searching');
-    setFoundPlayer(null); setPlayerSave(null); setCorrectMsg(null);
+    setFoundPlayer(null); setPlayerSave(null); setCorrectMsg(null); setPlayerChars([]); setAddCharMsg(null);
     const p = await findPlayer(searchQuery);
     if (!p) { setSearchStatus('notfound'); return; }
     setFoundPlayer(p);
@@ -45,6 +85,7 @@ export default function AdminPage() {
     setEditCoins(save ? String(save.pixelCoins) : '');
     setEditGems(save ? String(save.nekoGems) : '');
     setEditCrowns(save ? String(save.bossCrowns) : '');
+    await loadPlayerChars(p.uid);
     setSearchStatus('idle');
   };
 
@@ -239,6 +280,61 @@ export default function AdminPage() {
                   {correctBusy ? 'Correction en cours…' : '✅ Appliquer la correction'}
                 </button>
                 {correctMsg && <div style={{ marginTop: 10, fontSize: 12, color: correctMsg.startsWith('✅') ? '#4ade80' : '#f87171' }}>{correctMsg}</div>}
+
+                {/* ── Gestion de la collection de personnages ────────────── */}
+                <div style={{ marginTop: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: 14, marginBottom: 12 }}>
+                    Personnages possédés ({playerChars.length})
+                  </div>
+
+                  <div style={{ maxHeight: 320, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 18 }}>
+                    {playerChars.length === 0 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Aucun personnage.</div>}
+                    {playerChars.map(c => (
+                      <div key={c.instanceKey} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', fontSize: 12 }}>
+                        <span style={{ color: '#fff', fontWeight: 700, minWidth: 130 }}>{c.name}</span>
+                        <span style={{ color: c.edition === 'diamond' ? '#67e8f9' : c.edition === 'gold' ? '#fbbf24' : 'rgba(255,255,255,0.4)', minWidth: 60 }}>
+                          {c.edition === 'base' ? '' : c.edition === 'gold' ? '✨ Or' : '💎 Diamant'}
+                        </span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)', minWidth: 40 }}>{c.rank}★</span>
+                        <input
+                          type="number"
+                          defaultValue={c.level}
+                          onChange={e => setLevelEdits(s => ({ ...s, [c.instanceKey]: e.target.value }))}
+                          style={{ width: 70, padding: '5px 8px', borderRadius: 6, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12 }}
+                        />
+                        <button onClick={() => handleSetLevel(c.instanceKey)} disabled={charBusy === c.instanceKey}
+                          style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.4)', color: '#60a5fa', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
+                          Niveau
+                        </button>
+                        <button onClick={() => handleRemoveChar(c.instanceKey)} disabled={charBusy === c.instanceKey}
+                          style={{ padding: '5px 10px', borderRadius: 6, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171', cursor: 'pointer', fontSize: 11, fontWeight: 700, marginLeft: 'auto' }}>
+                          {charBusy === c.instanceKey ? '...' : 'Retirer'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Ajouter un personnage</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <input value={newCharId} onChange={e => setNewCharId(e.target.value)} placeholder="id exact (ex: goku)"
+                      style={{ flex: '1 1 140px', padding: '8px 10px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12 }} />
+                    <select value={newCharEdition} onChange={e => setNewCharEdition(e.target.value as 'base'|'gold'|'diamond')}
+                      style={{ padding: '8px 10px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12 }}>
+                      <option value="base">Base</option>
+                      <option value="gold">✨ Or</option>
+                      <option value="diamond">💎 Diamant</option>
+                    </select>
+                    <input value={newCharLevel} onChange={e => setNewCharLevel(e.target.value)} type="number" placeholder="Niveau"
+                      style={{ width: 80, padding: '8px 10px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12 }} />
+                    <input value={newCharRank} onChange={e => setNewCharRank(e.target.value)} type="number" min={1} max={7} placeholder="Rang"
+                      style={{ width: 70, padding: '8px 10px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12 }} />
+                    <button onClick={handleAddChar} disabled={addCharBusy || !newCharId.trim()}
+                      style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(139,92,246,0.18)', border: '1px solid #8b5cf6', color: '#a78bfa', cursor: 'pointer', fontWeight: 700, fontSize: 12 }}>
+                      {addCharBusy ? '...' : '+ Ajouter'}
+                    </button>
+                  </div>
+                  {addCharMsg && <div style={{ marginTop: 8, fontSize: 12, color: addCharMsg.startsWith('✅') ? '#4ade80' : '#f87171' }}>{addCharMsg}</div>}
+                </div>
               </div>
             )}
           </>
