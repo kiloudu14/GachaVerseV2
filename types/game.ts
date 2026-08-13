@@ -24,18 +24,17 @@ export function defaultEquippedItems(): EquippedItems {
 
 export const RARITY_CONFIG: Record<Rarity, {
   label: string; color: string; glow: string; chance: number; dpsMultiplier: number;
-  canEvolve: boolean;
 }> = {
-  C:  { label:'Commun',      color:'#9ca3af', glow:'#9ca3af', chance:50.0, dpsMultiplier:1,    canEvolve:false },
-  U:  { label:'Uncommun',    color:'#86efac', glow:'#22c55e', chance:20.0, dpsMultiplier:1.8,  canEvolve:false },
-  R:  { label:'Rare',        color:'#60a5fa', glow:'#3b82f6', chance:12.5, dpsMultiplier:3,    canEvolve:true  },  // ← canEvolve true (Pokémon)
-  E:  { label:'Épique',      color:'#c084fc', glow:'#a855f7', chance:8.0,  dpsMultiplier:7,    canEvolve:false },
-  L:  { label:'Légendaire',  color:'#fbbf24', glow:'#f59e0b', chance:4.5,  dpsMultiplier:15,   canEvolve:true  },
-  M:  { label:'Mythique',    color:'#f87171', glow:'#ef4444', chance:2.5,  dpsMultiplier:40,   canEvolve:true  },
-  S:  { label:'Stellaire',   color:'#ffffff', glow:'#fbbf24', chance:1.2,  dpsMultiplier:100,  canEvolve:true  },
-  CO: { label:'Cosmique',    color:'#34d399', glow:'#10b981', chance:0.8,  dpsMultiplier:300,  canEvolve:true  },
-  P:  { label:'Primordial',  color:'#ff6b35', glow:'#ff4500', chance:0.3,  dpsMultiplier:800,  canEvolve:true  },  // ← nouvelle rareté
-  T:  { label:'Transcendant',color:'#e879f9', glow:'#d946ef', chance:0.2,  dpsMultiplier:2000, canEvolve:true  },
+  C:  { label:'Commun',      color:'#9ca3af', glow:'#9ca3af', chance:50.0, dpsMultiplier:1,    },
+  U:  { label:'Uncommun',    color:'#86efac', glow:'#22c55e', chance:20.0, dpsMultiplier:1.8,  },
+  R:  { label:'Rare',        color:'#60a5fa', glow:'#3b82f6', chance:12.5, dpsMultiplier:3,    },
+  E:  { label:'Épique',      color:'#c084fc', glow:'#a855f7', chance:8.0,  dpsMultiplier:7,    },
+  L:  { label:'Légendaire',  color:'#fbbf24', glow:'#f59e0b', chance:4.5,  dpsMultiplier:15,   },
+  M:  { label:'Mythique',    color:'#f87171', glow:'#ef4444', chance:2.5,  dpsMultiplier:40,   },
+  S:  { label:'Stellaire',   color:'#ffffff', glow:'#fbbf24', chance:1.2,  dpsMultiplier:100,  },
+  CO: { label:'Cosmique',    color:'#34d399', glow:'#10b981', chance:0.8,  dpsMultiplier:300,  },
+  P:  { label:'Primordial',  color:'#ff6b35', glow:'#ff4500', chance:0.3,  dpsMultiplier:800,  },
+  T:  { label:'Transcendant',color:'#e879f9', glow:'#d946ef', chance:0.2,  dpsMultiplier:2000, },
 };
 
 // ── Forme d'évolution d'un personnage ─────────────────────────────────────
@@ -92,7 +91,6 @@ export function getLevelCap(character: CharacterTemplate, formIndex: number): nu
 }
 
 export function canEvolve(character: CharacterTemplate, owned: OwnedCharacter, inventory: Record<string, number> = {}): boolean {
-  if (!RARITY_CONFIG[character.rarity].canEvolve) return false;
   if (!character.forms || character.forms.length === 0) return false;
   const cap = getLevelCap(character, owned.currentForm);
   if (owned.level < cap) return false;
