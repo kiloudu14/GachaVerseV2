@@ -244,8 +244,8 @@ export const ULTIMATE_DEFS: Record<string, UltimateDef> = {
   },
   ichigo: {
     templateId:'ichigo', name:'Bankai', duration:1, cooldown:360,
-    description:'Envoie une attaque à 700% de son propre DPS',
-    effect:{ instantDamagePctSelfDps:700 }, animDuration:2400,     // ← nerfé : était 1000%
+    description:'Envoie une attaque à 1200% de son propre DPS',
+    effect:{ instantDamagePctSelfDps:1200 }, animDuration:2400,     // ← nerfé : était 1000%
   },
   ouma: {
     templateId:'ouma', name:'Mensonge', duration:10, cooldown:360,

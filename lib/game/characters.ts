@@ -110,7 +110,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   // ── MYTHIQUES ────────────────────────────────────────────────────────────
   ce('ren_m', 'Ren', 'M', 550, 'Persona 5', [
     f('ren_m_base', 'Ren',   'ren_m', 100, 1),
-    f('ren_m_evo1', 'Joker', 'ren_m', 200, 6),
+    f('ren_m_evo1', 'Joker', 'ren_m', 200, 7),
   ]),
   ce('ichigo', 'Ichigo', 'M', 580, 'Bleach', [
     f('ichigo_base', 'Ichigo',          'ichigo', 100, 1),
@@ -543,7 +543,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
   ce('ouchuu', 'Ouchuu', 'P', 14000, "Chill&Cool", [
     f('ouchuu_base',     'Ouchuu',               'ouchuu', 100, 1),
-    f('ouchuu_dep',      'Ouchuu Dépression Max','ouchuu', 200, 8),
+    f('ouchuu_dep',      'Ouchuu Dépression Max','ouchuu', 200, 10),
   ]),
 
   // ── TRANSCENDANTS V2 ────────────────────────────────────────────────────
