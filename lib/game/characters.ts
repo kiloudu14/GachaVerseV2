@@ -420,7 +420,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
   ce('atsushi',           'Atsushi',              'S', 1300, 'Bungou Stray Dogs', [
     f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
-    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 4),
+    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 5.5),
   ]),
   ce('mao_mao_ap', 'Mao Mao', 'S', 1380, "Les Carnets de l'Apothicaire", [
     f('mao_mao_ap_base', 'Mao Mao',             'mao_mao_ap', 100, 1),
