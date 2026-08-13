@@ -114,7 +114,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
   ce('ichigo', 'Ichigo', 'M', 580, 'Bleach', [
     f('ichigo_base', 'Ichigo',          'ichigo', 100, 1),
-    f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 4.5),
+    f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 5.5),
     f('ichigo_evo2', 'Ichigo — Vasto',  'ichigo', 300, 14),
   ]),
   c('ouma',  'Kokichi Ouma', 'M', 1010, 'Danganronpa'),
