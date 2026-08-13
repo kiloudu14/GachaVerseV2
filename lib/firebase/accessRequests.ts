@@ -24,6 +24,35 @@ export async function createAccessRequest(
   });
 }
 
+/**
+ * S'assure qu'une fiche existe dans "users" pour ce compte — sans l'écraser
+ * si elle existe déjà. Nécessaire pour la connexion Google (et tout autre
+ * flux qui ne passe pas par signUp/createAccessRequest) : sans ça, ces
+ * comptes n'ont jamais de fiche et n'apparaissent jamais dans le panel admin
+ * ("Tous les comptes"). Appelée à chaque connexion, elle rattrape aussi les
+ * comptes existants qui n'auraient pas encore de fiche.
+ */
+export async function ensureUserDoc(
+  uid: string, email: string, username: string
+): Promise<void> {
+  if (!db) return;
+  try {
+    const ref = doc(db, 'users', uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) return; // déjà une fiche, on n'y touche pas
+    await setDoc(ref, {
+      uid,
+      email: email || '',
+      username: username || '(pseudo inconnu)',
+      discordUsername: '',
+      approved: true,
+      createdAt: Date.now(),
+    });
+  } catch (e) {
+    console.error('[Access] ensureUserDoc:', e);
+  }
+}
+
 /** Le compte est-il validé et peut-il jouer ? */
 export async function isApproved(uid: string): Promise<boolean> {
   if (!db) return true; // pas de Firebase configuré : ne bloque rien
