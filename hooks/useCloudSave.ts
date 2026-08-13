@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import { useGameStore } from '@/store/gameStore';
 import { saveGameToFirestore, loadGameFromFirestore } from '@/lib/firebase/saveGame';
 import { updatePlayerScore } from '@/lib/firebase/leaderboard';
@@ -138,6 +140,7 @@ async function saveToFirebase(userId: string) {
 export function useCloudSave(userId: string | null) {
   const loadedRef = useRef(false);
   const userIdRef = useRef<string | null>(null);
+  const lastCorrectionRef = useRef(0);
 
   // Chargement au login
   useEffect(() => {
@@ -146,6 +149,31 @@ export function useCloudSave(userId: string | null) {
     userIdRef.current = userId;
     loadedRef.current = false;
     loadAndApply(userId).finally(() => { loadedRef.current = true; });
+  }, [userId]);
+
+  // Écoute EN DIRECT les corrections admin (solde rééquilibré) pendant que
+  // le joueur est connecté — sans ça, une correction faite pendant que le
+  // joueur est en train de jouer serait écrasée par son propre autosave
+  // avant même qu'il ne se reconnecte (voir correctPlayerBalance).
+  useEffect(() => {
+    if (!userId || !db) return;
+    const ref = doc(db, 'saves', userId);
+    const unsub = onSnapshot(ref, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data() as Record<string, unknown>;
+      const correctionAt = (data.adminCorrectionAt as number) ?? 0;
+      if (!correctionAt || correctionAt <= lastCorrectionRef.current) return;
+      lastCorrectionRef.current = correctionAt;
+      // Ignore la toute première lecture au montage (c'est juste l'état déjà
+      // chargé par loadAndApply, pas une nouvelle correction en direct).
+      if (!loadedRef.current) return;
+      const patch: Record<string, unknown> = { savedAt: Date.now() };
+      if (typeof data.pixelCoins === 'number') patch.pixelCoins = data.pixelCoins;
+      if (typeof data.nekoGems   === 'number') patch.nekoGems   = data.nekoGems;
+      if (typeof data.bossCrowns === 'number') patch.bossCrowns = data.bossCrowns;
+      useGameStore.setState(patch as Parameters<typeof useGameStore.setState>[0]);
+    });
+    return unsub;
   }, [userId]);
 
   // localStorage toutes les 30s — indépendant du quota Firebase

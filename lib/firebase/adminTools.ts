@@ -89,6 +89,13 @@ export async function getPlayerSave(uid: string): Promise<PlayerSaveSummary | nu
  * lastSaved à MAINTENANT — indispensable pour que la correction ne soit pas
  * écrasée par l'ancienne sauvegarde locale (localStorage) du joueur à sa
  * prochaine connexion (le jeu charge toujours la version la plus récente).
+ *
+ * `adminCorrectionAt` est un signal séparé écouté EN DIRECT par le client du
+ * joueur (voir useCloudSave.ts) : si le joueur est déjà connecté et en train
+ * de jouer au moment de la correction, son propre autosave (toutes les 30s
+ * en local / 10min sur Firebase) écraserait sinon la correction avant même
+ * qu'il ne se reconnecte. Ce signal permet d'appliquer la correction tout de
+ * suite dans son état de jeu en cours, sans attendre un rechargement.
  */
 export async function correctPlayerBalance(
   uid: string,
@@ -99,6 +106,7 @@ export async function correctPlayerBalance(
     await updateDoc(doc(db, 'saves', uid), {
       ...updates,
       lastSaved: Date.now(),
+      adminCorrectionAt: Date.now(),
     });
     return true;
   } catch (e) {
