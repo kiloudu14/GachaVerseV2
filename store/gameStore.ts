@@ -68,14 +68,14 @@ const EVENT_QUESTS: Omit<Quest,'current'|'done'>[] = [
 // Coût et multiplicateur du Coffre d'Or — partagés entre upgradeGold() et resolveEnemyDeath()
 // 8 niveaux, multiplicateur max ×5 (était ×2 en 6 niveaux)
 export const GOLD_UPGRADE_COSTS = [
-  4_000,       // lv1
-  20_000,      // lv2
-  80_000,      // lv3
-  300_000,     // lv4
-  800_000,     // lv5
-  3_000_000,   // lv6
-  12_000_000,  // lv7
-  50_000_000,  // lv8
+  6_000,       // lv1 (≈×1.5)
+  30_000,      // lv2
+  120_000,     // lv3
+  450_000,     // lv4
+  1_200_000,   // lv5
+  4_500_000,   // lv6
+  18_000_000,  // lv7
+  75_000_000,  // lv8
 ];
 export const GOLD_MULTIPLIERS = [1, 1.25, 1.55, 1.90, 2.35, 2.90, 3.75, 4.50, 5.00];
 
@@ -209,6 +209,8 @@ interface GameStore extends GameState {
   setGamePaused: (v: boolean) => void;
   // Timestamp de la dernière sauvegarde locale (anti-rollback)
   savedAt: number;
+  // Flag to temporarily suppress toasts/notifications during state restore
+  suppressToasts: boolean;
   // Combat
   clickEnemy: () => ClickResult;
   retreatFromBoss: () => void;
@@ -299,6 +301,8 @@ const makeInitial = () => ({
   weeklyQuestsDayKey: getThisWeekKey(),
   eventQuests: EVENT_QUESTS.map(q => ({ ...q, current: 0, done: false })),
   musicVolume: 0.5, musicMuted: false, eventMusicActive: false,
+  // Flag to temporarily suppress toasts/notifications during state restore
+  suppressToasts: false,
   bossCrowns: 0, voidOrbs: 0,
   inventory: {} as Record<string, number>,
   equipmentInventory: {} as Record<string, number>,
@@ -1043,6 +1047,11 @@ export const useGameStore = create<GameStore>()(
       claimQuest: (id) => set(s => {
         const q = s.quests.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claim', { questId: id });
+        } catch {}
         return {
           quests: s.quests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems  + q.reward : s.nekoGems,
@@ -1087,6 +1096,11 @@ export const useGameStore = create<GameStore>()(
       claimWeeklyQuest: (id) => set(s => {
         const q = s.weeklyQuests?.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claimWeekly', { questId: id });
+        } catch {}
         return {
           weeklyQuests: s.weeklyQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
@@ -1098,6 +1112,11 @@ export const useGameStore = create<GameStore>()(
       claimEventQuest: (id) => set(s => {
         const q = s.eventQuests?.find(q => q.id === id);
         if (!q || q.current < q.target || q.done) return {};
+        try {
+          const { logAudit } = require('@/lib/firebase/audit');
+          const uid = require('@/lib/firebase/config').auth?.currentUser?.uid ?? null;
+          logAudit(uid, 'quest:claimEvent', { questId: id });
+        } catch {}
         return {
           eventQuests: s.eventQuests.map(q2 => q2.id===id ? { ...q2, done:true } : q2),
           nekoGems:   q.rewardType==='gems'  ? s.nekoGems   + q.reward : s.nekoGems,
@@ -1237,6 +1256,7 @@ export const useGameStore = create<GameStore>()(
             pixelCoins: state.pixelCoins + coins,
             nekoGems:   state.nekoGems + gems,
             lastActiveAt: now,
+            savedAt: now,
             lastOfflineGain: gain,
             quests: cq.quests, weeklyQuests: cq.weeklyQuests,
           };

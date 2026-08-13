@@ -270,7 +270,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   c('panda_tekken',      'Panda',                'E', 65,  'Tekken'),
   ce('margith', 'Margith', 'E', 70, 'Elden Ring', [
     f('margith_base',    'Margith',              'margith', 100, 1),
-    f('margith_p2',      'Margith P2',           'margith', 200, 3.5),
+    f('margith_p2',      'Margith P2',           'margith', 200, 5),
   ]),
 
   // ── LÉGENDAIRES V2 ──────────────────────────────────────────────────────
@@ -418,7 +418,10 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('alice_sao_armor', 'Armure Légendaire',    'alice_sao', 200, 4.5),
     f('alice_sao_max',   'Puissance Maximale',   'alice_sao', 300, 11),
   ]),
-  c('atsushi',           'Atsushi',              'S', 1300, 'Bungou Stray Dogs'),
+  ce('atsushi',           'Atsushi',              'S', 1300, 'Bungou Stray Dogs', [
+    f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
+    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 4),
+  ]),
   ce('mao_mao_ap', 'Mao Mao', 'S', 1380, "Les Carnets de l'Apothicaire", [
     f('mao_mao_ap_base', 'Mao Mao',             'mao_mao_ap', 100, 1),
     f('mao_mao_ap_maqui','Maquillage',          'mao_mao_ap', 200, 5),

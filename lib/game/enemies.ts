@@ -556,10 +556,17 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
   const baseHp = Math.floor(50 * Math.pow(1.12, global - 1));
   const maxHp  = Math.floor(baseHp * hpMult);
 
-  // Coins : 60 × 1.13^(global-1), boss ×12
-  const pixelCoins = isBoss
-    ? Math.floor(60 * Math.pow(1.13, global - 1) * 12)
-    : Math.floor(60 * Math.pow(1.13, global - 1));
+  // Coins : base × growth^(global-1), boss × bossMult
+  // On applique en plus un scale global pour calibrer la vitesse d'obtention des coins.
+  const COIN_BASE = 60;
+  const COIN_GROWTH = 1.13;
+  const COIN_BOSS_MULT = 12;
+  const COIN_SCALE = 0.75; // réduire légèrement les gains (75% des valeurs d'origine)
+
+  const rawCoins = isBoss
+    ? Math.floor(COIN_BASE * Math.pow(COIN_GROWTH, global - 1) * COIN_BOSS_MULT)
+    : Math.floor(COIN_BASE * Math.pow(COIN_GROWTH, global - 1));
+  const pixelCoins = Math.max(0, Math.floor(rawCoins * COIN_SCALE));
 
   // Gemme garantie du "mini-boss" (vague 5) : uniquement lors d'une vraie
   // progression, jamais en re-farmant un palier déjà validé — sinon c'est un

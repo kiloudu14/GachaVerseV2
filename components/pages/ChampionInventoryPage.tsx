@@ -66,7 +66,7 @@ export function ChampionInventoryPage() {
   };
 
   return (
-    <div style={{ padding:'20px', maxWidth:'900px', margin:'0 auto', display:'flex', flexDirection:'column', gap:'16px' }}>
+    <div style={{ padding:'20px', maxWidth:'900px', margin:'0 auto', display:'flex', flexDirection:'column', gap:'16px', position: 'relative' }}>
 
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
@@ -80,7 +80,7 @@ export function ChampionInventoryPage() {
 
       {/* Feedback */}
       {feedback && (
-        <div style={{ padding:'10px 16px', borderRadius:'8px', fontFamily:'var(--f-ui)', fontSize:'13px', fontWeight:700,
+        <div style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', top: '72px', zIndex:30, padding:'10px 16px', borderRadius:'8px', fontFamily:'var(--f-ui)', fontSize:'13px', fontWeight:700,
           background: feedback.ok?'rgba(74,222,128,0.1)':'rgba(239,68,68,0.1)',
           border:`1px solid ${feedback.ok?'rgba(74,222,128,0.4)':'rgba(239,68,68,0.4)'}`,
           color: feedback.ok?'#4ade80':'#f87171',
@@ -95,8 +95,9 @@ export function ChampionInventoryPage() {
           Aucun doublon 7★ pour le moment.<br/>Continue à pull pour remplir cet inventaire !
         </div>
       ) : (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'12px' }}>
-          {champions.map(({ id, qty, tpl }) => {
+        <div style={{ maxHeight: '62vh', overflowY: 'auto' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'12px' }}>
+            {champions.map(({ id, qty, tpl }) => {
             if (!tpl) return null;
             const cfg     = RARITY_CONFIG[tpl.rarity];
             const orbs    = getVoidOrbsForRarity(tpl.rarity);
@@ -158,7 +159,8 @@ export function ChampionInventoryPage() {
                 )}
               </div>
             );
-          })}
+            })}
+          </div>
         </div>
       )}
     </div>

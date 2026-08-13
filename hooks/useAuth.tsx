@@ -10,6 +10,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
+import { logAudit } from '@/lib/firebase/audit';
 import { claimSession, watchSession, clearLocalSession } from '@/lib/firebase/session';
 import { createAccessRequest } from '@/lib/firebase/accessRequests';
 
@@ -61,6 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
     }
+    // Log sign in
+    logAudit(cred.user.uid, 'auth:signIn', { method: 'password', email });
   };
 
   const signUp = async (email: string, password: string, username: string, discordUsername: string) => {
@@ -69,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Compte créé mais PAS de session/accès automatique : il reste "en attente"
     // tant que le pseudo Discord n'a pas été vérifié manuellement.
     await createAccessRequest(cred.user.uid, email, username, discordUsername);
+    logAudit(cred.user.uid, 'auth:signUp', { email, username, discordUsername });
   };
 
   const signInGoogle = async () => {
@@ -80,12 +84,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       throw new Error('Ce compte est déjà connecté sur un autre appareil ou navigateur.');
     }
+    logAudit(cred.user.uid, 'auth:signIn', { method: 'google' });
   };
 
   const logout = async () => {
     clearLocalSession();
     if (!auth) return;
+    const uid = auth.currentUser?.uid ?? null;
     await signOut(auth);
+    logAudit(uid, 'auth:signOut');
   };
 
   const dismissKickedOut = () => setKickedOut(false);

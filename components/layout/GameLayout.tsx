@@ -103,7 +103,7 @@ export function GameLayout() {
   const goToPage = (p: Page) => { setPage(p); setDrawerOpen(false); };
   const [victory, setVictory] = useState<{ palier: number; gems: number; coins: number } | null>(null);
   const { pixelCoins, nekoGems, palier, wave, maxPalierReached, quests, ensureDailyQuests, username, lastEquipmentDrop, setLastEquipmentDrop, lastBossVictory, clearBossVictory } = useGameStore();
-  const { user, logout } = useAuth();
+  const { user, logout, kickedOut, dismissKickedOut } = useAuth();
   const { forceSave } = useCloudSave(user?.uid ?? null);
 
   // ── Compte validé manuellement ? ──────────────────────────────────────────
@@ -242,6 +242,28 @@ export function GameLayout() {
   // Bloquer les multi-instances
   if (instanceStatus === 'duplicate' || instanceStatus === 'takeover') {
     return <DuplicateTabScreen onTakeover={requestTakeover} isTakingOver={instanceStatus === 'takeover'} />;
+  }
+
+  // Session conflict : plusieurs appareils/ navigateurs utilisent le même compte.
+  if (user && kickedOut) {
+    return (
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'radial-gradient(circle at center, rgba(168,85,247,0.18), rgba(2,6,23,1) 52%)', padding:'24px' }}>
+        <div style={{ width:'min(560px, 92vw)', background:'rgba(12,10,30,0.92)', border:'1px solid rgba(192,132,252,0.45)', borderRadius:'20px', boxShadow:'0 0 40px rgba(168,85,247,0.35)', padding:'28px 26px', textAlign:'center' }}>
+          <div style={{ fontSize:'50px', marginBottom:'14px' }}>🚫</div>
+          <div style={{ fontFamily:'var(--f-title)', fontSize:'28px', fontWeight:900, letterSpacing:'2px', color:'#f5d0fe', marginBottom:'12px' }}>CONNEXION BLOQUÉE</div>
+          <div style={{ fontFamily:'var(--f-ui)', fontSize:'16px', lineHeight:1.6, color:'var(--text-sub)', marginBottom:'22px' }}>
+            Ce compte est déjà actif sur un autre appareil ou navigateur.<br />
+            Pour éviter les doubles sessions, l’accès au jeu est refusé tant que la session conflictuelle reste ouverte.
+          </div>
+          <button
+            onClick={async () => { dismissKickedOut(); await logout(); }}
+            style={{ background:'linear-gradient(135deg,#7c3aed,#a855f7)', border:'none', borderRadius:'12px', padding:'14px 22px', fontFamily:'var(--f-ui)', fontWeight:800, fontSize:'14px', color:'white', cursor:'pointer', boxShadow:'0 12px 28px rgba(168,85,247,0.35)' }}
+          >
+            SE DÉCONNECTER ET REESSAYER
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Compte connecté mais pas encore validé manuellement : accès bloqué.
