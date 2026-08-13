@@ -596,7 +596,16 @@ export function getCharacterById(id: string): CharacterTemplate | undefined {
   return CHARACTER_BY_ID.get(id);
 }
 
-export const BANNER_POOL = CHARACTER_POOL.filter(c => !c.isHero);
+// Personnages obtenables UNIQUEMENT via la Forge ou les Boss d'Événement —
+// ne doivent jamais apparaître au gacha, sinon leur exclusivité n'a plus de sens.
+const GACHA_EXCLUDED_IDS = new Set([
+  // Récompenses de recettes de Forge (lib/game/expeditions.ts)
+  'vegeto', 'gogeta', 'aizen_t', 'yoriichi', 'brunhilde', 'chara', 'shanks',
+  // Drops de boss d'événement (lib/game/eventBoss.ts)
+  'jinwoo', 'arthur_leywin', 'cid_kagenou',
+]);
+
+export const BANNER_POOL = CHARACTER_POOL.filter(c => !c.isHero && !GACHA_EXCLUDED_IDS.has(c.id));
 
 export function getCharFormName(tpl: CharacterTemplate, formIndex: number): string {
   if (!tpl.forms || tpl.forms.length === 0) return tpl.name;
