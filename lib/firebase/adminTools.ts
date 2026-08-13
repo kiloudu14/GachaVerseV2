@@ -13,6 +13,8 @@ export interface PlayerSaveSummary {
   pixelCoins: number;
   nekoGems: number;
   bossCrowns: number;
+  palier: number;
+  wave: number;
   maxPalierReached: number;
   lastSaved: number | null;
 }
@@ -75,6 +77,8 @@ export async function getPlayerSave(uid: string): Promise<PlayerSaveSummary | nu
       pixelCoins:       d.pixelCoins ?? 0,
       nekoGems:         d.nekoGems ?? 0,
       bossCrowns:       d.bossCrowns ?? 0,
+      palier:           d.palier ?? 1,
+      wave:             d.wave ?? 1,
       maxPalierReached: d.maxPalierReached ?? 1,
       lastSaved:        d.lastSaved ?? null,
     };
@@ -111,6 +115,30 @@ export async function correctPlayerBalance(
     return true;
   } catch (e) {
     console.error('[AdminTools] correctPlayerBalance:', e);
+    return false;
+  }
+}
+
+/**
+ * Corrige la progression d'un joueur (palier, vague, palier max atteint) —
+ * utile pour annuler une avancée obtenue via un bug/exploit. Même mécanisme
+ * `adminCorrectionAt` que correctPlayerBalance : appliqué en direct si le
+ * joueur est déjà connecté, sans attendre qu'il se reconnecte.
+ */
+export async function correctPlayerProgress(
+  uid: string,
+  updates: { palier?: number; wave?: number; maxPalierReached?: number }
+): Promise<boolean> {
+  if (!db) return false;
+  try {
+    await updateDoc(doc(db, 'saves', uid), {
+      ...updates,
+      lastSaved: Date.now(),
+      adminCorrectionAt: Date.now(),
+    });
+    return true;
+  } catch (e) {
+    console.error('[AdminTools] correctPlayerProgress:', e);
     return false;
   }
 }

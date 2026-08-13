@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/layout/AuthModal';
 import { getPendingRequests, getApprovedUsers, getAllUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
-import { findPlayer, getPlayerSave, correctPlayerBalance, getPlayerCollection, removePlayerCharacter, addPlayerCharacter, setPlayerCharacterLevel, PlayerLookup, PlayerSaveSummary, OwnedCharacterSummary } from '@/lib/firebase/adminTools';
+import { findPlayer, getPlayerSave, correctPlayerBalance, correctPlayerProgress, getPlayerCollection, removePlayerCharacter, addPlayerCharacter, setPlayerCharacterLevel, PlayerLookup, PlayerSaveSummary, OwnedCharacterSummary } from '@/lib/firebase/adminTools';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { isAdminEmail } from '@/lib/admin';
@@ -30,6 +30,11 @@ export default function AdminPage() {
   const [editCoins, setEditCoins] = useState('');
   const [editGems, setEditGems]   = useState('');
   const [editCrowns, setEditCrowns] = useState('');
+  const [editPalier, setEditPalier] = useState('');
+  const [editWave, setEditWave]     = useState('');
+  const [capMaxPalier, setCapMaxPalier] = useState(true);
+  const [progressBusy, setProgressBusy] = useState(false);
+  const [progressMsg, setProgressMsg]   = useState<string | null>(null);
   const [correctBusy, setCorrectBusy] = useState(false);
   const [correctMsg, setCorrectMsg]   = useState<string | null>(null);
 
@@ -75,7 +80,7 @@ export default function AdminPage() {
 
   const handleSearchPlayer = async () => {
     setSearchStatus('searching');
-    setFoundPlayer(null); setPlayerSave(null); setCorrectMsg(null); setPlayerChars([]); setAddCharMsg(null);
+    setFoundPlayer(null); setPlayerSave(null); setCorrectMsg(null); setProgressMsg(null); setPlayerChars([]); setAddCharMsg(null);
     const p = await findPlayer(searchQuery);
     if (!p) { setSearchStatus('notfound'); return; }
     setFoundPlayer(p);
@@ -84,6 +89,8 @@ export default function AdminPage() {
     setEditCoins(save ? String(save.pixelCoins) : '');
     setEditGems(save ? String(save.nekoGems) : '');
     setEditCrowns(save ? String(save.bossCrowns) : '');
+    setEditPalier(save ? String(save.palier) : '');
+    setEditWave(save ? String(save.wave) : '');
     await loadPlayerChars(p.uid);
     setSearchStatus('idle');
   };
@@ -96,9 +103,30 @@ export default function AdminPage() {
       nekoGems:   Math.max(0, Number(editGems) || 0),
       bossCrowns: Math.max(0, Number(editCrowns) || 0),
     });
-    setCorrectMsg(ok ? '✅ Corrigé — appliqué à sa prochaine connexion.' : '❌ Échec de la correction.');
+    setCorrectMsg(ok ? '✅ Corrigé — appliqué immédiatement s\'il est en ligne.' : '❌ Échec de la correction.');
     if (ok) { const save = await getPlayerSave(foundPlayer.uid); setPlayerSave(save); }
     setCorrectBusy(false);
+  };
+
+  // Remet un joueur à un palier précis (ex: après un bug/exploit qui lui a
+  // fait sauter des paliers). Si "capMaxPalier" est coché, le palier max
+  // atteint est aussi ramené au même niveau — utile pour annuler les
+  // récompenses/titres débloqués à tort via le bug.
+  const handleCorrectProgress = async () => {
+    if (!foundPlayer || !playerSave) return;
+    setProgressBusy(true); setProgressMsg(null);
+    const newPalier = Math.max(1, Number(editPalier) || 1);
+    const newWave   = Math.max(1, Math.min(10, Number(editWave) || 1));
+    const ok = await correctPlayerProgress(foundPlayer.uid, {
+      palier: newPalier,
+      wave: newWave,
+      maxPalierReached: capMaxPalier
+        ? Math.min(playerSave.maxPalierReached, newPalier)
+        : Math.max(playerSave.maxPalierReached, newPalier),
+    });
+    setProgressMsg(ok ? '✅ Palier corrigé — appliqué immédiatement s\'il est en ligne.' : '❌ Échec de la correction.');
+    if (ok) { const save = await getPlayerSave(foundPlayer.uid); setPlayerSave(save); }
+    setProgressBusy(false);
   };
 
   const isAdmin = isAdminEmail(user?.email);
@@ -300,7 +328,7 @@ export default function AdminPage() {
                 <div style={{ color: '#fff', fontWeight: 800, fontSize: 15, marginBottom: 2 }}>{foundPlayer.username}</div>
                 <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginBottom: 4 }}>{foundPlayer.email}</div>
                 <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginBottom: 16 }}>
-                  Palier max atteint : {playerSave.maxPalierReached} · Dernière sauvegarde : {playerSave.lastSaved ? new Date(playerSave.lastSaved).toLocaleString('fr-FR') : 'jamais'}
+                  Dernière sauvegarde : {playerSave.lastSaved ? new Date(playerSave.lastSaved).toLocaleString('fr-FR') : 'jamais'}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
@@ -325,6 +353,39 @@ export default function AdminPage() {
                   {correctBusy ? 'Correction en cours…' : '✅ Appliquer la correction'}
                 </button>
                 {correctMsg && <div style={{ marginTop: 10, fontSize: 12, color: correctMsg.startsWith('✅') ? '#4ade80' : '#f87171' }}>{correctMsg}</div>}
+
+                {/* ── Palier / progression (ex: annuler une avance obtenue via un bug) ── */}
+                <div style={{ marginTop: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: 14, marginBottom: 4 }}>Palier / progression</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginBottom: 14 }}>
+                    Palier actuel : {playerSave.palier} · Vague : {playerSave.wave}/10 · Palier max atteint : {playerSave.maxPalierReached}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                    <div>
+                      <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 11, marginBottom: 5 }}>⛰️ Palier</label>
+                      <input value={editPalier} onChange={e => setEditPalier(e.target.value)} type="number" min={1}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 11, marginBottom: 5 }}>🌊 Vague (1-10)</label>
+                      <input value={editWave} onChange={e => setEditWave(e.target.value)} type="number" min={1} max={10}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+                    </div>
+                  </div>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, cursor: 'pointer' }}>
+                    <input type="checkbox" checked={capMaxPalier} onChange={e => setCapMaxPalier(e.target.checked)} />
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
+                      Limiter aussi le &quot;palier max atteint&quot; à cette valeur (à cocher pour annuler une avance obtenue via un bug)
+                    </span>
+                  </label>
+
+                  <button onClick={handleCorrectProgress} disabled={progressBusy} style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.5)', color: '#60a5fa', cursor: 'pointer', fontWeight: 700, fontSize: 13 }}>
+                    {progressBusy ? 'Correction en cours…' : '✅ Appliquer le palier'}
+                  </button>
+                  {progressMsg && <div style={{ marginTop: 10, fontSize: 12, color: progressMsg.startsWith('✅') ? '#4ade80' : '#f87171' }}>{progressMsg}</div>}
+                </div>
 
                 {/* ── Gestion de la collection de personnages ────────────── */}
                 <div style={{ marginTop: 26, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)' }}>

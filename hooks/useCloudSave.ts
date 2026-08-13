@@ -171,6 +171,9 @@ export function useCloudSave(userId: string | null) {
       if (typeof data.pixelCoins === 'number') patch.pixelCoins = data.pixelCoins;
       if (typeof data.nekoGems   === 'number') patch.nekoGems   = data.nekoGems;
       if (typeof data.bossCrowns === 'number') patch.bossCrowns = data.bossCrowns;
+      if (typeof data.palier     === 'number') patch.palier     = data.palier;
+      if (typeof data.wave       === 'number') patch.wave       = data.wave;
+      if (typeof data.maxPalierReached === 'number') patch.maxPalierReached = data.maxPalierReached;
       if (data.collection && typeof data.collection === 'object') patch.collection = data.collection;
       useGameStore.setState(patch as unknown as Parameters<typeof useGameStore.setState>[0]);
     });
