@@ -554,11 +554,14 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
 
   // HP : 50 × 1.12^(global-1)
   const baseHp = Math.floor(50 * Math.pow(1.12, global - 1));
+  // Léger ajustement global supplémentaire (-6%, tous paliers confondus),
+  // en plus de la réduction progressive déjà en place à partir du palier 15.
+  const globalHpAdjust = 0.94;
   // À partir du palier 15 : -8% de PV supplémentaires par palier, pour TOUS
   // les ennemis (mobs et boss) — la courbe de base devenait trop lourde à
   // ce stade du jeu par rapport à la puissance réelle des joueurs.
   const lateGameHpReduction = palier >= 15 ? Math.pow(0.92, palier - 14) : 1;
-  const maxHp  = Math.floor(baseHp * hpMult * lateGameHpReduction);
+  const maxHp  = Math.floor(baseHp * hpMult * globalHpAdjust * lateGameHpReduction);
 
   // Coins : base × growth^(global-1), boss × bossMult
   // On applique en plus un scale global pour calibrer la vitesse d'obtention des coins.

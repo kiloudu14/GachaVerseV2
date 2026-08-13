@@ -43,92 +43,92 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   c('mr_popo',     'Mr Popo',         'C',  5,  'Dragon Ball Z'),
 
   // ── UNCOMMUNS ────────────────────────────────────────────────────────────
-  c('prince_lars', 'Prince Lars',     'U', 13,  'The Legend of Zelda'),
-  c('eugeo',       'Eugeo',           'U', 14,  'Sword Art Online'),
-  c('angie',       'Angie',           'U', 13,  'Danganronpa'),
-  c('gobuta',      'Gobuta',          'U', 15,  'Tensei Slime'),
-  c('vogue_merry', 'Vogue Merry',     'U', 12,  'One Piece'),
+  c('prince_lars', 'Prince Lars',     'U', 14,  'The Legend of Zelda'),
+  c('eugeo',       'Eugeo',           'U', 15,  'Sword Art Online'),
+  c('angie',       'Angie',           'U', 14,  'Danganronpa'),
+  c('gobuta',      'Gobuta',          'U', 16,  'Tensei Slime'),
+  c('vogue_merry', 'Vogue Merry',     'U', 13,  'One Piece'),
 
   // ── RARES ────────────────────────────────────────────────────────────────
-  ce('salamèche', 'Salamèche', 'R', 25, 'Pokémon', [
+  ce('salamèche', 'Salamèche', 'R', 27, 'Pokémon', [
     f('salamèche_base', 'Salamèche',  'salamèche', 100, 1),
     f('salamèche_evo1', 'Reptincel',  'salamèche', 200, 3),
     f('salamèche_evo2', 'Dracaufeu',  'salamèche', 300, 8),
   ]),
-  ce('carapuce', 'Carapuce', 'R', 24, 'Pokémon', [
+  ce('carapuce', 'Carapuce', 'R', 26, 'Pokémon', [
     f('carapuce_base', 'Carapuce',  'carapuce', 100, 1),
     f('carapuce_evo1', 'Carabaffe', 'carapuce', 200, 3),
     f('carapuce_evo2', 'Tortank',   'carapuce', 300, 8),
   ]),
-  ce('bulbizarre', 'Bulbizarre', 'R', 24, 'Pokémon', [
+  ce('bulbizarre', 'Bulbizarre', 'R', 26, 'Pokémon', [
     f('bulbizarre_base', 'Bulbizarre', 'bulbizarre', 100, 1),
     f('bulbizarre_evo1', 'Herbizarre', 'bulbizarre', 200, 3),
     f('bulbizarre_evo2', 'Florizarre', 'bulbizarre', 300, 8),
   ]),
-  c('kissy_missy', 'Kissy Missy',     'R', 20,  'Poppy Playtime'),
-  ce('yuno', 'Yuno', 'R', 22, 'Black Clover', [
+  c('kissy_missy', 'Kissy Missy',     'R', 22,  'Poppy Playtime'),
+  ce('yuno', 'Yuno', 'R', 24, 'Black Clover', [
     f('yuno_base', 'Yuno',                  'yuno', 100, 1),
     f('yuno_evo1', 'Yuno — Esprit du Vent', 'yuno', 200, 4),
   ]),
-  c('the_dress',   'The Dress',       'R', 21,  'R.E.P.O'),
-  c('kirito',      'Kirito',          'R', 23,  'Sword Art Online'),
+  c('the_dress',   'The Dress',       'R', 23,  'R.E.P.O'),
+  c('kirito',      'Kirito',          'R', 25,  'Sword Art Online'),
 
   // ── ÉPIQUES ─────────────────────────────────────────────────────────────
-  c('arsene',           'Arsène',           'E',  70, 'Persona 5'),
-  c('huggy_wuggy',      'Huggy Wuggy',      'E',  75, 'Poppy Playtime'),
-  c('diablo',           'Diablo',           'E',  72, 'Tensei Slime'),
-  c('reaper_leviathan', 'Reaper Leviathan', 'E',  85, 'Subnautica'),
-  c('reinhardt',        'Reinhardt',        'E',  80, 'Overwatch'),
+  c('arsene',           'Arsène',           'E',  76, 'Persona 5'),
+  c('huggy_wuggy',      'Huggy Wuggy',      'E',  81, 'Poppy Playtime'),
+  c('diablo',           'Diablo',           'E',  78, 'Tensei Slime'),
+  c('reaper_leviathan', 'Reaper Leviathan', 'E',  92, 'Subnautica'),
+  c('reinhardt',        'Reinhardt',        'E',  86, 'Overwatch'),
 
   // ── LÉGENDAIRES ──────────────────────────────────────────────────────────
-  ce('sanji', 'Sanji', 'L', 210, 'One Piece', [
+  ce('sanji', 'Sanji', 'L', 227, 'One Piece', [
     f('sanji_base', 'Sanji',            'sanji', 100, 1),
     f('sanji_evo1', 'Sanji — Raid Suit','sanji', 200, 5),
   ]),
-  ce('asta', 'Asta', 'L', 200, 'Black Clover', [
+  ce('asta', 'Asta', 'L', 216, 'Black Clover', [
     f('asta_base', 'Asta',              'asta', 100, 1),
     f('asta_evo1', 'Asta — Démon Noir', 'asta', 200, 5),
   ]),
-  c('taureau',     'Taureau',          'L', 195, 'R.E.P.O'),
-  ce('kioraku', 'Kyoraku', 'L', 210, 'Bleach', [
+  c('taureau',     'Taureau',          'L', 211, 'R.E.P.O'),
+  ce('kioraku', 'Kyoraku', 'L', 227, 'Bleach', [
     f('kioraku_base', 'Kyoraku',          'kioraku', 100, 1),
     f('kioraku_evo1', 'Kyoraku — Bankai', 'kioraku', 200, 5),
   ]),
-  c('arthur_pandragon', 'Arthur Pandragon', 'L', 200, 'Fate'),
-  ce('arthur_leywin', 'Arthur Leywin', 'P', 5405, 'Tbate', [
+  c('arthur_pandragon', 'Arthur Pandragon', 'L', 216, 'Fate'),
+  ce('arthur_leywin', 'Arthur Leywin', 'P', 5837, 'Tbate', [
     f('arthur_leywin_base', 'Arthur Leywin',           'arthur_leywin', 100, 1),
     f('arthur_leywin_evo1', 'Arthur Leywin — Lame d’Éther', 'arthur_leywin', 200, 10,  'cristal_ether'),
     f('arthur_leywin_evo2', 'Arthur Leywin — Épée de l’Aube', 'arthur_leywin', 300, 112, 'epee_ether'),
     f('arthur_leywin_evo3', 'Arthur Leywin — Roi du Soleil',  'arthur_leywin', 400, 550, 'sylvia'),
   ]),
-  ce('nagito_komaeda', 'Nagito Komaeda', 'L', 205, 'Danganronpa', [
+  ce('nagito_komaeda', 'Nagito Komaeda', 'L', 221, 'Danganronpa', [
     f('nagito_komaeda_base', 'Nagito Komaeda',         'nagito_komaeda', 100, 1),
     f('nagito_komaeda_evo1', 'Nagito — Espoir Ultime', 'nagito_komaeda', 200, 4.5),
   ]),
-  c('chuuya',      'Chuuya',           'L', 215, 'Bungou Stray Dogs'),
+  c('chuuya',      'Chuuya',           'L', 232, 'Bungou Stray Dogs'),
 
   // ── MYTHIQUES ────────────────────────────────────────────────────────────
-  ce('ren_m', 'Ren', 'M', 550, 'Persona 5', [
+  ce('ren_m', 'Ren', 'M', 594, 'Persona 5', [
     f('ren_m_base', 'Ren',   'ren_m', 100, 1),
     f('ren_m_evo1', 'Joker', 'ren_m', 200, 7),
   ]),
-  ce('ichigo', 'Ichigo', 'M', 580, 'Bleach', [
+  ce('ichigo', 'Ichigo', 'M', 626, 'Bleach', [
     f('ichigo_base', 'Ichigo',          'ichigo', 100, 1),
     f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 5.5),
     f('ichigo_evo2', 'Ichigo — Vasto',  'ichigo', 300, 14),
   ]),
-  c('ouma',  'Kokichi Ouma', 'M', 1010, 'Danganronpa'),
-  c('jax',   'Jax',          'M', 570, 'Digital Circus'),
-  c('dazai', 'Dazai',        'M', 570, 'Bungou Stray Dogs'),
+  c('ouma',  'Kokichi Ouma', 'M', 1091, 'Danganronpa'),
+  c('jax',   'Jax',          'M', 616, 'Digital Circus'),
+  c('dazai', 'Dazai',        'M', 616, 'Bungou Stray Dogs'),
 
   // ── STELLAIRES ───────────────────────────────────────────────────────────
-  ce('naruto', 'Naruto', 'S', 900, 'Naruto', [
+  ce('naruto', 'Naruto', 'S', 972, 'Naruto', [
     f('naruto_base', 'Naruto',                 'naruto', 100, 1),
     f('naruto_evo1', 'Naruto — Mode Sage',     'naruto', 200, 5),
     f('naruto_evo2', 'Naruto — Chakra Kyuubi', 'naruto', 300, 18),
     f('naruto_evo3', 'Naruto — Mode Baryon',   'naruto', 400, 60),
   ]),
-  ce('luffy', 'Luffy', 'S', 1200, 'One Piece', [
+  ce('luffy', 'Luffy', 'S', 1296, 'One Piece', [
     f('luffy_base', 'Luffy',          'luffy', 100, 1),
     f('luffy_evo1', 'Luffy — Gear 2', 'luffy', 200, 5),
     f('luffy_evo2', 'Luffy — Gear 4', 'luffy', 300, 18),
@@ -136,36 +136,36 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
 
   // ── COSMIQUES ────────────────────────────────────────────────────────────
-  ce('vegeta', 'Végéta', 'CO', 2875, 'Dragon Ball Z', [
+  ce('vegeta', 'Végéta', 'CO', 3105, 'Dragon Ball Z', [
     f('vegeta_base', 'Végéta',            'vegeta', 100, 1),
     f('vegeta_evo1', 'Végéta SS',         'vegeta', 200, 8),
     f('vegeta_evo2', 'Végéta SS Divin',   'vegeta', 300, 26),
     f('vegeta_evo3', 'Végéta SS Blue',    'vegeta', 400, 90),
   ]),
-  ce('minato', 'Minato', 'CO', 2185, 'Naruto', [
+  ce('minato', 'Minato', 'CO', 2360, 'Naruto', [
     f('minato_base', 'Minato',              'minato', 100, 1),
     f('minato_evo1', 'Minato — 4ème Hokage','minato', 200, 6.5),
   ]),
-  ce('gilgamesh', 'Gilgamesh', 'CO', 2358, 'Fate', [
+  ce('gilgamesh', 'Gilgamesh', 'CO', 2547, 'Fate', [
     f('gilgamesh_base', 'Gilgamesh',               'gilgamesh', 100, 1),
     f('gilgamesh_evo1', 'Gilgamesh — Roi des Héros','gilgamesh', 200, 9.5),
   ]),
-  c('link_midona','Link & Midona',    'CO', 2070, 'The Legend of Zelda'),
-  ce('jinwoo', 'Sung Jin Woo', 'CO', 2731, 'Solo Leveling', [
+  c('link_midona','Link & Midona',    'CO', 2236, 'The Legend of Zelda'),
+  ce('jinwoo', 'Sung Jin Woo', 'CO', 2949, 'Solo Leveling', [
     f('jinwoo_base', 'Sung Jin Woo',                     'jinwoo', 100, 1),
     f('jinwoo_evo1', 'Sung Jin Woo — Monarque Éveillé',  'jinwoo', 200, 7,  'elixir_vie'),
     f('jinwoo_evo2', 'Sung Jin Woo — Seigneur des Ombres','jinwoo', 300, 16, 'manteau_ombre'),
     f('jinwoo_evo3', 'Sung Jin Woo — Monarque des Ombres','jinwoo', 400, 50, 'beru'),
   ]),
 
-  ce('cid_kagenou', 'Cid Kagenou', 'CO', 2760, 'The Eminence in Shadow', [
+  ce('cid_kagenou', 'Cid Kagenou', 'CO', 2981, 'The Eminence in Shadow', [
     f('cid_kagenou_base', 'Cid Kagenou', 'cid_kagenou', 100, 1),
     f('cid_kagenou_evo1', 'Shadow',      'cid_kagenou', 200, 7,  'masque_cid'),
     f('cid_kagenou_evo2', 'John Smith',  'cid_kagenou', 300, 16, 'epee_slime'),
   ]),
 
   // ── PRIMORDIAUX ──────────────────────────────────────────────────────────
-  ce('goku', 'Goku', 'P', 7636, 'Dragon Ball Z', [
+  ce('goku', 'Goku', 'P', 8247, 'Dragon Ball Z', [
     f('goku_base', 'Goku',                'goku', 100,  1),
     f('goku_evo1', 'Goku Super Saiyen',   'goku', 200,  7),
     f('goku_evo2', 'Goku Super Saiyen 3', 'goku', 300,  38),
@@ -174,7 +174,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('goku_evo5', 'Goku Signe UI',       'goku', 600,  170),
     f('goku_evo6', 'Goku Ultra Instinct', 'goku', 700,  400),
   ]),
-  ce('limule', 'Limule', 'P', 7590, 'Tensei Slime', [
+  ce('limule', 'Limule', 'P', 8197, 'Tensei Slime', [
     f('limule_base', 'Limule',            'limule', 100,  1),
     f('limule_evo1', 'Limule Évoluée',    'limule', 200,  7),
     f('limule_evo2', 'Limule Ancestrale', 'limule', 300, 65),
@@ -182,7 +182,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
 
   // ── TRANSCENDANT ─────────────────────────────────────────────────────────
-  ce('nekoz', 'NekoZ', 'T', 14375, 'Chill&Cool', [
+  ce('nekoz', 'NekoZ', 'T', 15525, 'Chill&Cool', [
     f('nekoz_base', 'NekoZ',             'nekoz', 100, 1),
     f('nekoz_evo1', 'NekoZ — Mode Divin','nekoz', 200, 11),
   ]),
@@ -219,254 +219,254 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   c('mr_satan',          'Mr Satan',             'C',  6,  'Dragon Ball Z'),
 
   // ── UNCOMMONS V2 ────────────────────────────────────────────────────────
-  c('konohamaru',        'Konohamaru',           'U', 14,  'Naruto'),
-  c('goron',             'Goron',                'U', 13,  'The Legend of Zelda'),
-  c('repo_char',         'R.E.P.O',              'U', 14,  'R.E.P.O'),
-  c('tracer',            'Tracer',               'U', 15,  'Overwatch'),
-  c('lishu_ap',          'Lishu',                'U', 12,  "Les Carnets de l'Apothicaire"),
-  c('xiaolan_ap',        'Xiaolan',              'U', 13,  "Les Carnets de l'Apothicaire"),
-  c('kobeni',            'Kobeni',               'U', 13,  'Chainsaw Man'),
-  c('haumea_ff',         'Haumea',               'U', 14,  'Fire Force'),
-  c('riza',              'Riza',                 'U', 13,  'Fullmetal Alchemist Brotherhood'),
-  c('twix',              'Twix',                 'U', 13,  'Nos Animaux'),
-  c('zote',              'Zote',                 'U', 12,  'Hollow Knight'),
-  c('jean_aot',          'Jean',                 'U', 14,  'Attaque des Titans'),
-  c('mugman',            'Mugman',               'U', 13,  'Cuphead'),
-  c('chica_fnaf',        'Chica',                'U', 14,  "Five Nights At Freddy's"),
-  c('poulet',            'Poulet',               'U', 13,  'Minecraft'),
-  c('tenten',            'Tenten',               'U', 14,  'Naruto'),
-  c('hanataro',          'Yamada Hanatarô',      'U', 13,  'Bleach'),
-  c('kon',               'Kon',                  'U', 13,  'Bleach'),
-  c('don_kanonji',       'Don Kanonji',          'U', 14,  'Bleach'),
-  c('silica',            'Silica',               'U', 13,  'Sword Art Online'),
-  c('laboon',            'Laboon',               'U', 14,  'One Piece'),
-  c('fantome',           'Fantome',              'U', 14,  'Brotato'),
-  c('sisigou',           'Sisigou Kairi',        'U', 14,  'Fate'),
-  c('melina',            'Melina',               'U', 14,  'Elden Ring'),
+  c('konohamaru',        'Konohamaru',           'U', 15,  'Naruto'),
+  c('goron',             'Goron',                'U', 14,  'The Legend of Zelda'),
+  c('repo_char',         'R.E.P.O',              'U', 15,  'R.E.P.O'),
+  c('tracer',            'Tracer',               'U', 16,  'Overwatch'),
+  c('lishu_ap',          'Lishu',                'U', 13,  "Les Carnets de l'Apothicaire"),
+  c('xiaolan_ap',        'Xiaolan',              'U', 14,  "Les Carnets de l'Apothicaire"),
+  c('kobeni',            'Kobeni',               'U', 14,  'Chainsaw Man'),
+  c('haumea_ff',         'Haumea',               'U', 15,  'Fire Force'),
+  c('riza',              'Riza',                 'U', 14,  'Fullmetal Alchemist Brotherhood'),
+  c('twix',              'Twix',                 'U', 14,  'Nos Animaux'),
+  c('zote',              'Zote',                 'U', 13,  'Hollow Knight'),
+  c('jean_aot',          'Jean',                 'U', 15,  'Attaque des Titans'),
+  c('mugman',            'Mugman',               'U', 14,  'Cuphead'),
+  c('chica_fnaf',        'Chica',                'U', 15,  "Five Nights At Freddy's"),
+  c('poulet',            'Poulet',               'U', 14,  'Minecraft'),
+  c('tenten',            'Tenten',               'U', 15,  'Naruto'),
+  c('hanataro',          'Yamada Hanatarô',      'U', 14,  'Bleach'),
+  c('kon',               'Kon',                  'U', 14,  'Bleach'),
+  c('don_kanonji',       'Don Kanonji',          'U', 15,  'Bleach'),
+  c('silica',            'Silica',               'U', 14,  'Sword Art Online'),
+  c('laboon',            'Laboon',               'U', 15,  'One Piece'),
+  c('fantome',           'Fantome',              'U', 15,  'Brotato'),
+  c('sisigou',           'Sisigou Kairi',        'U', 15,  'Fate'),
+  c('melina',            'Melina',               'U', 15,  'Elden Ring'),
 
   // ── RARES V2 ────────────────────────────────────────────────────────────
-  c('boa_hancock',       'Boa Hancock',          'R', 25,  'One Piece'),
-  c('finral',            'Finral',               'R', 24,  'Black Clover'),
-  c('enderman',          'Enderman',             'R', 24,  'Minecraft'),
-  c('sabito',            'Sabito',               'R', 24,  'Demon Slayer'),
-  c('k1bo',              'K1-BO',                'R', 24,  'Danganronpa'),
-  c('yasutora_sado',     'Yasutora Sado',        'R', 25,  'Bleach'),
+  c('boa_hancock',       'Boa Hancock',          'R', 27,  'One Piece'),
+  c('finral',            'Finral',               'R', 26,  'Black Clover'),
+  c('enderman',          'Enderman',             'R', 26,  'Minecraft'),
+  c('sabito',            'Sabito',               'R', 26,  'Demon Slayer'),
+  c('k1bo',              'K1-BO',                'R', 26,  'Danganronpa'),
+  c('yasutora_sado',     'Yasutora Sado',        'R', 27,  'Bleach'),
 
   // ── ÉPIQUES V2 ──────────────────────────────────────────────────────────
-  c('catnap',            'CatNap',               'E', 70,  'Poppy Playtime'),
-  c('warden',            'Warden',               'E', 75,  'Minecraft'),
-  c('reaper_ow',         'Reaper',               'E', 72,  'Overwatch'),
-  c('lihua_ap',          'Lihua',                'E', 65,  "Les Carnets de l'Apothicaire"),
-  c('anya_spy',          'Anya',                 'E', 65,  'Spy x Family'),
-  c('maitre_yi',         'Maître Yi',            'E', 70,  'League of Legends'),
-  c('herald',            'Hérald',               'E', 72,  'League of Legends'),
-  ce('loki_va', 'Loki', 'E', 72, 'Valkyrie Apocalypse', [
+  c('catnap',            'CatNap',               'E', 76,  'Poppy Playtime'),
+  c('warden',            'Warden',               'E', 81,  'Minecraft'),
+  c('reaper_ow',         'Reaper',               'E', 78,  'Overwatch'),
+  c('lihua_ap',          'Lihua',                'E', 70,  "Les Carnets de l'Apothicaire"),
+  c('anya_spy',          'Anya',                 'E', 70,  'Spy x Family'),
+  c('maitre_yi',         'Maître Yi',            'E', 76,  'League of Legends'),
+  c('herald',            'Hérald',               'E', 78,  'League of Legends'),
+  ce('loki_va', 'Loki', 'E', 78, 'Valkyrie Apocalypse', [
     f('loki_va_base',    'Loki',                 'loki_va',  100, 1),
     f('loki_va_god',     'Loki — Forme de Dieu', 'loki_va',  200, 4),
   ]),
-  c('kirigiri',          'Kirigiri',             'E', 70,  'Danganronpa'),
-  c('asriel_ut',         'Asriel',               'E', 72,  'Undertale'),
-  c('bonny_fnaf',        'Bonny',                'E', 68,  "Five Nights At Freddy's"),
-  c('panda_tekken',      'Panda',                'E', 65,  'Tekken'),
-  ce('margith', 'Margith', 'E', 70, 'Elden Ring', [
+  c('kirigiri',          'Kirigiri',             'E', 76,  'Danganronpa'),
+  c('asriel_ut',         'Asriel',               'E', 78,  'Undertale'),
+  c('bonny_fnaf',        'Bonny',                'E', 73,  "Five Nights At Freddy's"),
+  c('panda_tekken',      'Panda',                'E', 70,  'Tekken'),
+  ce('margith', 'Margith', 'E', 76, 'Elden Ring', [
     f('margith_base',    'Margith',              'margith', 100, 1),
     f('margith_p2',      'Margith P2',           'margith', 200, 5),
   ]),
 
   // ── LÉGENDAIRES V2 ──────────────────────────────────────────────────────
-  ce('piccolo', 'Piccolo', 'L', 210, 'Dragon Ball Z', [
+  ce('piccolo', 'Piccolo', 'L', 227, 'Dragon Ball Z', [
     f('piccolo_base',    'Piccolo',              'piccolo', 100, 1),
     f('piccolo_kami',    'Fusion avec Kami',     'piccolo', 200, 4),
     f('piccolo_orange',  'Orange Piccolo',       'piccolo', 300, 9),
   ]),
-  ce('kakashi', 'Kakashi', 'L', 215, 'Naruto', [
+  ce('kakashi', 'Kakashi', 'L', 232, 'Naruto', [
     f('kakashi_base',    'Kakashi',              'kakashi', 100, 1),
     f('kakashi_sharingan','Sharingan',           'kakashi', 200, 4.5),
     f('kakashi_mangekyo','Mangekyo Sharingan',   'kakashi', 300, 10),
   ]),
-  ce('aki_csm', 'Aki Hayakawa', 'L', 200, 'Chainsaw Man', [
+  ce('aki_csm', 'Aki Hayakawa', 'L', 216, 'Chainsaw Man', [
     f('aki_csm_base',    'Aki Hayakawa',         'aki_csm', 100, 1),
     f('aki_csm_beast',   'Beast Devil',          'aki_csm', 200, 5),
   ]),
-  ce('arthur_ff', 'Arthur', 'L', 210, 'Fire Force', [
+  ce('arthur_ff', 'Arthur', 'L', 227, 'Fire Force', [
     f('arthur_ff_base',  'Arthur',               'arthur_ff', 100, 1),
     f('arthur_ff_ima',   'Imagination',          'arthur_ff', 200, 5),
   ]),
-  ce('alphonse', 'Alphonse', 'L', 210, 'Fullmetal Alchemist Brotherhood', [
+  ce('alphonse', 'Alphonse', 'L', 227, 'Fullmetal Alchemist Brotherhood', [
     f('alphonse_base',   'Alphonse',             'alphonse', 100, 1),
     f('alphonse_armor',  'Armure',               'alphonse', 200, 5),
   ]),
-  ce('karma_lol', 'Karma', 'L', 200, 'League of Legends', [
+  ce('karma_lol', 'Karma', 'L', 216, 'League of Legends', [
     f('karma_lol_base',  'Karma',                'karma_lol', 100, 1),
     f('karma_lol_6',     'Karma Level 6',        'karma_lol', 200, 5),
   ]),
-  ce('jinx_lol', 'Jinx', 'L', 205, 'League of Legends', [
+  ce('jinx_lol', 'Jinx', 'L', 221, 'League of Legends', [
     f('jinx_lol_base',   'Jinx',                 'jinx_lol', 100, 1),
     f('jinx_lol_6',      'Jinx Level 6',         'jinx_lol', 200, 5),
   ]),
-  c('igloo_na',          'Igloo',                'L', 190, 'Nos Animaux'),
-  ce('thor_va', 'Thor', 'L', 220, 'Valkyrie Apocalypse', [
+  c('igloo_na',          'Igloo',                'L', 205, 'Nos Animaux'),
+  ce('thor_va', 'Thor', 'L', 238, 'Valkyrie Apocalypse', [
     f('thor_va_base',    'Thor',                 'thor_va', 100, 1),
     f('thor_va_god',     'Thor — Forme de Dieu', 'thor_va', 200, 5),
   ]),
-  ce('mikasa', 'Mikasa', 'L', 200, 'Attaque des Titans', [
+  ce('mikasa', 'Mikasa', 'L', 216, 'Attaque des Titans', [
     f('mikasa_base',     'Mikasa',               'mikasa', 100, 1),
     f('mikasa_batail',   "Bataillon d'Exploration",'mikasa', 200, 5),
   ]),
-  c('cuphead_char',      'Cuphead',              'L', 195, 'Cuphead'),
-  c('emiya_kiri',        'Emiya Kiritsugu',      'L', 200, 'Fate'),
-  ce('flowey_ut', 'Flowey', 'L', 220, 'Undertale', [
+  c('cuphead_char',      'Cuphead',              'L', 211, 'Cuphead'),
+  c('emiya_kiri',        'Emiya Kiritsugu',      'L', 216, 'Fate'),
+  ce('flowey_ut', 'Flowey', 'L', 238, 'Undertale', [
     f('flowey_ut_base',  'Flowey',               'flowey_ut', 100, 1),
     f('flowey_ut_omega', 'Omega Flowey',         'flowey_ut', 200, 5),
   ]),
-  ce('godrick_er', 'Godrick', 'L', 200, 'Elden Ring', [
+  ce('godrick_er', 'Godrick', 'L', 216, 'Elden Ring', [
     f('godrick_er_base', 'Godrick',              'godrick_er', 100, 1),
     f('godrick_er_p2',   'Godrick P2',           'godrick_er', 200, 5),
   ]),
 
   // ── MYTHIQUES V2 ────────────────────────────────────────────────────────
-  ce('trunks', 'Trunks', 'M', 550, 'Dragon Ball Z', [
+  ce('trunks', 'Trunks', 'M', 594, 'Dragon Ball Z', [
     f('trunks_base',     'Trunks',               'trunks', 100, 1),
     f('trunks_ss',       'Super Saiyan',         'trunks', 200, 5.5),
     f('trunks_ss2',      'Super Saiyan 2',       'trunks', 300, 13),
   ]),
-  ce('explorer', 'Explorer', 'M', 500, 'Brotato', [
+  ce('explorer', 'Explorer', 'M', 540, 'Brotato', [
     f('explorer_base',   'Explorer',             'explorer', 100, 1),
     f('explorer_tree',   'Explorer — With Tree', 'explorer', 200, 5),
   ]),
-  ce('sea_emperor', 'Sea Emperor', 'M', 580, 'Subnautica', [
+  ce('sea_emperor', 'Sea Emperor', 'M', 626, 'Subnautica', [
     f('sea_emperor_base','Sea Emperor',          'sea_emperor', 100, 1),
     f('sea_emperor_adult','Sea Emperor Adulte',  'sea_emperor', 200, 5.5),
   ]),
-  c('zelda_char',        'Zelda',                'M', 540, 'The Legend of Zelda'),
-  ce('clown_repo', 'Clown', 'M', 520, 'R.E.P.O', [
+  c('zelda_char',        'Zelda',                'M', 583, 'The Legend of Zelda'),
+  ce('clown_repo', 'Clown', 'M', 562, 'R.E.P.O', [
     f('clown_repo_base', 'Clown',                'clown_repo', 100, 1),
     f('clown_repo_laser','Clown — Laser',        'clown_repo', 200, 5),
   ]),
-  ce('asuna', 'Asuna', 'M', 560, 'Sword Art Online', [
+  ce('asuna', 'Asuna', 'M', 605, 'Sword Art Online', [
     f('asuna_base',      'Asuna',                'asuna', 100, 1),
     f('asuna_elfe',      "Armure de l'Elfe",     'asuna', 200, 5),
     f('asuna_cheat',     'Cheat Activate',       'asuna', 300, 12),
   ]),
-  ce('power_csm', 'Power', 'M', 550, 'Chainsaw Man', [
+  ce('power_csm', 'Power', 'M', 594, 'Chainsaw Man', [
     f('power_csm_base',  'Power',                'power_csm', 100, 1),
     f('power_csm_blood', 'Blood Devil',          'power_csm', 200, 5.5),
   ]),
-  ce('yor', 'Yor', 'M', 560, 'Spy x Family', [
+  ce('yor', 'Yor', 'M', 605, 'Spy x Family', [
     f('yor_base',        'Yor Forger',           'yor', 100, 1),
     f('yor_assassin',    'Assassin',             'yor', 200, 5.5),
   ]),
-  ce('nezuko', 'Nezuko', 'M', 540, 'Demon Slayer', [
+  ce('nezuko', 'Nezuko', 'M', 583, 'Demon Slayer', [
     f('nezuko_base',     'Nezuko',               'nezuko', 100, 1),
     f('nezuko_demon',    'Forme Démoniaque',     'nezuko', 200, 5.5),
   ]),
-  ce('zenitsu', 'Zenitsu', 'M', 430, 'Demon Slayer', [
+  ce('zenitsu', 'Zenitsu', 'M', 464, 'Demon Slayer', [
     f('zenitsu_base',    'Zenitsu',              'zenitsu', 100, 1),
     f('zenitsu_maquille','Zenitsu Maquillé',     'zenitsu', 200, 5),
     f('zenitsu_marque',  'Zenitsu — Marque',     'zenitsu', 300, 12),
   ]),
-  ce('jinshi_ap', 'Jinshi', 'M', 510, "Les Carnets de l'Apothicaire", [
+  ce('jinshi_ap', 'Jinshi', 'M', 551, "Les Carnets de l'Apothicaire", [
     f('jinshi_ap_base',  'Jinshi',               'jinshi_ap', 100, 1),
     f('jinshi_ap_jade',  'Armure de Jade',       'jinshi_ap', 200, 5),
   ]),
-  c('adam_va',           'Adam',                 'M', 600, 'Valkyrie Apocalypse'),
-  ce('hornet_hk', 'Hornet', 'M', 540, 'Hollow Knight', [
+  c('adam_va',           'Adam',                 'M', 648, 'Valkyrie Apocalypse'),
+  ce('hornet_hk', 'Hornet', 'M', 583, 'Hollow Knight', [
     f('hornet_hk_base',  'Hornet',               'hornet_hk', 100, 1),
     f('hornet_hk_needle',"Forme de l'Aiguille",  'hornet_hk', 200, 5),
   ]),
-  ce('claudio', 'Claudio', 'M', 560, 'Tekken', [
+  ce('claudio', 'Claudio', 'M', 605, 'Tekken', [
     f('claudio_base',    'Claudio',              'claudio', 100, 1),
     f('claudio_burst',   'Claudio — Burst',      'claudio', 200, 5.5),
   ]),
-  c('celeste_drp',       'Celeste',              'M', 520, 'Danganronpa'),
+  c('celeste_drp',       'Celeste',              'M', 562, 'Danganronpa'),
 
   // ── STELLAIRES V2 ───────────────────────────────────────────────────────
-  ce('zoro', 'Zoro', 'S', 1400, 'One Piece', [
+  ce('zoro', 'Zoro', 'S', 1512, 'One Piece', [
     f('zoro_base',       'Zoro',                 'zoro', 100, 1),
     f('zoro_eclipse',    'Post Éclipse',         'zoro', 200, 4.5),
     f('zoro_wano',       'Post Wano',            'zoro', 300, 12),
   ]),
-  ce('madara', 'Madara', 'S', 1500, 'Naruto', [
+  ce('madara', 'Madara', 'S', 1620, 'Naruto', [
     f('madara_base',     'Madara',               'madara', 100, 1),
     f('madara_rinnegan', 'Rinnegan',             'madara', 200, 4.5),
     f('madara_susanoo',  'Susanoo',              'madara', 300, 12),
   ]),
-  ce('millim', 'Millim', 'S', 1400, 'Slime Datta Ken', [
+  ce('millim', 'Millim', 'S', 1512, 'Slime Datta Ken', [
     f('millim_base',     'Millim',               'millim', 100, 1),
     f('millim_slime',    'Millim — Slime',       'millim', 200, 5),
   ]),
-  ce('byakuya', 'Byakuya', 'S', 1500, 'Bleach', [
+  ce('byakuya', 'Byakuya', 'S', 1620, 'Bleach', [
     f('byakuya_base',    'Byakuya',              'byakuya', 100, 1),
     f('byakuya_shikai',  'Shikai',               'byakuya', 200, 4),
     f('byakuya_bankai',  'Bankai',               'byakuya', 300, 10),
   ]),
-  ce('richard_coeur', 'Richard Cœur de Lion', 'S', 1400, 'Fate', [
+  ce('richard_coeur', 'Richard Cœur de Lion', 'S', 1512, 'Fate', [
     f('richard_coeur_base','Richard Cœur de Lion','richard_coeur', 100, 1),
     f('richard_coeur_armor','Armure de Lion',    'richard_coeur', 200, 5),
   ]),
-  ce('ganondorf_char', 'Ganondorf', 'S', 1600, 'The Legend of Zelda', [
+  ce('ganondorf_char', 'Ganondorf', 'S', 1728, 'The Legend of Zelda', [
     f('ganondorf_char_base','Ganondorf',         'ganondorf_char', 100, 1),
     f('ganondorf_char_hum','Forme Humaine',      'ganondorf_char', 200, 4),
     f('ganondorf_char_dem','Forme Démoniaque',   'ganondorf_char', 300, 11),
   ]),
-  ce('pomni', 'Pomni', 'S', 1350, 'Digital Circus', [
+  ce('pomni', 'Pomni', 'S', 1458, 'Digital Circus', [
     f('pomni_base',      'Pomni',                'pomni', 100, 1),
     f('pomni_prime',     'Pomni — Prime',        'pomni', 200, 5),
   ]),
-  ce('alice_sao', 'Alice', 'S', 1450, 'Sword Art Online', [
+  ce('alice_sao', 'Alice', 'S', 1566, 'Sword Art Online', [
     f('alice_sao_base',  'Alice',                'alice_sao', 100, 1),
     f('alice_sao_armor', 'Armure Légendaire',    'alice_sao', 200, 4.5),
     f('alice_sao_max',   'Puissance Maximale',   'alice_sao', 300, 11),
   ]),
-  ce('atsushi',           'Atsushi',              'S', 1300, 'Bungou Stray Dogs', [
+  ce('atsushi',           'Atsushi',              'S', 1404, 'Bungou Stray Dogs', [
     f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
     f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 5.5),
   ]),
-  ce('mao_mao_ap', 'Mao Mao', 'S', 1380, "Les Carnets de l'Apothicaire", [
+  ce('mao_mao_ap', 'Mao Mao', 'S', 1490, "Les Carnets de l'Apothicaire", [
     f('mao_mao_ap_base', 'Mao Mao',             'mao_mao_ap', 100, 1),
     f('mao_mao_ap_maqui','Maquillage',          'mao_mao_ap', 200, 5),
   ]),
-  ce('denji', 'Denji', 'S', 1500, 'Chainsaw Man', [
+  ce('denji', 'Denji', 'S', 1620, 'Chainsaw Man', [
     f('denji_base',      'Denji',                'denji', 100, 1),
     f('denji_pochita',   'Pochita',              'denji', 200, 4.5),
     f('denji_chainsaw',  'Chainsaw Devil',       'denji', 300, 12),
   ]),
-  ce('loid', 'Loid Forger', 'S', 1420, 'Spy x Family', [
+  ce('loid', 'Loid Forger', 'S', 1534, 'Spy x Family', [
     f('loid_base',       'Loid Forger',          'loid', 100, 1),
     f('loid_espion',     'Espion',               'loid', 200, 5),
   ]),
-  ce('tanjiro', 'Tanjiro', 'S', 1500, 'Demon Slayer', [
+  ce('tanjiro', 'Tanjiro', 'S', 1620, 'Demon Slayer', [
     f('tanjiro_base',    'Tanjiro',              'tanjiro', 100, 1),
     f('tanjiro_eau',     "Forme de l'Eau",       'tanjiro', 200, 4.5),
     f('tanjiro_feu',     'Forme du Feu',         'tanjiro', 300, 12),
   ]),
-  ce('edward', 'Edward', 'S', 1450, 'Fullmetal Alchemist Brotherhood', [
+  ce('edward', 'Edward', 'S', 1566, 'Fullmetal Alchemist Brotherhood', [
     f('edward_base',     'Edward',               'edward', 100, 1),
     f('edward_alchi',    'Alchimiste',           'edward', 200, 4.5),
     f('edward_automail', 'Automail',             'edward', 300, 11),
   ]),
-  ce('roy', 'Roy Mustang', 'S', 1400, 'Fullmetal Alchemist Brotherhood', [
+  ce('roy', 'Roy Mustang', 'S', 1512, 'Fullmetal Alchemist Brotherhood', [
     f('roy_base',        'Roy Mustang',          'roy', 100, 1),
     f('roy_flame',       'Flame Alchemist',      'roy', 200, 5),
   ]),
-  ce('horus_na', 'Horus', 'S', 1400, 'Nos Animaux', [
+  ce('horus_na', 'Horus', 'S', 1512, 'Nos Animaux', [
     f('horus_na_base',   'Horus',                'horus_na', 100, 1),
     f('horus_na_celeste','Forme Céleste',        'horus_na', 200, 5),
   ]),
-  ce('livai', 'Livai', 'S', 1600, 'Attaque des Titans', [
+  ce('livai', 'Livai', 'S', 1728, 'Attaque des Titans', [
     f('livai_base',      'Livai',                'livai', 100, 1),
     f('livai_caporal',   'Caporal',              'livai', 200, 5.5),
   ]),
-  ce('freddy_fnaf', 'Freddy', 'S', 1400, "Five Nights At Freddy's", [
+  ce('freddy_fnaf', 'Freddy', 'S', 1512, "Five Nights At Freddy's", [
     f('freddy_fnaf_base','Freddy Fazbear',       'freddy_fnaf', 100, 1),
     f('freddy_fnaf_toy', 'Freddy Toy',           'freddy_fnaf', 200, 4.5),
     f('freddy_fnaf_gold','Freddy Golden',        'freddy_fnaf', 300, 11),
   ]),
-  ce('sans_ut', 'Sans', 'S', 1700, 'Undertale', [
+  ce('sans_ut', 'Sans', 'S', 1836, 'Undertale', [
     f('sans_ut_base',    'Sans',                 'sans_ut', 100, 1),
     f('sans_ut_genocide','Sans — Mode Génocide', 'sans_ut', 200, 6),
   ]),
-  ce('pichu', 'Pichu', 'S', 1350, 'Pokémon', [
+  ce('pichu', 'Pichu', 'S', 1458, 'Pokémon', [
     f('pichu_base',      'Pichu',                'pichu', 100, 1),
     f('pichu_pikachu',   'Pikachu',              'pichu', 200, 3.5),
     f('pichu_raichu',    'Raichu',               'pichu', 300, 8),
@@ -474,80 +474,80 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
 
   // ── COSMIQUES V2 ────────────────────────────────────────────────────────
-  ce('yami', 'Yami', 'CO', 5750, 'Black Clover', [
+  ce('yami', 'Yami', 'CO', 6210, 'Black Clover', [
     f('yami_base',       'Yami',                 'yami', 100, 1),
     f('yami_adult',      'Yami Adulte',          'yami', 200, 7),
     f('yami_slash',      'Dimensional Slash',    'yami', 300, 20),
   ]),
-  ce('aizen', 'Aizen', 'CO', 6325, 'Bleach', [
+  ce('aizen', 'Aizen', 'CO', 6831, 'Bleach', [
     f('aizen_base',      'Aizen',                'aizen', 100, 1),
     f('aizen_shikai',    'Aizen Shikai',         'aizen', 200, 6),
     f('aizen_bankai',    'Aizen Bankai',         'aizen', 300, 16),
     f('aizen_hogyoku',   'Aizen Hogyoku',        'aizen', 400, 40),
   ]),
-  ce('shinra', 'Shinra', 'CO', 5750, 'Fire Force', [
+  ce('shinra', 'Shinra', 'CO', 6210, 'Fire Force', [
     f('shinra_base',     'Shinra',               'shinra', 100, 1),
     f('shinra_8e',       '8ème Brigade',         'shinra', 200, 7),
     f('shinra_adora',    'Adora Burst',          'shinra', 300, 20),
   ]),
-  ce('jin_tekken', 'Jin Kazama', 'CO', 5980, 'Tekken', [
+  ce('jin_tekken', 'Jin Kazama', 'CO', 6458, 'Tekken', [
     f('jin_tekken_base', 'Jin Kazama',           'jin_tekken', 100, 1),
     f('jin_tekken_evil', 'Jin — Evil',           'jin_tekken', 200, 7.5),
   ]),
-  ce('zorua', 'Zorua', 'CO', 6325, 'Pokémon', [
+  ce('zorua', 'Zorua', 'CO', 6831, 'Pokémon', [
     f('zorua_base',      'Zorua',                'zorua', 100, 1),
     f('zorua_hisui',     "Zorua d'Hisui",        'zorua', 200, 5),
     f('zorua_zoroark',   'Zoroark',              'zorua', 300, 14),
     f('zorua_hisui2',    "Zoroark d'Hisui",      'zorua', 400, 35),
   ]),
-  ce('brume', 'Brume', 'P', 7636, 'Nos Animaux', [
+  ce('brume', 'Brume', 'P', 8247, 'Nos Animaux', [
     f('brume_base',      'Brume',                'brume', 100, 1),
     f('brume_sacree',    'Brume Sacrée',         'brume', 200, 7),
     f('brume_ultime',    'Brume Ultime',         'brume', 300, 20),
   ]),
 
   // ── PRIMORDIAUX V2 ──────────────────────────────────────────────────────
-  ce('steve', 'Steve', 'P', 8461, 'Minecraft', [
+  ce('steve', 'Steve', 'P', 9138, 'Minecraft', [
     f('steve_base',      'Steve',                'steve', 100, 1),
     f('steve_diamond',   'Armure en Diamant',    'steve', 200, 8),
     f('steve_netherite', 'Armure en Netherite',  'steve', 300, 22),
   ]),
-  ce('dva', 'D.Va', 'P', 8553, 'Overwatch', [
+  ce('dva', 'D.Va', 'P', 9237, 'Overwatch', [
     f('dva_base',        'D.Va',                 'dva', 100, 1),
     f('dva_mech',        'D.Va — Mech',          'dva', 200, 8.5),
   ]),
-  ce('benimaru', 'Benimaru', 'P', 8553, 'Fire Force', [
+  ce('benimaru', 'Benimaru', 'P', 9237, 'Fire Force', [
     f('benimaru_base',   'Benimaru',             'benimaru', 100, 1),
     f('benimaru_prime',  'Benimaru — Prime',     'benimaru', 200, 9),
   ]),
-  ce('aatrox_lol', 'Aatrox', 'P', 8645, 'League of Legends', [
+  ce('aatrox_lol', 'Aatrox', 'P', 9337, 'League of Legends', [
     f('aatrox_lol_base', 'Aatrox',              'aatrox_lol', 100, 1),
     f('aatrox_lol_6',    'Aatrox Level 6',      'aatrox_lol', 200, 7),
     f('aatrox_lol_20',   'Aatrox Level 20',     'aatrox_lol', 300, 20),
   ]),
-  ce('the_knight', 'The Knight', 'P', 8461, 'Hollow Knight', [
+  ce('the_knight', 'The Knight', 'P', 9138, 'Hollow Knight', [
     f('the_knight_base', 'The Knight',          'the_knight', 100, 1),
     f('the_knight_lvl1', 'Aiguillon Lvl 1',     'the_knight', 200, 7),
     f('the_knight_lvl2', 'Aiguillon Lvl 2',     'the_knight', 300, 18),
     f('the_knight_lvl3', 'Aiguillon Lvl 3',     'the_knight', 400, 50),
   ]),
-  ce('eren', 'Eren', 'P', 8553, 'Attaque des Titans', [
+  ce('eren', 'Eren', 'P', 9237, 'Attaque des Titans', [
     f('eren_base',       'Eren',                 'eren', 100, 1),
     f('eren_adult',      'Eren Adulte',          'eren', 200, 7),
     f('eren_assaillant', 'Titan Assaillant',     'eren', 300, 20),
     f('eren_originel',   'Titan Originel',       'eren', 400, 55),
   ]),
-  ce('rayquaza', 'Rayquaza', 'P', 8645, 'Pokémon', [
+  ce('rayquaza', 'Rayquaza', 'P', 9337, 'Pokémon', [
     f('rayquaza_base',   'Rayquaza',             'rayquaza', 100, 1),
     f('rayquaza_mega',   'Méga Rayquaza',        'rayquaza', 200, 9),
   ]),
-  ce('ouchuu', 'Ouchuu', 'P', 8461, "Chill&Cool", [
+  ce('ouchuu', 'Ouchuu', 'P', 9138, "Chill&Cool", [
     f('ouchuu_base',     'Ouchuu',               'ouchuu', 100, 1),
     f('ouchuu_dep',      'Ouchuu Dépression Max','ouchuu', 200, 10),
   ]),
 
   // ── TRANSCENDANTS V2 ────────────────────────────────────────────────────
-  ce('qin_shi_huang', 'Qin Shi Huang', 'T', 55200, 'Valkyrie Apocalypse', [
+  ce('qin_shi_huang', 'Qin Shi Huang', 'T', 59616, 'Valkyrie Apocalypse', [
     f('qin_shi_base',    'Qin Shi Huang',        'qin_shi_huang', 100, 1),
     f('qin_shi_roi',     'Roi de Chine',         'qin_shi_huang', 200, 10),
   ]),
@@ -555,30 +555,30 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   // ══════════════════════════════════════════════════════════════════════════
   // PERSONNAGES CRAFTABLES — Obtenus uniquement via la Forge
   // ══════════════════════════════════════════════════════════════════════════
-  ce('vegeto', 'Végéto', 'P', 8827, 'Dragon Ball Z', [
+  ce('vegeto', 'Végéto', 'P', 9533, 'Dragon Ball Z', [
     f('vegeto_base',     'Végéto',               'vegeto', 100, 1),
     f('vegeto_ss',       'Végéto Super Saiyen',  'vegeto', 200, 6),
     f('vegeto_ssblue',   'Végéto SS Blue',       'vegeto', 300, 18),
   ]),
-  ce('gogeta', 'Gogeta', 'P', 8735, 'Dragon Ball Z', [
+  ce('gogeta', 'Gogeta', 'P', 9434, 'Dragon Ball Z', [
     f('gogeta_base',     'Gogeta',               'gogeta', 100, 1),
     f('gogeta_ss',       'Gogeta Super Saiyen',  'gogeta', 200, 6),
     f('gogeta_ssblue',   'Gogeta SS Blue',       'gogeta', 300, 17),
   ]),
-  ce('aizen_t', 'Aizen Transcendant', 'P', 11944, 'Bleach', [
+  ce('aizen_t', 'Aizen Transcendant', 'P', 12900, 'Bleach', [
     f('aizen_t_base',    'Aizen Transcendant',   'aizen_t', 100, 1),
     f('aizen_t_fusion',  'Fusion Complète',      'aizen_t', 200, 10),
   ]),
-  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 7935, 'Demon Slayer', [
+  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 8570, 'Demon Slayer', [
     f('yoriichi_base',   'Yoriichi',             'yoriichi', 100, 1),
     f('yoriichi_sun',    'Danse du Soleil',      'yoriichi', 200, 11),
   ]),
-  c('brunhilde',   'Brunhilde',                  'P', 7682, 'Valkyrie Apocalypse'),
-  ce('chara', 'Chara', 'P', 11760, 'Undertale', [
+  c('brunhilde',   'Brunhilde',                  'P', 8297, 'Valkyrie Apocalypse'),
+  ce('chara', 'Chara', 'P', 12701, 'Undertale', [
     f('chara_base',      'Chara',                'chara', 100, 1),
     f('chara_genocide',  'Route Génocide',       'chara', 200, 10),
   ]),
-  ce('shanks', 'Shanks le Roux', 'T', 69000, 'One Piece', [
+  ce('shanks', 'Shanks le Roux', 'T', 74520, 'One Piece', [
     f('shanks_base',      'Shanks le Roux',      'shanks', 100, 1),
     f('shanks_conqueror', 'Haki du Conquérant',  'shanks', 200, 10),
     f('shanks_god',       'Dieu du Haki',        'shanks', 300, 28),
