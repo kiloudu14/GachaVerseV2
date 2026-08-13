@@ -554,9 +554,9 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
 
   // HP : 50 × 1.12^(global-1)
   const baseHp = Math.floor(50 * Math.pow(1.12, global - 1));
-  // Léger ajustement global supplémentaire (-6%, tous paliers confondus),
-  // en plus de la réduction progressive déjà en place à partir du palier 15.
-  const globalHpAdjust = 0.94;
+  // Ajustement global (tous paliers, mobs ET boss confondus) : -25% —
+  // remplace le -6% précédent, qui restait trop timide.
+  const globalHpAdjust = 0.75;
   // À partir du palier 15 : -8% de PV supplémentaires par palier, pour TOUS
   // les ennemis (mobs et boss) — la courbe de base devenait trop lourde à
   // ce stade du jeu par rapport à la puissance réelle des joueurs.
