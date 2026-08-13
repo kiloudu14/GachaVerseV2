@@ -241,10 +241,13 @@ function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void })
     if (hp <= 0 && !dead) {
       setDead(true);
       const result = rollEventDrop(boss.id);
+      useGameStore.setState(s => ({
+        totalBossKills: s.totalBossKills + 1,
+        ...(result.type === 'gems' ? { nekoGems: s.nekoGems + (result.qty ?? 0) } : {}),
+        ...(result.type === 'bossCrowns' ? { bossCrowns: s.bossCrowns + (result.qty ?? 0) } : {}),
+      }));
       if (result.type === 'character' && result.id) useGameStore.getState().addToCollection(result.id);
       else if (result.type === 'item' && result.id) addItem(result.id, result.qty ?? 1);
-      else if (result.type === 'gems') useGameStore.setState(s => ({ nekoGems: s.nekoGems + (result.qty ?? 0) }));
-      else if (result.type === 'bossCrowns') useGameStore.setState(s => ({ bossCrowns: s.bossCrowns + (result.qty ?? 0) }));
       setTimeout(() => setDrop(result), 800);
     }
   }, [hp, dead, addItem, boss]);
