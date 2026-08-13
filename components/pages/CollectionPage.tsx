@@ -9,22 +9,13 @@ import { RarityBadge, RankStars } from '@/components/ui/RarityBadge';
 import { Rarity, RARITY_CONFIG, calcCharDps, OwnedCharacter, CardEdition } from '@/types/game';
 import { formatNumber } from '@/lib/game/format';
 import { PageScroll, SectionHeader } from '@/components/ui/Page';
+import { CollectionFilters, COLLECTION_RARITY_ORDER, CollectionFilterMode, CollectionSortMode } from '@/components/ui/CollectionFilters';
 import { EDITION_CONFIG, makeInstanceKey } from '@/lib/game/editions';
 
-const RARITY_ORDER: Rarity[] = ['C','U','R','E','L','M','S','CO','P','T'];
+const RARITY_ORDER: Rarity[] = COLLECTION_RARITY_ORDER;
 
 // Tous les univers présents dans le pool
 const UNIVERSES = Array.from(new Set(CHARACTER_POOL.map(c => c.universe).filter(Boolean))).sort() as string[];
-
-type SortMode = 'rarity' | 'dps_desc' | 'dps_asc' | 'name';
-type FilterMode = Rarity | 'all' | 'owned' | 'missing';
-
-const SORT_LABELS: Record<SortMode, string> = {
-  rarity:   'RARETÉ',
-  dps_desc: 'DPS ↓',
-  dps_asc:  'DPS ↑',
-  name:     'NOM A→Z',
-};
 
 // Une "entrée" de collection = un template + une édition précise (Base/Or/Diamant).
 // Un template possédé en plusieurs éditions produit PLUSIEURS entrées, chacune
@@ -38,11 +29,14 @@ interface CollectionEntry {
 const ALL_EDITIONS: CardEdition[] = ['base', 'gold', 'diamond'];
 
 export function CollectionPage() {
-  const { collection } = useGameStore();
-  const [view,      setView]      = useState<'characters' | 'equipment'>('characters');
-  const [filter,    setFilter]    = useState<FilterMode>('all');
-  const [universe,  setUniverse]  = useState<string | 'all'>('all');
-  const [sort,      setSort]      = useState<SortMode>('rarity');
+  const { collection, collectionFilter, collectionUniverse, collectionSort, setCollectionFilters } = useGameStore();
+  const [view, setView] = useState<'characters' | 'equipment'>('characters');
+  const filter = collectionFilter as CollectionFilterMode;
+  const universe = collectionUniverse as string | 'all';
+  const sort = collectionSort as CollectionSortMode;
+  const setFilter = (next: CollectionFilterMode) => setCollectionFilters({ filter: next });
+  const setUniverse = (next: string | 'all') => setCollectionFilters({ universe: next });
+  const setSort = (next: CollectionSortMode) => setCollectionFilters({ sort: next });
 
   // Chaque template possédé se décline en autant d'entrées que d'éditions
   // réellement obtenues ; un template jamais obtenu garde une seule entrée
@@ -117,16 +111,6 @@ export function CollectionPage() {
       return order.indexOf(a.rarity as Rarity) - order.indexOf(b.rarity as Rarity);
     }),
   []);
-
-  const FilterBtn = ({ k, label, accent }: { k: FilterMode; label: string; accent?: string }) => (
-    <button onClick={() => setFilter(k)}
-      style={{ padding:'6px 14px', borderRadius:'8px', cursor:'pointer', fontFamily:'var(--f-ui)', fontWeight:700, fontSize:'11px', letterSpacing:'0.5px', transition:'all 0.15s',
-        background: filter===k ? `${accent ?? '#60a5fa'}18` : 'rgba(255,255,255,0.03)',
-        border: `1px solid ${filter===k ? `${accent ?? '#60a5fa'}55` : 'var(--border)'}`,
-        color: filter===k ? (accent ?? '#60a5fa') : 'var(--text-dim)' }}>
-      {label}
-    </button>
-  );
 
   const CharCard = ({ entry }: { entry: CollectionEntry }) => {
     const { tpl, owned } = entry;
@@ -208,55 +192,15 @@ export function CollectionPage() {
         {view === 'characters' ? (
           <>
             {/* ── FILTRES ─────────────────────────────────────────────────── */}
-            <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
-              {/* Filtre possession */}
-              <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', alignItems:'center' }}>
-                <span style={{ fontFamily:'var(--f-ui)', fontSize:'10px', color:'var(--text-muted)', fontWeight:700, letterSpacing:'1px', marginRight:'2px' }}>FILTRE</span>
-                <FilterBtn k="all"     label="TOUS" />
-                <FilterBtn k="owned"   label="✓ POSSÉDÉS" accent="#4ade80" />
-                <FilterBtn k="missing" label="🔒 MANQUANTS" accent="#f87171" />
-                <div style={{ width:'1px', height:'24px', background:'var(--border)', margin:'0 4px' }} />
-                {RARITY_ORDER.map(r => {
-                  const c = RARITY_CONFIG[r];
-                  return <FilterBtn key={r} k={r} label={c.label} accent={c.color} />;
-                })}
-              </div>
-
-              {/* Filtre univers */}
-              <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', alignItems:'center' }}>
-                <span style={{ fontFamily:'var(--f-ui)', fontSize:'10px', color:'var(--text-muted)', fontWeight:700, letterSpacing:'1px', marginRight:'2px' }}>UNIVERS</span>
-                <button onClick={() => setUniverse('all')}
-                  style={{ padding:'5px 12px', borderRadius:'8px', cursor:'pointer', fontFamily:'var(--f-ui)', fontWeight:700, fontSize:'10px',
-                    background: universe==='all' ? 'rgba(192,132,252,0.15)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${universe==='all' ? 'rgba(192,132,252,0.4)' : 'var(--border)'}`,
-                    color: universe==='all' ? 'var(--purple-glow)' : 'var(--text-dim)' }}>
-                  TOUS
-                </button>
-                {UNIVERSES.map(u => (
-                  <button key={u} onClick={() => setUniverse(u)}
-                    style={{ padding:'5px 12px', borderRadius:'8px', cursor:'pointer', fontFamily:'var(--f-ui)', fontWeight:700, fontSize:'10px',
-                      background: universe===u ? 'rgba(192,132,252,0.15)' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${universe===u ? 'rgba(192,132,252,0.4)' : 'var(--border)'}`,
-                      color: universe===u ? 'var(--purple-glow)' : 'var(--text-dim)' }}>
-                    {u}
-                  </button>
-                ))}
-              </div>
-
-              {/* Tri */}
-              <div style={{ display:'flex', gap:'6px', alignItems:'center' }}>
-                <span style={{ fontFamily:'var(--f-ui)', fontSize:'10px', color:'var(--text-muted)', fontWeight:700, letterSpacing:'1px', marginRight:'2px' }}>TRI</span>
-                {(Object.keys(SORT_LABELS) as SortMode[]).map(s => (
-                  <button key={s} onClick={() => setSort(s)}
-                    style={{ padding:'5px 12px', borderRadius:'8px', cursor:'pointer', fontFamily:'var(--f-ui)', fontWeight:700, fontSize:'10px',
-                      background: sort===s ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${sort===s ? 'rgba(251,191,36,0.4)' : 'var(--border)'}`,
-                      color: sort===s ? '#fbbf24' : 'var(--text-dim)' }}>
-                    {SORT_LABELS[s]}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CollectionFilters
+              filter={filter}
+              onFilterChange={setFilter}
+              universe={universe}
+              onUniverseChange={setUniverse}
+              sort={sort}
+              onSortChange={setSort}
+              universes={UNIVERSES}
+            />
 
             {/* ── RÉSULTATS ────────────────────────────────────────────────── */}
             {sorted.length === 0 && (
