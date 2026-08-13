@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/layout/AuthModal';
 import { getPendingRequests, getApprovedUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
+import { findPlayer, getPlayerSave, correctPlayerBalance, PlayerLookup, PlayerSaveSummary } from '@/lib/firebase/adminTools';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
@@ -20,7 +21,45 @@ export default function AdminPage() {
   const [logs, setLogs] = useState<Audit[]>([]);
   const [busy, setBusy]           = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [showTab, setShowTab] = useState<'requests'|'logs'>('requests');
+  const [showTab, setShowTab] = useState<'requests'|'logs'|'balance'>('requests');
+
+  // ── Correction de solde (onglet "Rééquilibrer un compte") ─────────────
+  const [searchQuery, setSearchQuery] = useState('');
+  const [foundPlayer, setFoundPlayer] = useState<PlayerLookup | null>(null);
+  const [playerSave, setPlayerSave]   = useState<PlayerSaveSummary | null>(null);
+  const [searchStatus, setSearchStatus] = useState<'idle'|'searching'|'notfound'>('idle');
+  const [editCoins, setEditCoins] = useState('');
+  const [editGems, setEditGems]   = useState('');
+  const [editCrowns, setEditCrowns] = useState('');
+  const [correctBusy, setCorrectBusy] = useState(false);
+  const [correctMsg, setCorrectMsg]   = useState<string | null>(null);
+
+  const handleSearchPlayer = async () => {
+    setSearchStatus('searching');
+    setFoundPlayer(null); setPlayerSave(null); setCorrectMsg(null);
+    const p = await findPlayer(searchQuery);
+    if (!p) { setSearchStatus('notfound'); return; }
+    setFoundPlayer(p);
+    const save = await getPlayerSave(p.uid);
+    setPlayerSave(save);
+    setEditCoins(save ? String(save.pixelCoins) : '');
+    setEditGems(save ? String(save.nekoGems) : '');
+    setEditCrowns(save ? String(save.bossCrowns) : '');
+    setSearchStatus('idle');
+  };
+
+  const handleCorrect = async () => {
+    if (!foundPlayer) return;
+    setCorrectBusy(true); setCorrectMsg(null);
+    const ok = await correctPlayerBalance(foundPlayer.uid, {
+      pixelCoins: Math.max(0, Number(editCoins) || 0),
+      nekoGems:   Math.max(0, Number(editGems) || 0),
+      bossCrowns: Math.max(0, Number(editCrowns) || 0),
+    });
+    setCorrectMsg(ok ? '✅ Corrigé — appliqué à sa prochaine connexion.' : '❌ Échec de la correction.');
+    if (ok) { const save = await getPlayerSave(foundPlayer.uid); setPlayerSave(save); }
+    setCorrectBusy(false);
+  };
 
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
 
@@ -86,6 +125,9 @@ export default function AdminPage() {
           <button onClick={() => { setShowTab('logs'); loadLogs(); }} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='logs' ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
             Logs
           </button>
+          <button onClick={() => setShowTab('balance')} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='balance' ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(251,191,36,0.14)', color: '#fbbf24', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+            ⚖️ Rééquilibrer un compte
+          </button>
         </div>
 
         {showTab === 'requests' && (
@@ -143,15 +185,64 @@ export default function AdminPage() {
             </div>
           </>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {approvedList.map(r => (
-            <div key={r.uid} style={{ display: 'flex', gap: 12, padding: '8px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', fontSize: 12 }}>
-              <span style={{ color: '#fff', fontWeight: 700, minWidth: 140 }}>{r.username}</span>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>{r.email}</span>
-              <span style={{ color: '#7289da' }}>{r.discordUsername}</span>
+        {showTab === 'balance' && (
+          <>
+            <h2 style={{ color: '#fbbf24', fontSize: 15, fontWeight: 800, marginBottom: 8 }}>Rééquilibrer un compte</h2>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 16, lineHeight: 1.5 }}>
+              Cherche un joueur par pseudo ou email exact, puis corrige son solde. Le changement s&apos;applique automatiquement à sa prochaine connexion (rien à faire de son côté).
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearchPlayer()}
+                placeholder="Pseudo ou email exact"
+                style={{ flex: 1, padding: '10px 14px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13 }}
+              />
+              <button onClick={handleSearchPlayer} disabled={searchStatus === 'searching'} style={{ padding: '10px 18px', borderRadius: 8, background: 'rgba(139,92,246,0.18)', border: '1px solid #8b5cf6', color: '#a78bfa', cursor: 'pointer', fontWeight: 700, fontSize: 12, whiteSpace: 'nowrap' }}>
+                {searchStatus === 'searching' ? '...' : '🔍 Chercher'}
+              </button>
             </div>
-          ))}
-        </div>
+
+            {searchStatus === 'notfound' && (
+              <div style={{ color: '#f87171', fontSize: 13, marginBottom: 16 }}>Aucun joueur trouvé avec ce pseudo/email exact.</div>
+            )}
+
+            {foundPlayer && playerSave && (
+              <div style={{ padding: '18px 20px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,191,36,0.25)' }}>
+                <div style={{ color: '#fff', fontWeight: 800, fontSize: 15, marginBottom: 2 }}>{foundPlayer.username}</div>
+                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginBottom: 4 }}>{foundPlayer.email}</div>
+                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginBottom: 16 }}>
+                  Palier max atteint : {playerSave.maxPalierReached} · Dernière sauvegarde : {playerSave.lastSaved ? new Date(playerSave.lastSaved).toLocaleString('fr-FR') : 'jamais'}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 11, marginBottom: 5 }}>🪙 Pixel-Coins</label>
+                    <input value={editCoins} onChange={e => setEditCoins(e.target.value)} type="number"
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13 }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 11, marginBottom: 5 }}>💎 Neko-Gemmes</label>
+                    <input value={editGems} onChange={e => setEditGems(e.target.value)} type="number"
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13 }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 11, marginBottom: 5 }}>👑 Couronnes</label>
+                    <input value={editCrowns} onChange={e => setEditCrowns(e.target.value)} type="number"
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13 }} />
+                  </div>
+                </div>
+
+                <button onClick={handleCorrect} disabled={correctBusy} style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.5)', color: '#4ade80', cursor: 'pointer', fontWeight: 700, fontSize: 13 }}>
+                  {correctBusy ? 'Correction en cours…' : '✅ Appliquer la correction'}
+                </button>
+                {correctMsg && <div style={{ marginTop: 10, fontSize: 12, color: correctMsg.startsWith('✅') ? '#4ade80' : '#f87171' }}>{correctMsg}</div>}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
