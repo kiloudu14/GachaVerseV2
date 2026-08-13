@@ -146,7 +146,10 @@ export async function removePlayerCharacter(uid: string, instanceKey: string): P
     if (!snap.exists()) return false;
     const collectionData = { ...(snap.data().collection ?? {}) };
     delete collectionData[instanceKey];
-    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    // adminCorrectionAt : même mécanisme que pour le solde — permet au client
+    // du joueur (s'il est en ligne) d'appliquer le changement en direct au
+    // lieu de le laisser écraser par son propre autosave (voir useCloudSave.ts).
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now(), adminCorrectionAt: Date.now() });
     return true;
   } catch (e) {
     console.error('[AdminTools] removePlayerCharacter:', e);
@@ -181,7 +184,7 @@ export async function addPlayerCharacter(
       xp: existing?.xp ?? 0,
       equippedItems: existing?.equippedItems,
     };
-    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now(), adminCorrectionAt: Date.now() });
     return { ok: true };
   } catch (e) {
     console.error('[AdminTools] addPlayerCharacter:', e);
@@ -198,7 +201,7 @@ export async function setPlayerCharacterLevel(uid: string, instanceKey: string, 
     const collectionData = { ...(snap.data().collection ?? {}) };
     if (!collectionData[instanceKey]) return false;
     collectionData[instanceKey] = { ...collectionData[instanceKey], level: Math.max(1, Math.min(999, Math.floor(newLevel))) };
-    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now() });
+    await updateDoc(doc(db, 'saves', uid), { collection: collectionData, lastSaved: Date.now(), adminCorrectionAt: Date.now() });
     return true;
   } catch (e) {
     console.error('[AdminTools] setPlayerCharacterLevel:', e);
