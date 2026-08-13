@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/layout/AuthModal';
-import { getPendingRequests, getApprovedUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
+import { getPendingRequests, getApprovedUsers, getAllUsers, approveUser, AccessRequest } from '@/lib/firebase/accessRequests';
 import { findPlayer, getPlayerSave, correctPlayerBalance, getPlayerCollection, removePlayerCharacter, addPlayerCharacter, setPlayerCharacterLevel, PlayerLookup, PlayerSaveSummary, OwnedCharacterSummary } from '@/lib/firebase/adminTools';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -15,10 +15,12 @@ export default function AdminPage() {
   const [showAuth, setShowAuth]   = useState(false);
   const [pending, setPending]     = useState<AccessRequest[]>([]);
   const [approvedList, setApprovedList] = useState<AccessRequest[]>([]);
+  const [allUsers, setAllUsers]   = useState<AccessRequest[]>([]);
+  const [accountSearch, setAccountSearch] = useState('');
   const [logs, setLogs] = useState<Audit[]>([]);
   const [busy, setBusy]           = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [showTab, setShowTab] = useState<'requests'|'logs'|'balance'>('requests');
+  const [showTab, setShowTab] = useState<'requests'|'accounts'|'logs'|'balance'>('requests');
 
   // ── Correction de solde (onglet "Rééquilibrer un compte") ─────────────
   const [searchQuery, setSearchQuery] = useState('');
@@ -103,9 +105,10 @@ export default function AdminPage() {
 
   const load = async () => {
     setRefreshing(true);
-    const [p, a] = await Promise.all([getPendingRequests(), getApprovedUsers()]);
+    const [p, a, all] = await Promise.all([getPendingRequests(), getApprovedUsers(), getAllUsers()]);
     setPending(p);
     setApprovedList(a);
+    setAllUsers(all);
     setRefreshing(false);
   };
 
@@ -160,6 +163,9 @@ export default function AdminPage() {
           <button onClick={() => { setShowTab('requests'); load(); }} disabled={refreshing} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='requests' ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(139,92,246,0.14)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
             {refreshing ? 'Actualisation…' : '🔄 Requests'}
           </button>
+          <button onClick={() => { setShowTab('accounts'); load(); }} disabled={refreshing} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='accounts' ? 'rgba(96,165,250,0.14)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(96,165,250,0.14)', color: '#60a5fa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
+            👥 Comptes ({allUsers.length})
+          </button>
           <button onClick={() => { setShowTab('logs'); loadLogs(); }} style={{ padding: '8px 16px', borderRadius: 8, background: showTab==='logs' ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', color: '#a78bfa', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
             Logs
           </button>
@@ -190,6 +196,48 @@ export default function AdminPage() {
           ))}
         </div>
 
+          </>
+        )}
+
+        {showTab === 'accounts' && (
+          <>
+            <h2 style={{ color: '#60a5fa', fontSize: 15, fontWeight: 800, marginBottom: 12 }}>Tous les comptes ({allUsers.length})</h2>
+            <input
+              value={accountSearch}
+              onChange={e => setAccountSearch(e.target.value)}
+              placeholder="Filtrer par pseudo, email ou id de save…"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, background: '#0a0818', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13, marginBottom: 16, boxSizing: 'border-box' }}
+            />
+            {refreshing && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 16 }}>Chargement…</div>}
+            {!refreshing && allUsers.length === 0 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Aucun compte trouvé.</div>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {allUsers
+                .filter(u => {
+                  const q = accountSearch.trim().toLowerCase();
+                  if (!q) return true;
+                  return u.username?.toLowerCase().includes(q)
+                    || u.email?.toLowerCase().includes(q)
+                    || u.uid?.toLowerCase().includes(q);
+                })
+                .map(u => (
+                  <div key={u.uid} style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.18)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                      <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>{u.username || '(sans pseudo)'}</span>
+                      <span style={{ color: u.approved ? '#4ade80' : '#fbbf24', fontSize: 11, fontWeight: 700 }}>
+                        {u.approved ? '✓ Validé' : '⏳ En attente'}
+                      </span>
+                    </div>
+                    <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>{u.email}</div>
+                    <div style={{ color: '#7289da', fontSize: 12 }}>Discord : {u.discordUsername || '—'}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'monospace', marginTop: 2 }}>
+                      ID de save : {u.uid}
+                    </div>
+                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>
+                      Créé le {u.createdAt ? new Date(u.createdAt).toLocaleString('fr-FR') : '—'}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </>
         )}
 

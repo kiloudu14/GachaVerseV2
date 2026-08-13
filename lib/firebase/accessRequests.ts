@@ -54,6 +54,20 @@ export async function getApprovedUsers(): Promise<AccessRequest[]> {
   } catch (e) { console.error('[Access] getApprovedUsers:', e); return []; }
 }
 
+/**
+ * Liste TOUS les comptes existants (collection "users"), quel que soit leur
+ * statut de validation. Le uid du document correspond aussi à l'identifiant
+ * de la sauvegarde cloud du joueur (collection "saves"), donc il sert
+ * directement d'"id de save" affichable dans le panel admin.
+ */
+export async function getAllUsers(): Promise<AccessRequest[]> {
+  if (!db) return [];
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    return snap.docs.map(d => d.data() as AccessRequest).sort((a, b) => b.createdAt - a.createdAt);
+  } catch (e) { console.error('[Access] getAllUsers:', e); return []; }
+}
+
 /** Valide un compte en attente. */
 export async function approveUser(uid: string): Promise<boolean> {
   if (!db) return false;
