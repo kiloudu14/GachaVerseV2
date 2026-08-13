@@ -30,6 +30,12 @@ function pickSymbol(): Symbol {
   return SYMBOLS[SYMBOLS.length - 1];
 }
 
+  while (reels[0].key === reels[1].key && reels[1].key === reels[2].key) {
+    reels = [pickSymbol(), pickSymbol(), pickSymbol()];
+  }
+  return reels;
+}
+
 export function JackpotEvent() {
   const end               = useRandomEventStore(s => s.end);
   const grant             = useGameStore(s => s.grantEventRewards);
@@ -74,7 +80,7 @@ export function JackpotEvent() {
     }, 80);
     setTimeout(() => {
       if (spinIv.current) clearInterval(spinIv.current);
-      const final = isTriple ? [target, target, target] : [target, pickSymbol(), pickSymbol()];
+      const final = isTriple ? [target, target, target] : buildNonTripleReels();
       setReels(final);
       setSpinning(false);
       setDone(true);
