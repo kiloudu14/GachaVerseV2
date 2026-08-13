@@ -49,7 +49,11 @@ function getSessionToken(): string {
 }
 
 export async function claimSession(uid: string): Promise<boolean> {
-  if (!db || !uid) return false;
+  if (!db) {
+    console.warn('[Session] Firestore non disponible — contournement en développement activé.');
+    return true;
+  }
+  if (!uid) return false;
 
   const browserId = getBrowserId();
   const sessionToken = getSessionToken();
@@ -95,7 +99,11 @@ export async function claimSession(uid: string): Promise<boolean> {
 }
 
 export async function heartbeatSession(uid: string): Promise<boolean> {
-  if (!db || !uid || typeof window === 'undefined') return false;
+  if (!db) {
+    console.warn('[Session] Firestore non disponible — heartbeat contourné en développement.');
+    return true;
+  }
+  if (!uid || typeof window === 'undefined') return false;
 
   const browserId = getBrowserId();
   const sessionToken = getSessionToken();
