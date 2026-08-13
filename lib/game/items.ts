@@ -346,14 +346,14 @@ export function rollEquipmentChest(tier: ChestTier): string {
       { rarity:'C',  threshold: 100   },  // 45.92%
     ],
     epic: [
-      { rarity:'T',  threshold: 0.41 },   // 0.41%
-      { rarity:'P',  threshold: 5.93 },   // 5.52%
-      { rarity:'CO', threshold: 13.44 },  // 7.51%
-      { rarity:'S',  threshold: 22.77 },  // 9.33%
-      { rarity:'L',  threshold: 37.71 },  // 14.94%
-      { rarity:'E',  threshold: 75.43 },  // 37.72%
-      { rarity:'R',  threshold: 91.46 },  // 16.03%
-      { rarity:'C',  threshold: 100   },  // 8.54%
+      { rarity:'T',  threshold: 0.91 },   // 0.91%
+      { rarity:'P',  threshold: 7.43 },   // 6.52%
+      { rarity:'CO', threshold: 15.94 },  // 8.51%
+      { rarity:'S',  threshold: 26.77 },  // 10.83%
+      { rarity:'L',  threshold: 43.71 },  // 16.94%
+      { rarity:'E',  threshold: 79.43 },  // 35.72%
+      { rarity:'R',  threshold: 93.46 },  // 14.03%
+      { rarity:'C',  threshold: 100   },   // 6.54%
     ],
   };
 
