@@ -83,6 +83,18 @@ export const GOLD_MULTIPLIERS = [1, 1.25, 1.55, 1.90, 2.35, 2.90, 3.75, 4.50, 5.
 const LOCAL_STORAGE_KEY = 'gachaverse_save';
 const BROADCAST_CHANNEL = typeof window !== 'undefined' ? new BroadcastChannel('gachaverse_state') : null;
 
+// Vérifie le bonus "bonusFor" d'un équipement pour un perso donné — accepte
+// une cible unique ou plusieurs (ex: un objet qui boost Aizen ET Aizen
+// Transcendant). Utilisé pour TOUS les emplacements, pas juste l'arme —
+// avant ce correctif, le bonus des objets non-armes (ex: Plastron Primordial
+// de Cid Kagenou) était défini mais jamais réellement appliqué au DPS.
+function getEquipBonusMult(def: ReturnType<typeof getEquipmentDef>, templateId: string): number {
+  if (!def?.bonusFor) return 1;
+  const target = def.bonusFor.templateId;
+  const matches = Array.isArray(target) ? target.includes(templateId) : target === templateId;
+  return matches ? def.bonusFor.multiplier : 1;
+}
+
 // Sauvegarde immédiate en localStorage + diffuse aux autres onglets
 function broadcastAndSaveLocal() {
   if (typeof window === 'undefined') return;
@@ -861,14 +873,17 @@ export const useGameStore = create<GameStore>()(
         const boostMult    = get().isDpsBoostActive() ? BOOST_MULTIPLIER : 1;
         const prestigeMult = getPrestigeBonuses().dpsMult;
 
-        const helmetMult = getEquipmentDef(owned.equippedItems?.helmet ?? '')?.dpsMultiplier ?? 1;
-        const chestMult  = getEquipmentDef(owned.equippedItems?.chest ?? '')?.dpsMultiplier ?? 1;
-        const pantsMult  = getEquipmentDef(owned.equippedItems?.pants ?? '')?.dpsMultiplier ?? 1;
-        const bootsMult  = getEquipmentDef(owned.equippedItems?.boots ?? '')?.dpsMultiplier ?? 1;
-        const weaponDef  = getEquipmentDef(owned.equippedItems?.weapon ?? '');
-        const weaponMult = weaponDef?.dpsMultiplier ?? 1;
-        const weaponBonusMult = weaponDef?.bonusFor?.templateId === tpl.id ? weaponDef.bonusFor.multiplier : 1;
-        const equippedMult = helmetMult * chestMult * pantsMult * bootsMult * weaponMult * weaponBonusMult;
+        const helmetDef = getEquipmentDef(owned.equippedItems?.helmet ?? '');
+        const chestDef  = getEquipmentDef(owned.equippedItems?.chest ?? '');
+        const pantsDef  = getEquipmentDef(owned.equippedItems?.pants ?? '');
+        const bootsDef  = getEquipmentDef(owned.equippedItems?.boots ?? '');
+        const weaponDef = getEquipmentDef(owned.equippedItems?.weapon ?? '');
+        const helmetMult = (helmetDef?.dpsMultiplier ?? 1) * getEquipBonusMult(helmetDef, tpl.id);
+        const chestMult  = (chestDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(chestDef,  tpl.id);
+        const pantsMult  = (pantsDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(pantsDef,  tpl.id);
+        const bootsMult  = (bootsDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(bootsDef,  tpl.id);
+        const weaponMult = (weaponDef?.dpsMultiplier ?? 1) * getEquipBonusMult(weaponDef, tpl.id);
+        const equippedMult = helmetMult * chestMult * pantsMult * bootsMult * weaponMult;
 
         const dpsWithEquip = Math.floor(calcCharDps(tpl, owned) * equippedMult);
         const withSyn = calcDpsWithSynergies(templateId, dpsWithEquip, activeSynergies);
@@ -893,14 +908,17 @@ export const useGameStore = create<GameStore>()(
           const tpl   = getCharacterById(pureId);
           if (!owned || !tpl) return total;
           const baseDps  = calcCharDps(tpl, owned);
-          const helmetMult = getEquipmentDef(owned.equippedItems?.helmet ?? '')?.dpsMultiplier ?? 1;
-          const chestMult  = getEquipmentDef(owned.equippedItems?.chest ?? '')?.dpsMultiplier ?? 1;
-          const pantsMult  = getEquipmentDef(owned.equippedItems?.pants ?? '')?.dpsMultiplier ?? 1;
-          const bootsMult  = getEquipmentDef(owned.equippedItems?.boots ?? '')?.dpsMultiplier ?? 1;
-          const weaponMult = getEquipmentDef(owned.equippedItems?.weapon ?? '')?.dpsMultiplier ?? 1;
-          const weaponDef  = getEquipmentDef(owned.equippedItems?.weapon ?? '');
-          const weaponBonusMult = weaponDef?.bonusFor?.templateId === tpl.id ? weaponDef.bonusFor.multiplier : 1;
-          const equippedMult = helmetMult * chestMult * pantsMult * bootsMult * weaponMult * weaponBonusMult;
+          const helmetDef = getEquipmentDef(owned.equippedItems?.helmet ?? '');
+          const chestDef  = getEquipmentDef(owned.equippedItems?.chest ?? '');
+          const pantsDef  = getEquipmentDef(owned.equippedItems?.pants ?? '');
+          const bootsDef  = getEquipmentDef(owned.equippedItems?.boots ?? '');
+          const weaponDef = getEquipmentDef(owned.equippedItems?.weapon ?? '');
+          const helmetMult = (helmetDef?.dpsMultiplier ?? 1) * getEquipBonusMult(helmetDef, tpl.id);
+          const chestMult  = (chestDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(chestDef,  tpl.id);
+          const pantsMult  = (pantsDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(pantsDef,  tpl.id);
+          const bootsMult  = (bootsDef?.dpsMultiplier  ?? 1) * getEquipBonusMult(bootsDef,  tpl.id);
+          const weaponMult = (weaponDef?.dpsMultiplier ?? 1) * getEquipBonusMult(weaponDef, tpl.id);
+          const equippedMult = helmetMult * chestMult * pantsMult * bootsMult * weaponMult;
           const dpsWithEquip = Math.floor(baseDps * equippedMult);
           const withSyn  = calcDpsWithSynergies(id, dpsWithEquip, activeSynergies);
           const ultMult  = ult.getDpsMultiplierFor(id);

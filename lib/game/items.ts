@@ -71,7 +71,7 @@ export interface EquipmentDef {
   dpsMultiplier: number;
   recycleValue: number;
   bonusFor?: {
-    templateId: string;
+    templateId: string | string[]; // un seul perso, ou plusieurs (ex: Aizen ET Aizen Transcendant)
     multiplier: number;
     description: string;
   };
@@ -241,6 +241,36 @@ export const EQUIPMENT_DEFS: Record<string, EquipmentDef> = {
     id: 'clef_babylone', name: 'Clé de Babylone', slot:'weapon', rarity:'CO', icon:'✨', color:'#fde68a',
     description:"Armes bennir par les plus puissant", dpsMultiplier:1.58, recycleValue:8500000,
     bonusFor:{ templateId:'gilgamesh', multiplier:1.40, description:"Bonus si équipée par Gilgamesh" },
+  },
+  weapon_primordial_antidepresseur: {
+    id: 'weapon_primordial_antidepresseur', name: 'Antidépresseur', slot:'weapon', rarity:'P', icon:'💊', color:'#ff6b35',
+    description:"Un remède à la mélancolie... ou une arme redoutable. Bonus si équipé par Ouchuu.", dpsMultiplier:1.55, recycleValue:7100000,
+    bonusFor:{ templateId:'ouchuu', multiplier:1.30, description:'Bonus si équipé par Ouchuu' },
+  },
+  weapon_cosmic_pourfenda: {
+    id: 'weapon_cosmic_pourfenda', name: 'Pourfenda', slot:'weapon', rarity:'CO', icon:'⚔️', color:'#34d399',
+    description:"Une lame sombre qui tranche l'espace lui-même. Bonus si équipé par Yami.", dpsMultiplier:1.75, recycleValue:5700000,
+    bonusFor:{ templateId:'yami', multiplier:1.35, description:'Bonus si équipé par Yami' },
+  },
+  weapon_transcendant_griffon: {
+    id: 'weapon_transcendant_griffon', name: 'Griffon', slot:'weapon', rarity:'T', icon:'🦅', color:'#e879f9',
+    description:"Une arme légendaire à la puissance du Roi. Bonus si équipé par Shanks.", dpsMultiplier:1.95, recycleValue:9300000,
+    bonusFor:{ templateId:'shanks', multiplier:1.90, description:'Bonus si équipé par Shanks' },
+  },
+  weapon_transcendant_alte_alarmer: {
+    id: 'weapon_transcendant_alte_alarmer', name: 'Alte Alarmer', slot:'weapon', rarity:'T', icon:'🔔', color:'#e879f9',
+    description:"Une arme antique qui annonce la chute des empires. Bonus si équipé par Qin Shi Huang.", dpsMultiplier:1.95, recycleValue:9400000,
+    bonusFor:{ templateId:'qin_shi_huang', multiplier:1.90, description:'Bonus si équipé par Qin Shi Huang' },
+  },
+  weapon_primordial_hogyoku: {
+    id: 'weapon_primordial_hogyoku', name: 'Hogyoku Éveillé', slot:'weapon', rarity:'P', icon:'💠', color:'#ff6b35',
+    description:"L'orbe interdit qui efface les frontières entre Hollow et Shinigami. Bonus si équipé par Aizen ou Aizen Transcendant.", dpsMultiplier:1.55, recycleValue:7300000,
+    bonusFor:{ templateId:['aizen','aizen_t'], multiplier:1.30, description:'Bonus si équipé par Aizen ou Aizen Transcendant' },
+  },
+  chest_primordial_gi_fusion: {
+    id: 'chest_primordial_gi_fusion', name: 'Gi de Fusion', slot:'chest', rarity:'P', icon:'🥋', color:'#ff6b35',
+    description:"Le vêtement porté lors des fusions les plus puissantes de l'univers. Bonus si équipé par Vegeto ou Gogeta.", dpsMultiplier:1.38, recycleValue:620000,
+    bonusFor:{ templateId:['vegeto','gogeta'], multiplier:1.30, description:'Bonus si équipé par Vegeto ou Gogeta' },
   },
 };
 
