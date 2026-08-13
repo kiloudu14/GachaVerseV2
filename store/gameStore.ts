@@ -68,14 +68,14 @@ const EVENT_QUESTS: Omit<Quest,'current'|'done'>[] = [
 // Coût et multiplicateur du Coffre d'Or — partagés entre upgradeGold() et resolveEnemyDeath()
 // 8 niveaux, multiplicateur max ×5 (était ×2 en 6 niveaux)
 export const GOLD_UPGRADE_COSTS = [
-  4_000,       // lv1
-  20_000,      // lv2
-  80_000,      // lv3
-  300_000,     // lv4
-  800_000,     // lv5
-  3_000_000,   // lv6
-  12_000_000,  // lv7
-  50_000_000,  // lv8
+  6_000,       // lv1 (≈×1.5)
+  30_000,      // lv2
+  120_000,     // lv3
+  450_000,     // lv4
+  1_200_000,   // lv5
+  4_500_000,   // lv6
+  18_000_000,  // lv7
+  75_000_000,  // lv8
 ];
 export const GOLD_MULTIPLIERS = [1, 1.25, 1.55, 1.90, 2.35, 2.90, 3.75, 4.50, 5.00];
 

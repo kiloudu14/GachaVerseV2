@@ -141,7 +141,8 @@ export function calcBaseDpc(level: number): number {
  *   lv 0 → 60   lv 5 → 300   lv 10 → 1 502   lv 20 → 37 647   lv 50 → 591M
  */
 export function calcClickUpgradeCost(level: number): number {
-  return Math.floor(60 * Math.pow(1.38, level));
+  // Augmenté : base plus élevée et croissance légèrement augmentée
+  return Math.floor(90 * Math.pow(1.45, level));
 }
 
 // ── Coûts de niveau ───────────────────────────────────────────────────────
@@ -149,14 +150,15 @@ export function levelUpCost(level: number, rarity: Rarity): number {
   const rarityBase: Record<Rarity, number> = {
     C:16, U:30, R:50, E:120, L:300, M:800, S:2400, CO:8000, P:24000, T:80000,
   };
-  // Croissance 1.07 au lieu de 1.085 — plus accessible aux niveaux élevés
-  return Math.floor(rarityBase[rarity] * Math.pow(1.07, level - 1));
+  // Légère augmentation de la croissance pour rendre les montées de niveau
+  // un peu plus coûteuses (1.08 au lieu de 1.07)
+  return Math.floor(rarityBase[rarity] * Math.pow(1.08, level - 1));
 }
 
 export function heroLevelUpCost(level: number): number {
-  // 150 × 1.18^(level-1) — moins punitif (était 200 × 1.22^level)
-  // lv1→150  lv10→700  lv50→65K  lv100→3.6M
-  return Math.floor(150 * Math.pow(1.18, level - 1));
+  // Augmenter légèrement le coût de montée du héros pour ralentir la progression
+  // 200 × 1.20^(level-1)
+  return Math.floor(200 * Math.pow(1.20, level - 1));
 }
 
 // ── Coût d'évolution ─────────────────────────────────────────────────────

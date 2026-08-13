@@ -23,8 +23,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "firebase-admin": "^11.11.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "firebase-admin": "^11.11.0"
+    "typescript": "^5"
   }
 }
