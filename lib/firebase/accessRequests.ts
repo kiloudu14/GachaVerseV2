@@ -39,11 +39,43 @@ export async function ensureUserDoc(
   try {
     const ref = doc(db, 'users', uid);
     const snap = await getDoc(ref);
-    if (snap.exists()) return; // déjà une fiche, on n'y touche pas
+
+    const resolveUsername = async (fallback: string): Promise<string> => {
+      let resolved = fallback.trim();
+      if (!resolved) {
+        try {
+          const saveSnap = await getDoc(doc(db!, 'saves', uid));
+          const saveUsername = saveSnap.exists() ? (saveSnap.data().username as string | undefined) : undefined;
+          if (saveUsername && saveUsername.trim()) resolved = saveUsername.trim();
+        } catch { /* ignore, on retombe sur les valeurs par défaut ci-dessous */ }
+      }
+      if (!resolved) resolved = email ? email.split('@')[0] : '(pseudo inconnu)';
+      return resolved;
+    };
+
+    if (snap.exists()) {
+      // Répare les fiches déjà créées avec un pseudo manquant/placeholder
+      // (ex: comptes email/mdp rattrapés avant ce correctif, qui n'avaient
+      // pas encore accès au pseudo stocké dans la sauvegarde de jeu).
+      const current = snap.data().username as string | undefined;
+      if (!current || !current.trim() || current === '(pseudo inconnu)') {
+        const fixed = await resolveUsername(username);
+        if (fixed !== '(pseudo inconnu)') await updateDoc(ref, { username: fixed });
+      }
+      return;
+    }
+
+    // Firebase Auth ne fournit jamais de displayName pour les comptes
+    // email/mot de passe (seulement pour Google) : `username` arrive donc
+    // vide ici pour la plupart des anciens comptes. Le vrai pseudo choisi
+    // par le joueur existe déjà dans sa sauvegarde de jeu (saves/{uid}) —
+    // on va le chercher là avant de se rabattre sur l'email ou "inconnu".
+    const resolvedUsername = await resolveUsername(username);
+
     await setDoc(ref, {
       uid,
       email: email || '',
-      username: username || '(pseudo inconnu)',
+      username: resolvedUsername,
       discordUsername: '',
       approved: true,
       createdAt: Date.now(),
