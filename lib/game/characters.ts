@@ -95,7 +95,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('kioraku_evo1', 'Kyoraku — Bankai', 'kioraku', 200, 5),
   ]),
   c('arthur_pandragon', 'Arthur Pandragon', 'L', 200, 'Fate'),
-  ce('arthur_leywin', 'Arthur Leywin', 'P', 6000, 'Tbate', [
+  ce('arthur_leywin', 'Arthur Leywin', 'P', 6720, 'Tbate', [
     f('arthur_leywin_base', 'Arthur Leywin',           'arthur_leywin', 100, 1),
     f('arthur_leywin_evo1', 'Arthur Leywin — Lame d’Éther', 'arthur_leywin', 200, 10,  'cristal_ether'),
     f('arthur_leywin_evo2', 'Arthur Leywin — Épée de l’Aube', 'arthur_leywin', 300, 112, 'epee_ether'),
@@ -165,7 +165,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   ]),
 
   // ── PRIMORDIAUX ──────────────────────────────────────────────────────────
-  ce('goku', 'Goku', 'P', 5000, 'Dragon Ball Z', [
+  ce('goku', 'Goku', 'P', 6640, 'Dragon Ball Z', [
     f('goku_base', 'Goku',                'goku', 100,  1),
     f('goku_evo1', 'Goku Super Saiyen',   'goku', 200,  7),
     f('goku_evo2', 'Goku Super Saiyen 3', 'goku', 300,  38),
@@ -174,7 +174,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('goku_evo5', 'Goku Signe UI',       'goku', 600,  170),
     f('goku_evo6', 'Goku Ultra Instinct', 'goku', 700,  400),
   ]),
-  ce('limule', 'Limule', 'P', 4500, 'Tensei Slime', [
+  ce('limule', 'Limule', 'P', 6600, 'Tensei Slime', [
     f('limule_base', 'Limule',            'limule', 100,  1),
     f('limule_evo1', 'Limule Évoluée',    'limule', 200,  7),
     f('limule_evo2', 'Limule Ancestrale', 'limule', 300, 65),
@@ -500,48 +500,48 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('zorua_zoroark',   'Zoroark',              'zorua', 300, 14),
     f('zorua_hisui2',    "Zoroark d'Hisui",      'zorua', 400, 35),
   ]),
-  ce('brume', 'Brume', 'P', 5000, 'Nos Animaux', [
+  ce('brume', 'Brume', 'P', 6640, 'Nos Animaux', [
     f('brume_base',      'Brume',                'brume', 100, 1),
     f('brume_sacree',    'Brume Sacrée',         'brume', 200, 7),
     f('brume_ultime',    'Brume Ultime',         'brume', 300, 20),
   ]),
 
   // ── PRIMORDIAUX V2 ──────────────────────────────────────────────────────
-  ce('steve', 'Steve', 'P', 14000, 'Minecraft', [
+  ce('steve', 'Steve', 'P', 7357, 'Minecraft', [
     f('steve_base',      'Steve',                'steve', 100, 1),
     f('steve_diamond',   'Armure en Diamant',    'steve', 200, 8),
     f('steve_netherite', 'Armure en Netherite',  'steve', 300, 22),
   ]),
-  ce('dva', 'D.Va', 'P', 15000, 'Overwatch', [
+  ce('dva', 'D.Va', 'P', 7437, 'Overwatch', [
     f('dva_base',        'D.Va',                 'dva', 100, 1),
     f('dva_mech',        'D.Va — Mech',          'dva', 200, 8.5),
   ]),
-  ce('benimaru', 'Benimaru', 'P', 15000, 'Fire Force', [
+  ce('benimaru', 'Benimaru', 'P', 7437, 'Fire Force', [
     f('benimaru_base',   'Benimaru',             'benimaru', 100, 1),
     f('benimaru_prime',  'Benimaru — Prime',     'benimaru', 200, 9),
   ]),
-  ce('aatrox_lol', 'Aatrox', 'P', 16000, 'League of Legends', [
+  ce('aatrox_lol', 'Aatrox', 'P', 7517, 'League of Legends', [
     f('aatrox_lol_base', 'Aatrox',              'aatrox_lol', 100, 1),
     f('aatrox_lol_6',    'Aatrox Level 6',      'aatrox_lol', 200, 7),
     f('aatrox_lol_20',   'Aatrox Level 20',     'aatrox_lol', 300, 20),
   ]),
-  ce('the_knight', 'The Knight', 'P', 14000, 'Hollow Knight', [
+  ce('the_knight', 'The Knight', 'P', 7357, 'Hollow Knight', [
     f('the_knight_base', 'The Knight',          'the_knight', 100, 1),
     f('the_knight_lvl1', 'Aiguillon Lvl 1',     'the_knight', 200, 7),
     f('the_knight_lvl2', 'Aiguillon Lvl 2',     'the_knight', 300, 18),
     f('the_knight_lvl3', 'Aiguillon Lvl 3',     'the_knight', 400, 50),
   ]),
-  ce('eren', 'Eren', 'P', 15000, 'Attaque des Titans', [
+  ce('eren', 'Eren', 'P', 7437, 'Attaque des Titans', [
     f('eren_base',       'Eren',                 'eren', 100, 1),
     f('eren_adult',      'Eren Adulte',          'eren', 200, 7),
     f('eren_assaillant', 'Titan Assaillant',     'eren', 300, 20),
     f('eren_originel',   'Titan Originel',       'eren', 400, 55),
   ]),
-  ce('rayquaza', 'Rayquaza', 'P', 16000, 'Pokémon', [
+  ce('rayquaza', 'Rayquaza', 'P', 7517, 'Pokémon', [
     f('rayquaza_base',   'Rayquaza',             'rayquaza', 100, 1),
     f('rayquaza_mega',   'Méga Rayquaza',        'rayquaza', 200, 9),
   ]),
-  ce('ouchuu', 'Ouchuu', 'P', 14000, "Chill&Cool", [
+  ce('ouchuu', 'Ouchuu', 'P', 7357, "Chill&Cool", [
     f('ouchuu_base',     'Ouchuu',               'ouchuu', 100, 1),
     f('ouchuu_dep',      'Ouchuu Dépression Max','ouchuu', 200, 10),
   ]),
@@ -555,26 +555,26 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   // ══════════════════════════════════════════════════════════════════════════
   // PERSONNAGES CRAFTABLES — Obtenus uniquement via la Forge
   // ══════════════════════════════════════════════════════════════════════════
-  ce('vegeto', 'Végéto', 'P', 18000, 'Dragon Ball Z', [
+  ce('vegeto', 'Végéto', 'P', 7676, 'Dragon Ball Z', [
     f('vegeto_base',     'Végéto',               'vegeto', 100, 1),
     f('vegeto_ss',       'Végéto Super Saiyen',  'vegeto', 200, 6),
     f('vegeto_ssblue',   'Végéto SS Blue',       'vegeto', 300, 18),
   ]),
-  ce('gogeta', 'Gogeta', 'P', 17000, 'Dragon Ball Z', [
+  ce('gogeta', 'Gogeta', 'P', 7596, 'Dragon Ball Z', [
     f('gogeta_base',     'Gogeta',               'gogeta', 100, 1),
     f('gogeta_ss',       'Gogeta Super Saiyen',  'gogeta', 200, 6),
     f('gogeta_ssblue',   'Gogeta SS Blue',       'gogeta', 300, 17),
   ]),
-  ce('aizen_t', 'Aizen Transcendant', 'P', 52000, 'Bleach', [
+  ce('aizen_t', 'Aizen Transcendant', 'P', 10386, 'Bleach', [
     f('aizen_t_base',    'Aizen Transcendant',   'aizen_t', 100, 1),
     f('aizen_t_fusion',  'Fusion Complète',      'aizen_t', 200, 10),
   ]),
-  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 55000, 'Demon Slayer', [
+  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 10625, 'Demon Slayer', [
     f('yoriichi_base',   'Yoriichi',             'yoriichi', 100, 1),
     f('yoriichi_sun',    'Danse du Soleil',      'yoriichi', 200, 11),
   ]),
-  c('brunhilde',   'Brunhilde',                  'P', 5500, 'Valkyrie Apocalypse'),
-  ce('chara', 'Chara', 'P', 50000, 'Undertale', [
+  c('brunhilde',   'Brunhilde',                  'P', 6680, 'Valkyrie Apocalypse'),
+  ce('chara', 'Chara', 'P', 10226, 'Undertale', [
     f('chara_base',      'Chara',                'chara', 100, 1),
     f('chara_genocide',  'Route Génocide',       'chara', 200, 10),
   ]),
