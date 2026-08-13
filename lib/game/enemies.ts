@@ -554,7 +554,12 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
 
   // HP : 50 × 1.12^(global-1)
   const baseHp = Math.floor(50 * Math.pow(1.12, global - 1));
-  const maxHp  = Math.floor(baseHp * hpMult);
+  // Boss uniquement, à partir du palier 20 : +15% de PV supplémentaires par
+  // palier au-delà de 20, pour compenser la puissance cumulée (niveau, rang,
+  // équipement, synergies...) qui grandit plus vite que la courbe de base sur
+  // la fin de partie.
+  const lateBossExtra = (isBoss && palier >= 20) ? Math.pow(1.15, palier - 19) : 1;
+  const maxHp  = Math.floor(baseHp * hpMult * lateBossExtra);
 
   // Coins : base × growth^(global-1), boss × bossMult
   // On applique en plus un scale global pour calibrer la vitesse d'obtention des coins.
@@ -562,11 +567,14 @@ export function generateEnemy(wave: number, palier: number, maxPalierReached: nu
   const COIN_GROWTH = 1.13;
   const COIN_BOSS_MULT = 12;
   const COIN_SCALE = 0.75; // réduire légèrement les gains (75% des valeurs d'origine)
+  // À partir du palier 19 : -10% d'or supplémentaires par palier (tous les
+  // ennemis, pas que les boss), pour freiner l'inflation de fin de partie.
+  const lateCoinReduction = palier >= 19 ? Math.pow(0.90, palier - 18) : 1;
 
   const rawCoins = isBoss
     ? Math.floor(COIN_BASE * Math.pow(COIN_GROWTH, global - 1) * COIN_BOSS_MULT)
     : Math.floor(COIN_BASE * Math.pow(COIN_GROWTH, global - 1));
-  const pixelCoins = Math.max(0, Math.floor(rawCoins * COIN_SCALE));
+  const pixelCoins = Math.max(0, Math.floor(rawCoins * COIN_SCALE * lateCoinReduction));
 
   // Gemme garantie du "mini-boss" (vague 5) : uniquement lors d'une vraie
   // progression, jamais en re-farmant un palier déjà validé — sinon c'est un

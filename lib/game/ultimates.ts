@@ -315,8 +315,8 @@ export const ULTIMATE_DEFS: Record<string, UltimateDef> = {
   },
   arthur_leywin: {
     templateId:'arthur_leywin', name:'Lame d\'Éther', duration:5, cooldown:540,
-    description:'Épées automatiques (4/s à 100% du DPS d\'équipe) pendant 5s',
-    effect:{ autoStrikes:{ perSecond:4, source:'teamDpsPct', value:100 } }, animDuration:3000,
+    description:'Épées automatiques (4/s à 60% du DPS d\'équipe) pendant 5s',
+    effect:{ autoStrikes:{ perSecond:4, source:'teamDpsPct', value:60 } }, animDuration:3000, // ← nerfé : était 100% (x5.0 au total, désormais x3.4 comme les ultimes similaires)
   },
 
   // ══ TRANSCENDANT — cooldown 600s ══════════════════════════════════════

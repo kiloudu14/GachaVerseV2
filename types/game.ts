@@ -146,7 +146,7 @@ export function calcClickUpgradeCost(level: number): number {
 // ── Coûts de niveau ───────────────────────────────────────────────────────
 export function levelUpCost(level: number, rarity: Rarity): number {
   const rarityBase: Record<Rarity, number> = {
-    C:16, U:30, R:50, E:120, L:300, M:800, S:2400, CO:8000, P:72000, T:80000,
+    C:16, U:30, R:50, E:120, L:300, M:800, S:2400, CO:20000, P:110000, T:140000,
   };
   // Légère augmentation de la croissance pour rendre les montées de niveau
   // un peu plus coûteuses (1.08 au lieu de 1.07)

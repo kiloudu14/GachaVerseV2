@@ -95,7 +95,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('kioraku_evo1', 'Kyoraku — Bankai', 'kioraku', 200, 5),
   ]),
   c('arthur_pandragon', 'Arthur Pandragon', 'L', 200, 'Fate'),
-  ce('arthur_leywin', 'Arthur Leywin', 'P', 6720, 'Tbate', [
+  ce('arthur_leywin', 'Arthur Leywin', 'P', 4700, 'Tbate', [
     f('arthur_leywin_base', 'Arthur Leywin',           'arthur_leywin', 100, 1),
     f('arthur_leywin_evo1', 'Arthur Leywin — Lame d’Éther', 'arthur_leywin', 200, 10,  'cristal_ether'),
     f('arthur_leywin_evo2', 'Arthur Leywin — Épée de l’Aube', 'arthur_leywin', 300, 112, 'epee_ether'),
@@ -122,7 +122,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   c('dazai', 'Dazai',        'M', 570, 'Bungou Stray Dogs'),
 
   // ── STELLAIRES ───────────────────────────────────────────────────────────
-  ce('naruto', 'Naruto', 'S', 1200, 'Naruto', [
+  ce('naruto', 'Naruto', 'S', 900, 'Naruto', [
     f('naruto_base', 'Naruto',                 'naruto', 100, 1),
     f('naruto_evo1', 'Naruto — Mode Sage',     'naruto', 200, 5),
     f('naruto_evo2', 'Naruto — Chakra Kyuubi', 'naruto', 300, 18),
@@ -360,7 +360,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('nezuko_base',     'Nezuko',               'nezuko', 100, 1),
     f('nezuko_demon',    'Forme Démoniaque',     'nezuko', 200, 5.5),
   ]),
-  ce('zenitsu', 'Zenitsu', 'M', 570, 'Demon Slayer', [
+  ce('zenitsu', 'Zenitsu', 'M', 430, 'Demon Slayer', [
     f('zenitsu_base',    'Zenitsu',              'zenitsu', 100, 1),
     f('zenitsu_maquille','Zenitsu Maquillé',     'zenitsu', 200, 5),
     f('zenitsu_marque',  'Zenitsu — Marque',     'zenitsu', 300, 12),
@@ -569,7 +569,7 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('aizen_t_base',    'Aizen Transcendant',   'aizen_t', 100, 1),
     f('aizen_t_fusion',  'Fusion Complète',      'aizen_t', 200, 10),
   ]),
-  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 10625, 'Demon Slayer', [
+  ce('yoriichi', 'Yoriichi Tsugikuni', 'P', 6900, 'Demon Slayer', [
     f('yoriichi_base',   'Yoriichi',             'yoriichi', 100, 1),
     f('yoriichi_sun',    'Danse du Soleil',      'yoriichi', 200, 11),
   ]),

@@ -65,7 +65,7 @@ export const SYNERGIES: SynergyDef[] = [
   { id:'lol',         universe:'League of Legends',    label:'League of Legends',color:'#38bdf8', glow:'#0ea5e9', icon:'⚔',
     thresholds:[{ count:2, label:'+22% DPS LoL',dpsBonus:22,globalBonus:0 },{ count:4, label:'+42% DPS +6% global',dpsBonus:42,globalBonus:6 }] },
   { id:'demonslayer', universe:'Demon Slayer',         label:'Demon Slayer',     color:'#22d3ee', glow:'#0891b2', icon:'🗡',
-    thresholds:[{ count:2, label:'+20% DPS Demon Slayer',dpsBonus:20,globalBonus:0 },{ count:3, label:'+42% DPS',dpsBonus:42,globalBonus:0 }] },
+    thresholds:[{ count:2, label:'+20% DPS Demon Slayer',dpsBonus:20,globalBonus:0 },{ count:3, label:'+33% DPS',dpsBonus:33,globalBonus:0 }] },
   { id:'cuphead',     universe:'Cuphead',              label:'Cuphead',          color:'#f87171', glow:'#dc2626', icon:'🎬',
     thresholds:[{ count:2, label:'+18% DPS Cuphead',dpsBonus:18,globalBonus:0 },{ count:3, label:'+40% DPS',dpsBonus:40,globalBonus:0 }] },
   { id:'nosanimaux',  universe:'Nos Animaux',          label:'Nos Animaux',      color:'#86efac', glow:'#22c55e', icon:'🐾',
