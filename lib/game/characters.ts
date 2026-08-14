@@ -413,10 +413,10 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('pomni_base',      'Pomni',                'pomni', 100, 1),
     f('pomni_prime',     'Pomni — Prime',        'pomni', 200, 5),
   ]),
-  ce('alice_sao', 'Alice', 'S', 1566, 'Sword Art Online', [
+  ce('alice_sao', 'Alice', 'S', 1666, 'Sword Art Online', [
     f('alice_sao_base',  'Alice',                'alice_sao', 100, 1),
     f('alice_sao_armor', 'Armure Légendaire',    'alice_sao', 200, 4.5),
-    f('alice_sao_max',   'Puissance Maximale',   'alice_sao', 300, 11),
+    f('alice_sao_max',   'Puissance Maximale',   'alice_sao', 300, 17),
   ]),
   ce('atsushi',           'Atsushi',              'S', 1420, 'Bungou Stray Dogs', [
     f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
