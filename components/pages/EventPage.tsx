@@ -3,9 +3,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useGameStore, bumpBossQuests } from '@/store/gameStore';
 import { useUltimateStore } from '@/store/ultimateStore';
 import { EVENT_BOSSES, rollEventDrop, getEventBossMaxHp, EventBossDef, DropResult } from '@/lib/game/eventBoss';
-import { getItemDef } from '@/lib/game/items';
+import { getItemDef, getEquipmentDef } from '@/lib/game/items';
 import { getCharacterById } from '@/lib/game/characters';
-import { RARITY_CONFIG } from '@/types/game';
+import { RARITY_CONFIG, calcCharDps } from '@/types/game';
+import { calcDpsWithSynergies, computeActiveSynergies } from '@/lib/game/synergies';
 import { CharacterCardThumb } from '@/components/ui/CharacterCardThumb';
 import { formatNumber } from '@/lib/game/format';
 import { useFallbackImage, buildImageCandidates, stripKnownExtension } from '@/lib/image-fallback';
@@ -209,12 +210,39 @@ function EventLobby({ onSelect }: { onSelect: (id: string) => void }) {
 }
 
 function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void }) {
-  const { getHeroDpc, getTotalDps, addItem, nekoGems, bossCrowns } = useGameStore();
+  const { getHeroDpc, getTotalDps, addItem, nekoGems, bossCrowns, collection, equippedTeam } = useGameStore();
   const { registerClick, getClickDpcMultiplier, consumeNextClickMultiplier, getActiveEnemyDamageTakenMultiplier } = useUltimateStore();
   const { checkClick, isBlocked, strikeLevel, detectionReason, submitApology } = useAntiAutoclick();
 
   const boss = useMemo(() => EVENT_BOSSES.find(b => b.id === bossId) ?? EVENT_BOSSES[0], [bossId]);
-  const [maxHp, setMaxHp] = useState(() => getEventBossMaxHp(boss, getHeroDpc() + getTotalDps()));
+  
+  // Calcul du DPS équipé avec équipements et synergies (même logique que CompanionsPage)
+  const activeSynergies = useMemo(() => computeActiveSynergies(equippedTeam), [equippedTeam]);
+  const getEquipmentMultiplier = useCallback((ownedChar: typeof collection[string], tpl: ReturnType<typeof getCharacterById>) => {
+    if (!ownedChar || !tpl) return 1;
+    const weaponDef = getEquipmentDef(ownedChar.equippedItems?.weapon ?? '');
+    const weaponBonusMult = weaponDef?.bonusFor?.templateId === tpl.id ? (weaponDef?.bonusFor?.multiplier ?? 1) : 1;
+    return Object.values(ownedChar.equippedItems ?? {}).reduce((mult, eqId) => {
+      if (!eqId) return mult;
+      const def = getEquipmentDef(eqId);
+      return def ? mult * def.dpsMultiplier : mult;
+    }, 1) * weaponBonusMult;
+  }, [collection]);
+  
+  const totalEquippedDps = useMemo(() => {
+    return equippedTeam.reduce((sum, id) => {
+      if (!id) return sum;
+      const owned = collection[id];
+      if (!owned) return sum;
+      const tpl = getCharacterById(owned.templateId);
+      if (!tpl) return sum;
+      const base = calcCharDps(tpl, owned);
+      const equippedMult = getEquipmentMultiplier(owned, tpl);
+      return sum + calcDpsWithSynergies(id, Math.floor(base * equippedMult), activeSynergies);
+    }, 0);
+  }, [equippedTeam, collection, getEquipmentMultiplier, activeSynergies]);
+  
+  const [maxHp, setMaxHp] = useState(() => getEventBossMaxHp(boss, getHeroDpc() + totalEquippedDps));
   const [hp, setHp] = useState(maxHp);
   const [dmgs, setDmgs] = useState<Dmg[]>([]);
   const [hit, setHit] = useState(false);
@@ -224,18 +252,18 @@ function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void })
   const now = Date.now();
 
   useEffect(() => {
-    const freshMax = getEventBossMaxHp(boss, getHeroDpc() + getTotalDps());
+    const freshMax = getEventBossMaxHp(boss, getHeroDpc() + totalEquippedDps);
     setMaxHp(freshMax); setHp(freshMax); setDead(false); setDrop(null);
-  }, [boss, getHeroDpc, getTotalDps]);
+  }, [boss, getHeroDpc, totalEquippedDps]);
 
   useEffect(() => {
     if (dead) return;
     const id = setInterval(() => {
-      const dps = getTotalDps() * getActiveEnemyDamageTakenMultiplier();
+      const dps = totalEquippedDps * getActiveEnemyDamageTakenMultiplier();
       if (dps > 0) setHp(h => Math.max(0, h - dps));
     }, 1000);
     return () => clearInterval(id);
-  }, [dead, getTotalDps, getActiveEnemyDamageTakenMultiplier]);
+  }, [dead, totalEquippedDps, getActiveEnemyDamageTakenMultiplier]);
 
   useEffect(() => {
     if (hp <= 0 && !dead) {
@@ -274,7 +302,7 @@ function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void })
   }, [dead, checkClick, getHeroDpc, getClickDpcMultiplier, consumeNextClickMultiplier, getActiveEnemyDamageTakenMultiplier, registerClick]);
 
   const respawn = () => {
-    const freshMax = getEventBossMaxHp(boss, getHeroDpc() + getTotalDps());
+    const freshMax = getEventBossMaxHp(boss, getHeroDpc() + totalEquippedDps);
     setMaxHp(freshMax); setHp(freshMax); setDead(false); setDrop(null); setKills(k => k + 1);
   };
 
