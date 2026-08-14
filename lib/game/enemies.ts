@@ -180,15 +180,15 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
   // ── PALIER 13 : Fate — Guerre du Saint Graal ─────────────────────────────
   13: [
     { name:'Enkidu',                     sprite: sp(13,'enkidu')                          },
-    { name:'Héraclès (Strange/Fake)',    sprite: sp(13,'hercules_sf'),  hpMult:1.8        },
-    { name:'Mordred',                    sprite: sp(13,'mordred'),      hpMult:2.2        },
-    { name:'Héraclès (UBW)',             sprite: sp(13,'hercules_ubw'), hpMult:2.8        },
-    { name:'Karna',                      sprite: sp(13,'karna'),        hpMult:3.2        },
-    { name:'Cu Chulainn',                sprite: sp(13,'cu_chulainn'),  hpMult:3.5        },
-    { name:'Emiya Shirou',               sprite: sp(13,'emiya_shirou'), hpMult:4.0        },
-    { name:'Achilles',                   sprite: sp(13,'achilles'),     hpMult:5.0        },
-    { name:'Richard Coeur de Lion',      sprite: sp(13,'richard'),      hpMult:6.0        },
-    { name:'Iskandar',                   sprite: sp(13,'iskandar'),     isBoss:true, hpMult:15 },
+    { name:'Héraclès (Strange/Fake)',    sprite: sp(13,'hercules_sf'),  hpMult:1.5        },
+    { name:'Mordred',                    sprite: sp(13,'mordred'),      hpMult:1.8        },
+    { name:'Héraclès (UBW)',             sprite: sp(13,'hercules_ubw'), hpMult:2.1        },
+    { name:'Karna',                      sprite: sp(13,'karna'),        hpMult:2.7        },
+    { name:'Cu Chulainn',                sprite: sp(13,'cu_chulainn'),  hpMult:3.1        },
+    { name:'Emiya Shirou',               sprite: sp(13,'emiya_shirou'), hpMult:3.7        },
+    { name:'Achilles',                   sprite: sp(13,'achilles'),     hpMult:4.2        },
+    { name:'Richard Coeur de Lion',      sprite: sp(13,'richard'),      hpMult:5.5        },
+    { name:'Iskandar',                   sprite: sp(13,'iskandar'),     isBoss:true, hpMult:14.2 },
   ],
   // ── PALIER 14 : Zelda — Royaume du Crépuscule ────────────────────────────
   14: [
@@ -201,7 +201,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Gor Cobalt',          sprite: sp(14,'gor_cobalt'),    hpMult:3.5           },
     { name:'Roi Bulbin',          sprite: sp(14,'roi_bulbin'),    hpMult:4.0           },
     { name:'Xanto',               sprite: sp(14,'xanto'),         hpMult:5.5           },
-    { name:'Ganondorf',           sprite: sp(14,'ganondorf'),     isBoss:true, hpMult:15 },
+    { name:'Ganondorf',           sprite: sp(14,'ganondorf'),     isBoss:true, hpMult:14.8 },
   ],
   // ── PALIER 15 : R.E.P.O — Univers R.E.P.O ───────────────────────────────
   15: [
@@ -214,7 +214,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Crane',                     sprite: sp(15,'crane'),             hpMult:3.2    },
     { name:'Laser',                     sprite: sp(15,'laser'),             hpMult:4.0    },
     { name:'Dress',                     sprite: sp(15,'dress'),             hpMult:5.0    },
-    { name:'Nonne',                     sprite: sp(15,'nonne'),             isBoss:true, hpMult:15.5 },
+    { name:'Nonne',                     sprite: sp(15,'nonne'),             isBoss:true, hpMult:15 },
   ],
   // ── PALIER 16 : Danganronpa — Académie Kibougamine ───────────────────────
   16: [
@@ -227,7 +227,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Celeste',            sprite: sp(16,'celeste'),       hpMult:3.5           },
     { name:'Kiibo',              sprite: sp(16,'kiibo'),         hpMult:4.0           },
     { name:'Rantaro',            sprite: sp(16,'rantaro'),       hpMult:5.0           },
-    { name:'Maki',               sprite: sp(16,'maki'),          isBoss:true, hpMult:15.5 },
+    { name:'Maki',               sprite: sp(16,'maki'),          isBoss:true, hpMult:15.2 },
   ],
   // ── PALIER 17 : Digital Circus — Chapiteau du Cirque ─────────────────────
   17: [
@@ -253,7 +253,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Chudelkin',                  sprite: sp(18,'chudelkin'),     hpMult:4.0         },
     { name:'Quinella',                   sprite: sp(18,'quinella'),      hpMult:5.0         },
     { name:'Dark God Vecta (Gabriel)',   sprite: sp(18,'gabriel'),       hpMult:6.5         },
-    { name:'Subtilizer (Forme Finale)',  sprite: sp(18,'subtilizer'),    isBoss:true, hpMult:16 },
+    { name:'Subtilizer (Forme Finale)',  sprite: sp(18,'subtilizer'),    isBoss:true, hpMult:15.8 },
   ],
   // ── PALIER 19 : Bungo Stray Dogs — Yokohama ──────────────────────────────
   19: [
@@ -279,7 +279,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Mauga',              sprite: sp(20,'mauga'),         hpMult:3.2           },
     { name:'Reaper',             sprite: sp(20,'reaper'),        hpMult:4.0           },
     { name:'Doomfist',           sprite: sp(20,'doomfist'),      hpMult:5.0           },
-    { name:'Vendetta',           sprite: sp(20,'vendetta'),      isBoss:true, hpMult:16 },
+    { name:'Vendetta',           sprite: sp(20,'vendetta'),      isBoss:true, hpMult:16.2 },
   ],
   // ── PALIER 21 : Les Carnets de l'Apothicaire — Le Pavillon de Jade ───────
   21: [
@@ -305,7 +305,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Power',              sprite: sp(22,'power'),         hpMult:3.5           },
     { name:'Aki',                sprite: sp(22,'aki'),           hpMult:4.0           },
     { name:'Pochita',            sprite: sp(22,'pochita'),       hpMult:5.0           },
-    { name:'Makima',             sprite: sp(22,'makima'),        isBoss:true, hpMult:16.5 },
+    { name:'Makima',             sprite: sp(22,'makima'),        isBoss:true, hpMult:16.8 },
   ],
   // ── PALIER 23 : Spy x Family — Opération Strix ───────────────────────────
   23: [
@@ -318,7 +318,7 @@ const PALIER_ENEMIES: Record<number, EnemyDef[]> = {
     { name:'Anya',               sprite: sp(23,'anya'),          hpMult:2.8           },
     { name:'Yuri',               sprite: sp(23,'yuri'),          hpMult:3.5           },
     { name:'Yor',                sprite: sp(23,'yor'),           hpMult:4.5           },
-    { name:'Loid',               sprite: sp(23,'loid'),          isBoss:true, hpMult:16.5 },
+    { name:'Loid',               sprite: sp(23,'loid'),          isBoss:true, hpMult:16.8 },
   ],
   // ── PALIER 24 : Dragon Ball — Arc Namek ──────────────────────────────────
   24: [

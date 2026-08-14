@@ -108,31 +108,31 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
   c('chuuya',      'Chuuya',           'L', 232, 'Bungou Stray Dogs'),
 
   // ── MYTHIQUES ────────────────────────────────────────────────────────────
-  ce('ren_m', 'Ren', 'M', 594, 'Persona 5', [
+  ce('ren_m', 'Ren', 'M', 599, 'Persona 5', [
     f('ren_m_base', 'Ren',   'ren_m', 100, 1),
     f('ren_m_evo1', 'Joker', 'ren_m', 200, 7),
   ]),
-  ce('ichigo', 'Ichigo', 'M', 626, 'Bleach', [
+  ce('ichigo', 'Ichigo', 'M', 640, 'Bleach', [
     f('ichigo_base', 'Ichigo',          'ichigo', 100, 1),
     f('ichigo_evo1', 'Ichigo — Bankai', 'ichigo', 200, 5.5),
-    f('ichigo_evo2', 'Ichigo — Vasto',  'ichigo', 300, 14),
+    f('ichigo_evo2', 'Ichigo — Vasto',  'ichigo', 300, 17.5),
   ]),
-  c('ouma',  'Kokichi Ouma', 'M', 1091, 'Danganronpa'),
-  c('jax',   'Jax',          'M', 616, 'Digital Circus'),
-  c('dazai', 'Dazai',        'M', 616, 'Bungou Stray Dogs'),
+  c('ouma',  'Kokichi Ouma', 'M', 1199, 'Danganronpa'),
+  c('jax',   'Jax',          'M', 816, 'Digital Circus'),
+  c('dazai', 'Dazai',        'M', 696, 'Bungou Stray Dogs'),
 
   // ── STELLAIRES ───────────────────────────────────────────────────────────
   ce('naruto', 'Naruto', 'S', 972, 'Naruto', [
     f('naruto_base', 'Naruto',                 'naruto', 100, 1),
     f('naruto_evo1', 'Naruto — Mode Sage',     'naruto', 200, 5),
     f('naruto_evo2', 'Naruto — Chakra Kyuubi', 'naruto', 300, 18),
-    f('naruto_evo3', 'Naruto — Mode Baryon',   'naruto', 400, 60),
+    f('naruto_evo3', 'Naruto — Mode Baryon',   'naruto', 400, 65),
   ]),
   ce('luffy', 'Luffy', 'S', 1296, 'One Piece', [
     f('luffy_base', 'Luffy',          'luffy', 100, 1),
     f('luffy_evo1', 'Luffy — Gear 2', 'luffy', 200, 5),
     f('luffy_evo2', 'Luffy — Gear 4', 'luffy', 300, 18),
-    f('luffy_evo3', 'Luffy — Gear 5', 'luffy', 400, 60),
+    f('luffy_evo3', 'Luffy — Gear 5', 'luffy', 400, 65),
   ]),
 
   // ── COSMIQUES ────────────────────────────────────────────────────────────
@@ -418,9 +418,9 @@ export const CHARACTER_POOL: CharacterTemplate[] = [
     f('alice_sao_armor', 'Armure Légendaire',    'alice_sao', 200, 4.5),
     f('alice_sao_max',   'Puissance Maximale',   'alice_sao', 300, 11),
   ]),
-  ce('atsushi',           'Atsushi',              'S', 1404, 'Bungou Stray Dogs', [
+  ce('atsushi',           'Atsushi',              'S', 1420, 'Bungou Stray Dogs', [
     f('atsushi_base', 'Atsushi', 'atsushi', 100, 1),
-    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 5.5),
+    f('atsushi_evo1', 'Atsushi — Bête', 'atsushi', 200, 6),
   ]),
   ce('mao_mao_ap', 'Mao Mao', 'S', 1490, "Les Carnets de l'Apothicaire", [
     f('mao_mao_ap_base', 'Mao Mao',             'mao_mao_ap', 100, 1),
