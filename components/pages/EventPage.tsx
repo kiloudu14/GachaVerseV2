@@ -5,8 +5,8 @@ import { useUltimateStore } from '@/store/ultimateStore';
 import { EVENT_BOSSES, rollEventDrop, getEventBossMaxHp, EventBossDef, DropResult } from '@/lib/game/eventBoss';
 import { getItemDef, getEquipmentDef } from '@/lib/game/items';
 import { getCharacterById } from '@/lib/game/characters';
-import { RARITY_CONFIG, calcCharDps } from '@/types/game';
-import { calcDpsWithSynergies, computeActiveSynergies } from '@/lib/game/synergies';
+import { RARITY_CONFIG } from '@/types/game';
+import { calculateEquippedTeamDps } from '@/lib/game/dpsCalculation';
 import { CharacterCardThumb } from '@/components/ui/CharacterCardThumb';
 import { formatNumber } from '@/lib/game/format';
 import { useFallbackImage, buildImageCandidates, stripKnownExtension } from '@/lib/image-fallback';
@@ -210,37 +210,12 @@ function EventLobby({ onSelect }: { onSelect: (id: string) => void }) {
 }
 
 function EventBattle({ bossId, onBack }: { bossId: string; onBack: () => void }) {
-  const { getHeroDpc, getTotalDps, addItem, nekoGems, bossCrowns, collection, equippedTeam } = useGameStore();
+  const { getHeroDpc, addItem, nekoGems, bossCrowns, collection, equippedTeam } = useGameStore();
   const { registerClick, getClickDpcMultiplier, consumeNextClickMultiplier, getActiveEnemyDamageTakenMultiplier } = useUltimateStore();
   const { checkClick, isBlocked, strikeLevel, detectionReason, submitApology } = useAntiAutoclick();
 
   const boss = useMemo(() => EVENT_BOSSES.find(b => b.id === bossId) ?? EVENT_BOSSES[0], [bossId]);
-  
-  // Calcul du DPS équipé avec équipements et synergies (même logique que CompanionsPage)
-  const activeSynergies = useMemo(() => computeActiveSynergies(equippedTeam), [equippedTeam]);
-  const getEquipmentMultiplier = useCallback((ownedChar: typeof collection[string], tpl: ReturnType<typeof getCharacterById>) => {
-    if (!ownedChar || !tpl) return 1;
-    const weaponDef = getEquipmentDef(ownedChar.equippedItems?.weapon ?? '');
-    const weaponBonusMult = weaponDef?.bonusFor?.templateId === tpl.id ? (weaponDef?.bonusFor?.multiplier ?? 1) : 1;
-    return Object.values(ownedChar.equippedItems ?? {}).reduce((mult, eqId) => {
-      if (!eqId) return mult;
-      const def = getEquipmentDef(eqId);
-      return def ? mult * def.dpsMultiplier : mult;
-    }, 1) * weaponBonusMult;
-  }, [collection]);
-  
-  const totalEquippedDps = useMemo(() => {
-    return equippedTeam.reduce((sum, id) => {
-      if (!id) return sum;
-      const owned = collection[id];
-      if (!owned) return sum;
-      const tpl = getCharacterById(owned.templateId);
-      if (!tpl) return sum;
-      const base = calcCharDps(tpl, owned);
-      const equippedMult = getEquipmentMultiplier(owned, tpl);
-      return sum + calcDpsWithSynergies(id, Math.floor(base * equippedMult), activeSynergies);
-    }, 0);
-  }, [equippedTeam, collection, getEquipmentMultiplier, activeSynergies]);
+  const totalEquippedDps = useMemo(() => calculateEquippedTeamDps(equippedTeam, collection), [equippedTeam, collection]);
   
   const [maxHp, setMaxHp] = useState(() => getEventBossMaxHp(boss, getHeroDpc() + totalEquippedDps));
   const [hp, setHp] = useState(maxHp);
